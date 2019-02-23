@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,9 +24,25 @@ class Service
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Basket", inversedBy="service")
+     * @ORM\Column(type="float")
      */
-    private $basket;
+    private $cost;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Receipt", mappedBy="service")
+     */
+    private $receipts;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="services")
+     */
+    private $users;
+
+    public function __construct()
+    {
+        $this->receipts = new ArrayCollection();
+        $this->users = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -43,14 +61,70 @@ class Service
         return $this;
     }
 
-    public function getBasket(): ?Basket
+    public function getCost(): ?float
     {
-        return $this->basket;
+        return $this->cost;
     }
 
-    public function setBasket(?Basket $basket): self
+    public function setCost(float $cost): self
     {
-        $this->basket = $basket;
+        $this->cost = $cost;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Receipt[]
+     */
+    public function getReceipts(): Collection
+    {
+        return $this->receipts;
+    }
+
+    public function addReceipt(Receipt $receipt): self
+    {
+        if (!$this->receipts->contains($receipt)) {
+            $this->receipts[] = $receipt;
+            $receipt->addService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceipt(Receipt $receipt): self
+    {
+        if ($this->receipts->contains($receipt)) {
+            $this->receipts->removeElement($receipt);
+            $receipt->removeService($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeService($this);
+        }
 
         return $this;
     }
