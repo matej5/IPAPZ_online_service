@@ -30,7 +30,7 @@ class ServiceController extends AbstractController
     {
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
-        if ($this->isGranted('ROLE_USER') && $form->isSubmitted() && $form->isValid()) {
+        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
             /** @var Service $service */
             $service = $form->getData();
             $entityManager->persist($service);
@@ -96,9 +96,27 @@ class ServiceController extends AbstractController
     }
 
     /**
+     * @Route("/cart", name="service_buy")
+     * @param Request $request
+     * @return Response
+     */
+    public function buy(Request $request)
+    {
+        $form = $this->createForm(ServiceFormType::class);
+        $form->handleRequest($request);
+
+        $service = $this->getUser()->getServices();
+
+        return $this->render('service/cart.html.twig', [
+            'form' => $form->createView(),
+            'services' => $service
+        ]);
+    }
+
+    /**
      * @Security("user == post.getUser()")
      * @Route("/service/{id}/delete", name="service_delete")
-     * @param Post $post
+     * @param Service $service
      * @param EntityManagerInterface $entityManager
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */

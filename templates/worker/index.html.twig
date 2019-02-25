@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if is_granted('ROLE_BOSS') %}
+        {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        {{ form_end(form) }}
+    {% endif %}
+    <h3>Workers</h3>
+    {% for worker in workers %}
+        <div class="row mt-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">{{ worker.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
