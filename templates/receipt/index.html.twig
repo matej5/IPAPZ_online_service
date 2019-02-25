@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {#{% for receipt in receipts %}#}
+        {#<div class="row mt-3">#}
+            {#<div class="col-lg-6">#}
+                {#<div class="card">#}
+                    {#<div class="card-body">#}
+                        {#<p class="card-text">{{ receipt.buyer }}</p>#}
+                        {#<p class="card-text">{{ receipt.worker }}</p>#}
+                        {#<p class="card-text">{{ receipt.office.city }}</p>#}
+                        {#{% for service in receipt.getService %}#}
+                        {#<p class="card-text">{{ service.name }}</p>#}
+                        {#<p class="card-text">{{ service.cost }}</p>#}
+                        {#{% endfor %}#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#{% endfor %}#}
+{% endblock %}
