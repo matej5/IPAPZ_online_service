@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\WorkerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -101,12 +102,12 @@ class Receipt
         return $this;
     }
 
-    public function getWorker(): ?User
+    public function getWorker(): ?Worker
     {
         return $this->worker;
     }
 
-    public function setWorker(?User $worker): self
+    public function setWorker(?Worker $worker): self
     {
         $this->worker = $worker;
 

@@ -27,6 +27,11 @@
                     <a class="nav-link" href="{{ path('worker_index') }}">Workers</a>
                 </li>
             {% endif %}
+            {% if is_granted('ROLE_USER') %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('receipt_index') }}">Shop history</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
     <div class="navbar-collapse">

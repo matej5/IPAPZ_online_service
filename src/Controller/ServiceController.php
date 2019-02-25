@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Entity\Post;
+use App\Entity\Receipt;
 use App\Entity\Service;
+use App\Entity\Worker;
 use App\Form\ServiceFormType;
+use App\Form\WorkerFormType;
+use App\Repository\OfficeRepository;
 use App\Repository\ServiceRepository;
-use App\Repository\PostRepository;
+use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -80,31 +82,48 @@ class ServiceController extends AbstractController
     /**
      * @Route("/cart", name="service_view")
      * @param Request $request
+     * @param WorkerRepository $workerRepository
      * @return Response
      */
-    public function view(Request $request)
+    public function view(Request $request, WorkerRepository $workerRepository)
     {
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
-
         $service = $this->getUser()->getServices();
-
+        $workers = $workerRepository->findAll();
         return $this->render('service/cart.html.twig', [
             'form' => $form->createView(),
-            'services' => $service
+            'services' => $service,
+            'workers' => $workers
         ]);
     }
-
     /**
-     * @Route("/cart", name="service_buy")
+     * @Route("/cart/{id}", name="service_buy")
+     * @param Worker $worker
      * @param Request $request
+     * @param OfficeRepository $officeRepository
+     * @param EntityManagerInterface $entityManager
+     * @param WorkerRepository $workerRepository
      * @return Response
      */
-    public function buy(Request $request)
+    public function buy(Worker $worker, Request $request, OfficeRepository $officeRepository, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
     {
-        $form = $this->createForm(ServiceFormType::class);
+        $form = $this->createForm(WorkerFormType::class);
         $form->handleRequest($request);
-
+        /** @var Receipt $receipt */
+        $receipt = new Receipt();
+        if ($this->isGranted('ROLE_USER')) {
+            foreach ($this->getUser()->getServices() as $service){
+                $receipt->addService($service);
+                $this->getUser()->removeService($service);
+            }
+            $receipt->setWorker($worker);
+            $receipt->setOffice($officeRepository->findOneBy(['id' => 1]));
+            $receipt->setBuyer($this->getUser());
+            $entityManager->persist($receipt);
+            $entityManager->flush();
+            return $this->redirectToRoute('service_index');
+        }
         $service = $this->getUser()->getServices();
 
         return $this->render('service/cart.html.twig', [
