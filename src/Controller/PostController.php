@@ -9,6 +9,7 @@ use App\Form\CommentFormType;
 use App\Form\PostFormType;
 use App\Repository\LikeDislikeRepository;
 use App\Repository\PostRepository;
+use App\Repository\ReceiptRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class PostController extends AbstractController
 {
@@ -25,9 +28,10 @@ class PostController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param PostRepository $postRepository
+     * @param ReceiptRepository $receiptRepository
      * @return Response
      */
-    public function index(Request $request, EntityManagerInterface $entityManager, PostRepository $postRepository)
+    public function index(Request $request, EntityManagerInterface $entityManager, PostRepository $postRepository, ReceiptRepository $receiptRepository)
     {
         $form = $this->createForm(PostFormType::class);
         $form->handleRequest($request);
@@ -40,7 +44,6 @@ class PostController extends AbstractController
             $this->addFlash('success', 'New post created!');
             return $this->redirectToRoute('post_index');
         }
-
         $posts = $postRepository->getAllInLastWeek();
 
         return $this->render('post/index.html.twig', [
@@ -61,11 +64,13 @@ class PostController extends AbstractController
     {
         $form = $this->createForm(CommentFormType::class);
         $form->handleRequest($request);
-        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
+        if ($this->isGranted('ROLE_USER') && $form->isSubmitted() && $form->isValid()) {
             /** @var Comment $comment */
             $comment = $form->getData();
             $comment->setUser($this->getUser());
             $post->addComment($comment);
+            $date = new \DateTime();
+            $comment->setCreatedAt($date);
             $entityManager->flush();
             return $this->redirectToRoute('post_view', [
                 'id' => $post->getId()

@@ -23,18 +23,6 @@ class ReceiptFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('office', EntityType::class, [
-                'class' => Office::class
-            ]);
-        $builder
-            ->add('buyer', EntityType::class, [
-                'class' => User::class
-            ]);
-        $builder
-            ->add('worker', EntityType::class, [
-                'class' => Worker::class
-            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

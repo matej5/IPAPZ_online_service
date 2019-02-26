@@ -41,7 +41,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-subtitle mt-2 text-muted">{{ comment.createdAt|date }}</h6>
-                        <h5 class="card-title">{{ comment.user.fullName }} says:</h5>
+                        <h5 class="card-title">{{ comment.user.firstname }} {{ comment.user.lastname }} says:</h5>
                         <p class="card-text">{{ comment.content }}</p>
                     </div>
                 </div>
