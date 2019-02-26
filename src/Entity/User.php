@@ -430,7 +430,7 @@ class User implements UserInterface
         $fn = $this->firstname;
         $ln = $this->lastname;
         $em = $this->email;
-        $siteRoot = __DIR__ . '/images/';
+        $siteRoot = '/home/matej/zavrsni/public/images/';
 
         $newUserSubfolder = $siteRoot . $em;
         if (!file_exists($newUserSubfolder)) {
@@ -545,6 +545,7 @@ class User implements UserInterface
                 }
             }
         }
+
         $save = $newUserSubfolder . '/avatar.jpeg';
         imagejpeg($im, $save, 100);   //Saves the image
 

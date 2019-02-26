@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Form\UserFormType;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -95,6 +96,55 @@ class UserController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("/profile", name="app_profile")
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return null|Response
+     */
+    public function profile(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ) {
+
+        $user = $this->getUser();
+
+        $form = $this->createForm(UserFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getUser()->setFirstname($form->get('firstname')->getData());
+            $this->getUser()->setLastname($form->get('lastname')->getData());
+            $entityManager->flush();
+        }
+
+        return $this->render('user/view.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * @Route("/generate", name="app_generate")
+     * @param Request $request
+     * @return null|Response
+     */
+    public function generate(
+        Request $request
+    ) {
+        $user = $this->getUser();
+        $user->createAvatar();
+        $form = $this->createForm(UserFormType::class, $user);
+        $form->handleRequest($request);
+
+        return $this->render('user/view.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
+    }
+
+
 
     /**
      * @Route("/logout", name="app_logout")
