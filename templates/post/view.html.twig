@@ -40,6 +40,7 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
+                        <img class="img-thumbnail" style="height: 150px; width: 150px;" src="{{ asset('images/'~ comment.user.email ~'/'~ comment.user.image ) }}">
                         <h6 class="card-subtitle mt-2 text-muted">{{ comment.createdAt|date }}</h6>
                         <h5 class="card-title">{{ comment.user.firstname }} {{ comment.user.lastname }} says:</h5>
                         <p class="card-text">{{ comment.content }}</p>
