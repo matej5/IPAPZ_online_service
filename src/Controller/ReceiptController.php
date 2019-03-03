@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Receipt;
 use App\Form\ReceiptFormType;
 use App\Repository\ReceiptRepository;
+use App\Repository\WorkerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,12 +24,30 @@ class ReceiptController extends AbstractController
         $form = $this->createForm(ReceiptFormType::class);
         $form->handleRequest($request);
 
+        $receipts = $receiptRepository->findBy(['buyer' => $this->getUser()]);
+
+        return $this->render('receipt/index.html.twig', [
+            'form' => $form->createView(),
+            'receipts' => $receipts
+        ]);
+    }
+
+    /**
+     * @Route("/jobs", name="receipt_view")
+     * @param Request $request
+     * @param ReceiptRepository $receiptRepository
+     * @param WorkerRepository $workerRepository
+     * @return Response
+     */
+    public function view(Request $request, ReceiptRepository $receiptRepository, WorkerRepository $workerRepository)
+    {
+        $form = $this->createForm(ReceiptFormType::class);
+        $form->handleRequest($request);
+
         if($this->isGranted('ROLE_BOSS')){
             $receipts = $receiptRepository->findAll();
-        }elseif ($this->isGranted('ROLE_WORKER')){
-            $receipts = $receiptRepository->findBy(['worker' => $this->getUser()]);
-        }else{
-            $receipts = $receiptRepository->findBy(['buyer' => $this->getUser()]);
+        }elseif($this->isGranted('ROLE_WORKER')){
+            $receipts = $receiptRepository->findBy(['worker' => $workerRepository->findOneBy(['user' => $this->getUser()])]);
         }
 
         return $this->render('receipt/index.html.twig', [

@@ -112,4 +112,13 @@ class Receipt
 
         return $this;
     }
+
+    public function getTotal()
+    {
+        $i = 0;
+        foreach ($this->service as $r) {
+            $i += $r->getCost();
+        }
+        return $i;
+    }
 }

@@ -130,18 +130,13 @@ class UserController extends AbstractController
      * @param Request $request
      * @return null|Response
      */
-    public function generate(
-        Request $request
-    ) {
+    public function generate(Request $request) {
         $user = $this->getUser();
         $user->createAvatar();
         $form = $this->createForm(UserFormType::class, $user);
         $form->handleRequest($request);
 
-        return $this->render('user/view.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user
-        ]);
+        return $this->redirectToRoute('app_profile');
     }
 
 

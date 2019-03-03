@@ -35,6 +35,11 @@
                     <a class="nav-link" href="{{ path('office_index') }}">Office</a>
                 </li>
             {% endif %}
+            {% if is_granted('ROLE_WORKER') or is_granted('ROLE_BOSS') %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('receipt_view') }}">Jobs</a>
+                </li>
+            {% endif %}
             {% if is_granted('ROLE_USER') %}
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ path('receipt_index') }}">Shop history</a>

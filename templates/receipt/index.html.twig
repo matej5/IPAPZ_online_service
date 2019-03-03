@@ -6,16 +6,18 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">Buyer: {{ receipt.buyer.firstname }} {{ receipt.buyer.lastname }}</p>
-                        <p class="card-text">Worker: {{ receipt.worker.name }}</p>
+                        <p class="card-text">Kupac: {{ receipt.buyer.firstname }} {{ receipt.buyer.lastname }}</p>
+                        <p class="card-text">Radnik: {{ receipt.worker.name }}</p>
                         <hr>
-                        {% for service in receipt.getService %}
-                        <p class="card-text">{{ service.name }}......{{ service.cost }} kn</p>
-                        {% endfor %}
+                        <div class="row">
+                            {% for service in receipt.getService %}
+                                    <div class="col-md-9">{{ service.name }}</div>
+                                    <div class="col-md-3">{{ service.cost }} kn</div>
+                            {% endfor %}
+                            <div class="col-md-4 offset-md-8">Total: {{ receipt.getTotal }} kn</div>
+                        </div>
                         <hr>
-                        <p class="card-text">{{ receipt.office.address }}</p>
-                        <p class="card-text">{{ receipt.office.city }}</p>
-                        <p class="card-text">{{ receipt.office.getState }}</p>
+                        <p class="card-text">{{ receipt.office.address }}, {{ receipt.office.city }}, {{ receipt.office.getState }}</p>
                     </div>
                 </div>
             </div>

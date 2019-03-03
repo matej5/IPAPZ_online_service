@@ -12,8 +12,8 @@
 
         <h3>Profile</h3>
         <hr>
-        <p>{{ user.firstname }} {{ user.lastname }}</p>
-        <p>{{ user.email }}</p>
+        <p>Name: {{ user.firstname }} {{ user.lastname }}</p>
+        <p>Email: {{ user.email }}</p>
         <img class="img-thumbnail" style="height: 150px; width: 150px;" src="{{ asset('images/'~ user.email ~'/'~ user.image ) }}">
             <hr>
     {% endif %}
