@@ -10,7 +10,7 @@ namespace App\Form;
 
 use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,7 +24,7 @@ class ServiceFormType extends AbstractType
                 'label' => 'Service'
             ]);
         $builder
-            ->add('cost', TextareaType::class, [
+            ->add('cost', NumberType::class, [
                 'label' => 'Service cost'
             ]);
     }

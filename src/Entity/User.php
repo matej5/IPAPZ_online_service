@@ -430,7 +430,7 @@ class User implements UserInterface
         $fn = $this->firstname;
         $ln = $this->lastname;
         $em = $this->email;
-        $siteRoot = '/home/matej/zavrsni/public/images/';
+        $siteRoot = '/home/matej/Projekti/IPAPZ_online_service/public/images/';
 
         $newUserSubfolder = $siteRoot . $em;
         if (!file_exists($newUserSubfolder)) {

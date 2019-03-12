@@ -67,8 +67,8 @@ class UserController extends AbstractController
             // encode the plain password
             //todo insert worker and other roles
 //            $a=['ROLE_BOSS'];
-//            $a=['ROLE_WORKER'];
-//            $user->setRoles($a);
+            $a=['ROLE_WORKER'];
+            $user->setRoles($a);
             $user->setMoney(200);
             $user->createAvatar();
             $user->setImage('avatar.jpeg');

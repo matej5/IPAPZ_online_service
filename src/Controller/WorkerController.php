@@ -33,8 +33,7 @@ class WorkerController extends AbstractController
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
             /** @var Worker $worker */
             $worker = new Worker();
-            $rep = $this->getDoctrine()->getRepository(User::class);
-            $user = $rep->findOneBy(['email' => $form->getData()->getEmail()]);
+            $user = $userRepository->findOneBy(['email' => $form->getData()->getEmail()]);
             $worker->setUser($user);
             $worker->setName($user->getFirstname() . ' ' . $user->getLastname());
             $a=['ROLE_WORKER'];
