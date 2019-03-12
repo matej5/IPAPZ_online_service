@@ -43,9 +43,20 @@ class Office
      */
     private $receipts;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $category;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Worker", mappedBy="office")
+     */
+    private $worker;
+
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
+        $this->worker = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -126,6 +137,49 @@ class Office
             // set the owning side to null (unless already changed)
             if ($receipt->getOffice() === $this) {
                 $receipt->setOffice(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Worker[]
+     */
+    public function getWorker(): Collection
+    {
+        return $this->worker;
+    }
+
+    public function addWorker(Worker $worker): self
+    {
+        if (!$this->worker->contains($worker)) {
+            $this->worker[] = $worker;
+            $worker->setOffice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorker(Worker $worker): self
+    {
+        if ($this->worker->contains($worker)) {
+            $this->worker->removeElement($worker);
+            // set the owning side to null (unless already changed)
+            if ($worker->getOffice() === $this) {
+                $worker->setOffice(null);
             }
         }
 

@@ -33,6 +33,11 @@ class Worker
      */
     private $receipts;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="worker")
+     */
+    private $office;
+
 
     public function __construct()
     {
@@ -94,6 +99,18 @@ class Worker
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getOffice(): ?Office
+    {
+        return $this->office;
+    }
+
+    public function setOffice(?Office $office): self
+    {
+        $this->office = $office;
 
         return $this;
     }

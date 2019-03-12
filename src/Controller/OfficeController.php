@@ -22,6 +22,10 @@ class OfficeController extends AbstractController
      */
     public function index(Request $request, EntityManagerInterface $entityManager, OfficeRepository $officeRepository)
     {
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
         $form = $this->createForm(OfficeFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {

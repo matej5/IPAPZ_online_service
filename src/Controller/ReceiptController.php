@@ -21,6 +21,10 @@ class ReceiptController extends AbstractController
      */
     public function index(Request $request, ReceiptRepository $receiptRepository)
     {
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
         $form = $this->createForm(ReceiptFormType::class);
         $form->handleRequest($request);
 
@@ -41,6 +45,10 @@ class ReceiptController extends AbstractController
      */
     public function view(Request $request, ReceiptRepository $receiptRepository, WorkerRepository $workerRepository)
     {
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
         $form = $this->createForm(ReceiptFormType::class);
         $form->handleRequest($request);
 

@@ -60,6 +60,10 @@ class ServiceController extends AbstractController
      */
     public function add(Service $service,Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_USER')) {
@@ -87,6 +91,10 @@ class ServiceController extends AbstractController
      */
     public function view(Request $request, WorkerRepository $workerRepository)
     {
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
         $service = $this->getUser()->getServices();
@@ -108,6 +116,10 @@ class ServiceController extends AbstractController
      */
     public function buy(Worker $worker, Request $request, OfficeRepository $officeRepository, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
     {
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
         $form = $this->createForm(WorkerFormType::class);
         $form->handleRequest($request);
         /** @var Receipt $receipt */

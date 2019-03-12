@@ -28,6 +28,9 @@ class WorkerController extends AbstractController
      */
     public function index(Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository, UserRepository $userRepository)
     {
+        if(!$this->isGranted('ROLE_BOSS')){
+            return $this->redirectToRoute('post_index');
+        }
         $form = $this->createForm(WorkerFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
