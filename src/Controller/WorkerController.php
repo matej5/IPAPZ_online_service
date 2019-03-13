@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\Worker;
 use App\Form\WorkerFormType;
 use App\Form\BossFormType;
+use App\Form\OffWorFormType;
 use App\Repository\UserRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -103,17 +104,17 @@ class WorkerController extends AbstractController
      */
     public function worker(Worker $worker, WorkerRepository $workerRepository, Request $request, EntityManagerInterface $entityManager) {
 
-        if(!$this->isGranted('ROLE_USER')){
+        if(!($this->isGranted('ROLE_BOSS') || $this->isGranted('ROLE_ADMIN'))){
             return $this->redirectToRoute('post_index');
         }
-
+        /** @var Worker $worker */
         $worker = $workerRepository->findOneBy(['id' => $worker->getId()]);
 
-        $form = $this->createForm(OfficeFormType::class);
+        $form = $this->createForm(OffWorFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $worker->setOffice($form->getData());
+            $worker->setOffice($form->getData()->getOffice());
             $entityManager->flush();
         }
 

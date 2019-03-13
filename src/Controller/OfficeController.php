@@ -34,7 +34,7 @@ class OfficeController extends AbstractController
             $entityManager->persist($office);
             $entityManager->flush();
             $this->addFlash('success', 'New office created!');
-            return $this->redirectToRoute('post_index');
+            return $this->redirectToRoute('office_index');
         }
         $offices = $officeRepository->findAll();
 
