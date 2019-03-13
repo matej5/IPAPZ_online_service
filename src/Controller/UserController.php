@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Form\UserFormType;
+use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -66,8 +67,7 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             //todo insert worker and other roles
-//            $a=['ROLE_BOSS'];
-//            $a=['ROLE_WORKER'];
+//            $a=['ROLE_ADMIN'];
 //            $user->setRoles($a);
             $user->setMoney(200);
             $user->createAvatar();
@@ -123,8 +123,29 @@ class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->render('user/view.html.twig', [
+        return $this->render('user/index.html.twig', [
             'form' => $form->createView(),
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * @Route("/user/{id}", name="app_user")
+     * @param User $user
+     * @param UserRepository $userRepository
+     * @return null|Response
+     */
+    public function user(User $user,
+        UserRepository $userRepository
+    ) {
+
+        if(!$this->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('post_index');
+        }
+
+        $user = $userRepository->findOneBy(['id' => $user->getId()]);
+
+        return $this->render('user/view.html.twig', [
             'user' => $user
         ]);
     }

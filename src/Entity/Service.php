@@ -38,6 +38,16 @@ class Service
      */
     private $users;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="services")
+     */
+    private $boss;
+
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
@@ -125,6 +135,30 @@ class Service
             $this->users->removeElement($user);
             $user->removeService($this);
         }
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getBoss(): ?Worker
+    {
+        return $this->boss;
+    }
+
+    public function setBoss(?Worker $boss): self
+    {
+        $this->boss = $boss;
 
         return $this;
     }

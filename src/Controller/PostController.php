@@ -35,7 +35,7 @@ class PostController extends AbstractController
     {
         $form = $this->createForm(PostFormType::class);
         $form->handleRequest($request);
-        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
+        if (($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) && ($form->isSubmitted() && $form->isValid())) {
             /** @var Post $post */
             $post = $form->getData();
             $post->setUser($this->getUser());
@@ -45,6 +45,8 @@ class PostController extends AbstractController
             return $this->redirectToRoute('post_index');
         }
         $posts = $postRepository->getAllInLastWeek();
+
+        $user = $this->getUser();
 
         return $this->render('post/index.html.twig', [
             'form' => $form->createView(),

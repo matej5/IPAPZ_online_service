@@ -52,8 +52,10 @@ class ReceiptController extends AbstractController
         $form = $this->createForm(ReceiptFormType::class);
         $form->handleRequest($request);
 
-        if($this->isGranted('ROLE_BOSS')){
+        if($this->isGranted('ROLE_ADMIN')){
             $receipts = $receiptRepository->findAll();
+        }elseif($this->isGranted('ROLE_BOSS')){
+            $receipts = $receiptRepository->findBy(['worker' => $workerRepository->findOneBy(['category' => $workerRepository->findOneBy(['user' => $this->getUser()])->getCategory()])]);
         }elseif($this->isGranted('ROLE_WORKER')){
             $receipts = $receiptRepository->findBy(['worker' => $workerRepository->findOneBy(['user' => $this->getUser()])]);
         }

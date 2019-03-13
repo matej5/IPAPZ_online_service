@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {% if is_granted('ROLE_BOSS') %}
+    {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
         {{ form_start(form) }}
-            {{ form_row(form.email) }}
+            {{ form_row(form.user) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
         {{ form_end(form) }}
     {% endif %}
@@ -13,7 +13,7 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">{{ worker.name }}</p>
+                        <a href="{{ path('app_user' , {'id': worker.user.id}) }}"><p class="card-text">{{ worker.name }}</p></a>
                     </div>
                 </div>
             </div>

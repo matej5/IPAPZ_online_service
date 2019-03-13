@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    {% if is_granted('ROLE_BOSS') %}
+    {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
         {{ form_start(form) }}
             {{ form_row(form.name) }}
             {{ form_row(form.cost) }}

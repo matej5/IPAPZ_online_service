@@ -1,25 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Pocetna</h1>
     {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
         {{ form_start(form) }}
-            {{ form_row(form.title) }}
-            {{ form_row(form.content) }}
-            {{ form_row(form.image) }}
+        {{ form_row(form.user) }}
+        {{ form_row(form.category) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
         {{ form_end(form) }}
     {% endif %}
-
-    {% for post in posts %}
+    <h3>Bosses</h3>
+    {% for worker in workers %}
         <div class="row mt-3">
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="card-subtitle mt-2 text-muted">{{ post.createdAt|date }}</h6>
-                        <h1>{{ post.title }}</h1>
-                        <p class="card-text">{{ post.content }}</p>
-                        <a href="{{ path('post_view', {'id': post.id}) }}" class="card-link">Details</a>
+                        <p class="card-text">{{ worker.name }}</p>
                     </div>
                 </div>
             </div>

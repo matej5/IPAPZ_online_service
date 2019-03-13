@@ -44,11 +44,6 @@ class Office
     private $receipts;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $category;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Worker", mappedBy="office")
      */
     private $worker;
@@ -139,18 +134,6 @@ class Office
                 $receipt->setOffice(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }

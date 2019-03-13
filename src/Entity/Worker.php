@@ -19,12 +19,8 @@ class Worker
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
      * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     * @var User
      */
     private $user;
 
@@ -38,10 +34,21 @@ class Worker
      */
     private $office;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $category;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Service", mappedBy="boss")
+     */
+    private $services;
+
 
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -49,16 +56,9 @@ class Worker
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName()
     {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
+        return $this->user->getFirstname() . ' ' . $this->user->getLastname();
     }
 
     /**
@@ -111,6 +111,49 @@ class Worker
     public function setOffice(?Office $office): self
     {
         $this->office = $office;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Service[]
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): self
+    {
+        if (!$this->services->contains($service)) {
+            $this->services[] = $service;
+            $service->setBoss($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): self
+    {
+        if ($this->services->contains($service)) {
+            $this->services->removeElement($service);
+            // set the owning side to null (unless already changed)
+            if ($service->getBoss() === $this) {
+                $service->setBoss(null);
+            }
+        }
 
         return $this;
     }

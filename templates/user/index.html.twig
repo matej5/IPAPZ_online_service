@@ -2,6 +2,14 @@
 
 {% block body %}
     {% if is_granted('ROLE_USER') %}
+        {{ form_start(form) }}
+            {{ form_row(form.firstname) }}
+            {{ form_row(form.lastname) }}
+            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('app_generate') }}">Generate image</a>
+
         <h3>Profile</h3>
         <hr>
         <p>Name: {{ user.firstname }} {{ user.lastname }}</p>

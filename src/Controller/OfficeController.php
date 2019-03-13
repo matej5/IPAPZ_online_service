@@ -28,7 +28,7 @@ class OfficeController extends AbstractController
 
         $form = $this->createForm(OfficeFormType::class);
         $form->handleRequest($request);
-        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
+        if (($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) && ($form->isSubmitted() && $form->isValid())) {
             /** @var Office $office */
             $office = $form->getData();
             $entityManager->persist($office);

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if is_granted('ROLE_USER') %}
+        <h3>Profile</h3>
+        <hr>
+        <p>Name: {{ worker.getName }} </p>
+        <p>Email: {{ worker.user.email }}</p>
+        <img class="img-thumbnail" style="height: 150px; width: 150px;" src="{{ asset('images/'~ worker.user.email ~'/'~ worker.user.image ) }}">
+            <hr>
+    {% endif %}
+{% endblock %}
