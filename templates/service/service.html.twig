@@ -45,7 +45,7 @@
                         {% if service.status == 'allowed' %}
                             <a href="{{ path('service_add', {'id': service.id}) }}" class="card-link">Add</a>
                         {% endif %}
-                        {% if is_granted('ROLE_ADMIN') %}
+                        {% if is_granted('ROLE_ADMIN') and service.status == 'queued' %}
                             <a href="{{ path('service_allow', {'id': service.id}) }}">
                                 Allow
                             </a>

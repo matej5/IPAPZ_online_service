@@ -121,12 +121,13 @@ class ServiceController extends AbstractController
     /**
      * @Route("/add/{id}", name="service_add")
      * @param Service $service
+     * @param WorkerRepository $workerRepository
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function add(Service $service,Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    public function add(Service $service, WorkerRepository $workerRepository, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
@@ -140,7 +141,7 @@ class ServiceController extends AbstractController
         }
 
         $service = $serviceRepository->findAll();
-
+        $cart = [];
         return $this->render('service/service.html.twig', [
             'form' => $form->createView(),
             'services' => $service
@@ -173,12 +174,11 @@ class ServiceController extends AbstractController
      * @Route("/cart/{id}", name="service_buy")
      * @param Worker $worker
      * @param Request $request
-     * @param OfficeRepository $officeRepository
      * @param EntityManagerInterface $entityManager
      * @param WorkerRepository $workerRepository
      * @return Response
      */
-    public function buy(Worker $worker, Request $request, OfficeRepository $officeRepository, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
+    public function buy(Worker $worker, Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
     {
         if(!$this->isGranted('ROLE_USER')){
             return $this->redirectToRoute('post_index');
@@ -194,7 +194,7 @@ class ServiceController extends AbstractController
                 $this->getUser()->removeService($service);
             }
             $receipt->setWorker($worker);
-            $receipt->setOffice($officeRepository->findOneBy(['id' => 1]));
+            $receipt->setOffice($worker->getOffice());
             $receipt->setBuyer($this->getUser());
             $entityManager->persist($receipt);
             $entityManager->flush();
