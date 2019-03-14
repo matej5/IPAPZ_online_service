@@ -22,36 +22,104 @@ use Symfony\Component\Routing\Annotation\Route;
 class ServiceController extends AbstractController
 {
     /**
-     * @Route("/service", name="service_index")
+     * @Route("/service/{category}", name="service_index")
      * @param Request $request
+     * @param WorkerRepository $workerRepository
      * @param EntityManagerInterface $entityManager
      * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function index(Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    public function index($category = null, Request $request, WorkerRepository $workerRepository, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
             /** @var Service $service */
             $service = $form->getData();
+            $service->setStatus('queued');
+            $service->setCategory($workerRepository->findOneBy(['user' => $this->getUser()])->getCategory());
+            $service->setBoss($workerRepository->findOneBy(['user' => $this->getUser()]));
             $entityManager->persist($service);
             $entityManager->flush();
             $this->addFlash('success', 'New service created!');
             return $this->redirectToRoute('service_index');
         }
 
-        $service = $serviceRepository->findAll();
+        $cat = $serviceRepository->findCategory();
+
+        if(strtolower($request->get('category')) == 'queue' && $this->isGranted('ROLE_ADMIN')){
+            $service = $serviceRepository->findBy(['status' => 'queued']);
+        } else {
+            $service = $serviceRepository->findBy(['status' => 'allowed', 'category' => $category]);
+        }
 
         return $this->render('service/service.html.twig', [
             'form' => $form->createView(),
-            'services' => $service
+            'category' => $cat,
+            'services' => $service,
+            'title' => $category
         ]);
     }
 
+    /**
+     * @Route("/serviceEdit/{id}", name="service_edit")
+     * @param Service $service
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param ServiceRepository $serviceRepository
+     * @return Response
+     */
+    public function viewService(Service $service, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    {
+        if (!($this->isGranted('ROLE_BOSS') && $this->getUser()->getWorker()->getCategory() == $service->getCategory())){
+            return $this->redirectToRoute('service_index');
+        }
+        $form = $this->createForm(ServiceFormType::class, $service);
+        $form->handleRequest($request);
+        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
+            /** @var Service $service */
+            $service = $form->getData();
+            $service->setStatus('queued');
+            $service->setDuration($form->get('duration')->getData());
+            $service->setName($form->get('name')->getData());
+            $service->setCost($form->get('cost')->getData());
+            $entityManager->persist($service);
+            $entityManager->flush();
+            $this->addFlash('success', 'Edited service!');
+            return $this->redirectToRoute('service_index');
+        }
+
+        $cat = $serviceRepository->findCategory();
+
+        return $this->render('service/view.html.twig', [
+            'form' => $form->createView(),
+            'category' => $cat,
+            'services' => $service,
+            'title' => 'Edit service'
+        ]);
+    }
 
     /**
-     * @Route("/service/{id}", name="service_add")
+     * @Route("/allow/{id}", name="service_allow")
+     * @param Service $service
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function allow(Service $service, EntityManagerInterface $entityManager)
+    {
+        if($this->isGranted('ROLE_ADMIN')){
+            /** @var Service $service */
+            $service->setStatus('allowed');
+            $entityManager->persist($service);
+            $entityManager->flush();
+            return $this->redirectToRoute('service_index');
+        }
+
+        return $this->redirectToRoute('service_index');
+    }
+
+    /**
+     * @Route("/add/{id}", name="service_add")
      * @param Service $service
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -60,10 +128,6 @@ class ServiceController extends AbstractController
      */
     public function add(Service $service,Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
-        if(!$this->isGranted('ROLE_USER')){
-            return $this->redirectToRoute('post_index');
-        }
-
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_USER')) {

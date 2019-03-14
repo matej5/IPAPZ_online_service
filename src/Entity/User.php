@@ -90,6 +90,11 @@ class User implements UserInterface
      */
     private $image;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Worker", cascade={"persist", "remove"})
+     */
+    private $worker;
+
 
     public function __construct()
     {
@@ -550,5 +555,17 @@ class User implements UserInterface
         imagejpeg($im, $save, 100);   //Saves the image
 
         imagedestroy($im);
+    }
+
+    public function getWorker(): ?Worker
+    {
+        return $this->worker;
+    }
+
+    public function setWorker(?Worker $worker): self
+    {
+        $this->worker = $worker;
+
+        return $this;
     }
 }

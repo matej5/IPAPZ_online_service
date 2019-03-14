@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% if is_granted('ROLE_BOSS') %}
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.cost) }}
+            {{ form_row(form.duration) }}
+            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        {{ form_end(form) }}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-3" >
+            <ul class="list group">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('service_index', {'category': 'Queue'}) }}">
+                            Queue
+                        </a>
+                    </li>
+                {% endif %}
+                {% for cat in category %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('service_index' , {'category': cat.category}) }}">
+                            {{ cat.category }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

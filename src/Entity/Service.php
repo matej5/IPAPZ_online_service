@@ -48,6 +48,16 @@ class Service
      */
     private $boss;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $duration;
+
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
@@ -159,6 +169,30 @@ class Service
     public function setBoss(?Worker $boss): self
     {
         $this->boss = $boss;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getDuration(): ?int
+    {
+        return $this->duration;
+    }
+
+    public function setDuration(int $duration): self
+    {
+        $this->duration = $duration;
 
         return $this;
     }

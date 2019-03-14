@@ -25,7 +25,11 @@ class ServiceFormType extends AbstractType
             ]);
         $builder
             ->add('cost', NumberType::class, [
-                'label' => 'Service cost'
+                'label' => 'Cost'
+            ]);
+        $builder
+            ->add('duration', NumberType::class, [
+                'label' => 'Duration (min)'
             ]);
     }
 

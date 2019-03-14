@@ -14,6 +14,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BossFormType extends AbstractType
@@ -22,8 +24,10 @@ class BossFormType extends AbstractType
     {
         $builder
             ->add('user', EntityType::class, [
-                'choice_label' => 'email',
-                'class' => User::class
+                'class' => User::class,
+                'choice_label' => function ($user){
+                return $user->getFirstname();
+                }
             ])
             ->add('category', TextType::class, [
                 'label' => 'Add category'

@@ -2,24 +2,56 @@
 
 {% block body %}
 
-    {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
+    {% if is_granted('ROLE_BOSS') %}
         {{ form_start(form) }}
             {{ form_row(form.name) }}
             {{ form_row(form.cost) }}
+            {{ form_row(form.duration) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
         {{ form_end(form) }}
     {% endif %}
 
-    <div class="row mt-3">
+    <div class="row">
+        <div class="col-3" >
+            <ul class="list group">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('service_index', {'category': 'Queue'}) }}">
+                            Queue
+                        </a>
+                    </li>
+                {% endif %}
+                {% for cat in category %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('service_index' , {'category': cat.category}) }}">
+                            {{ cat.category }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
         <div class="col-lg-6">
             <ul class="list group">
-            {% for service in services %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">{{ service.name }}
-                <span class="badge">{{ service.cost }} kn</span>
-                    {% if is_granted('ROLE_USER') %}
-                <a href="{{ path('service_add', {'id': service.id}) }}" class="card-link">Add</a></li>
+                <h3>{{ title }}</h3>
+                {% for service in services %}
+                    {% if is_granted('ROLE_BOSS') and app.user.worker.category == service.category %}
+                        <a href="{{ path('service_edit', {'id': service.id}) }}">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">{{ service.name }}
+                        </a>
+                    {% else %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">{{ service.name }}
                     {% endif %}
-            {% endfor %}
+                        <span class="badge">{{ service.cost }} kn</span>
+                        {% if service.status == 'allowed' %}
+                            <a href="{{ path('service_add', {'id': service.id}) }}" class="card-link">Add</a>
+                        {% endif %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('service_allow', {'id': service.id}) }}">
+                                Allow
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
             </ul>
         </div>
     </div>

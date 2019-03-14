@@ -8,7 +8,7 @@
         <p>Email: {{ worker.user.email }}</p>
         <img class="img-thumbnail" style="height: 150px; width: 150px;" src="{{ asset('images/'~ worker.user.email ~'/'~ worker.user.image ) }}">
             <hr>
-        {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
+        {% if (is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN')) and app.user.worker.category == worker.category %}
             {{ form_start(form) }}
             {{ form_row(form.office) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>

@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
+    {% if is_granted('ROLE_ADMIN') %}
         {{ form_start(form) }}
         {{ form_row(form.user) }}
         {{ form_row(form.category) }}
