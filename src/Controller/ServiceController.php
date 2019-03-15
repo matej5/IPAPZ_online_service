@@ -204,18 +204,11 @@ class ServiceController extends AbstractController
         $form->handleRequest($request);
         /** @var Receipt $receipt */
         $receipt = new Receipt();
+
         if ($this->isGranted('ROLE_USER')) {
-            foreach ($this->getUser()->getServices() as $service){
-                $receipt->addService($service);
-                $this->getUser()->removeService($service);
-            }
-            $receipt->setWorker($worker);
-            $receipt->setOffice($worker->getOffice());
-            $receipt->setBuyer($this->getUser());
-            $entityManager->persist($receipt);
-            $entityManager->flush();
-            return $this->redirectToRoute('service_index');
+
         }
+
         $service = $this->getUser()->getServices();
 
         return $this->render('service/cart.html.twig', [

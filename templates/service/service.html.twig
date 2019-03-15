@@ -43,7 +43,8 @@
                     {% endif %}
                         <span class="badge">{{ service.cost }} kn</span>
                         {% if service.status == 'allowed' %}
-                            <a href="{{ path('service_add', {'id': service.id}) }}" class="card-link">Add</a>
+                            <a href="{{ path('service_buy', {'id': service.id}) }}" class="card-link">Buy</a>
+                            <a href="{{ path('service_add', {'id': service.id}) }}" class="card-link">Add to wishlist</a>
                         {% endif %}
                         {% if is_granted('ROLE_ADMIN') and service.status == 'queued' %}
                             <a href="{{ path('service_allow', {'id': service.id}) }}">

@@ -41,6 +41,11 @@ class Receipt
      */
     private $worker;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $startOfService;
+
     public function __construct()
     {
         $this->service = new ArrayCollection();
@@ -120,5 +125,17 @@ class Receipt
             $i += $r->getCost();
         }
         return $i;
+    }
+
+    public function getStartOfService(): ?\DateTimeInterface
+    {
+        return $this->startOfService;
+    }
+
+    public function setStartOfService(\DateTimeInterface $startOfService): self
+    {
+        $this->startOfService = $startOfService;
+
+        return $this;
     }
 }
