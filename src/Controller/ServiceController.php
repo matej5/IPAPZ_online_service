@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -121,49 +122,64 @@ class ServiceController extends AbstractController
     /**
      * @Route("/add/{id}", name="service_add")
      * @param Service $service
-     * @param WorkerRepository $workerRepository
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function add(Service $service, WorkerRepository $workerRepository, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    public function add(Service $service, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_USER')) {
             /** @var Service $service */
             $this->getUser()->addService($service);
+            $form->get('image')->setData('');
             $entityManager->persist($service);
             $entityManager->flush();
             $this->addFlash('success', 'New service added to cart!');
             return $this->redirectToRoute('service_index');
+        }else {
+            $response = new Response();
+            $count = 0;
+            if(isset($_COOKIE['services'][0])) {
+                $count = count($_COOKIE['services']);
+            }
+            $cookieServices = array(
+                'name' => "services[$count]",
+                'service' => $service->getId()
+            );
+            $cookie = new Cookie($cookieServices['name'],$cookieServices['service']);
+            $response->headers->setCookie($cookie, '', 1);
+            $response->send();
+
         }
 
         $service = $serviceRepository->findAll();
         $cart = [];
-        return $this->render('service/service.html.twig', [
-            'form' => $form->createView(),
-            'services' => $service
-        ]);
+        return $this->redirectToRoute('service_index');
     }
 
     /**
      * @Route("/cart", name="service_view")
      * @param Request $request
      * @param WorkerRepository $workerRepository
+     * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function view(Request $request, WorkerRepository $workerRepository)
+    public function view(Request $request, WorkerRepository $workerRepository, ServiceRepository $serviceRepository)
     {
-        if(!$this->isGranted('ROLE_USER')){
-            return $this->redirectToRoute('post_index');
-        }
-
         $form = $this->createForm(ServiceFormType::class);
         $form->handleRequest($request);
-        $service = $this->getUser()->getServices();
-        $workers = $workerRepository->findAll();
+        $service = null;
+        if(!$this->isGranted('ROLE_USER') && isset($_COOKIE['services'])){
+            foreach ($_COOKIE['services'] as $s){
+                $service[] = $serviceRepository->findOneBy(['id' => $s]);
+            }
+        }elseif($this->isGranted('ROLE_USER')) {
+            $service = $this->getUser()->getServices();
+        }
+            $workers = $workerRepository->findAll();
         return $this->render('service/cart.html.twig', [
             'form' => $form->createView(),
             'services' => $service,

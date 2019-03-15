@@ -40,6 +40,7 @@ class WorkerController extends AbstractController
             /** @var Worker $worker */
             $worker = $form->getData();
             $a=['ROLE_WORKER'];
+            $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
             $worker->setCategory($workerRepository->findOneBy(['user' => $this->getUser()])->getCategory());
             $entityManager->persist($worker);
@@ -79,6 +80,7 @@ class WorkerController extends AbstractController
             /** @var Worker $worker */
             $worker = $form->getData();
             $a=['ROLE_BOSS'];
+            $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
             $entityManager->persist($worker);
             $entityManager->flush();
@@ -110,11 +112,12 @@ class WorkerController extends AbstractController
         /** @var Worker $worker */
         $worker = $workerRepository->findOneBy(['id' => $worker->getId()]);
 
-        $form = $this->createForm(OffWorFormType::class);
+        $form = $this->createForm(OffWorFormType::class, $worker);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $worker->setOffice($form->getData()->getOffice());
+            $worker->setOffice($form->get('office')->getData());
+            $worker->setWorkDays($form->get('workDays')->getData());
             $entityManager->flush();
         }
 

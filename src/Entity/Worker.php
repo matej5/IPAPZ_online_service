@@ -44,6 +44,20 @@ class Worker
      */
     private $services;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $workTime;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $workDays;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $startTime;
 
     public function __construct()
     {
@@ -154,6 +168,42 @@ class Worker
                 $service->setBoss(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getWorkTime(): ?int
+    {
+        return $this->workTime;
+    }
+
+    public function setWorkTime(int $workTime): self
+    {
+        $this->workTime = $workTime;
+
+        return $this;
+    }
+
+    public function getWorkDays(): ?int
+    {
+        return $this->workDays;
+    }
+
+    public function setWorkDays(int $workDays): self
+    {
+        $this->workDays = $workDays;
+
+        return $this;
+    }
+
+    public function getStartTime(): ?int
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(int $startTime): self
+    {
+        $this->startTime = $startTime;
 
         return $this;
     }

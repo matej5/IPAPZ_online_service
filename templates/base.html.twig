@@ -55,6 +55,13 @@
     </div>
     <div class="navbar-collapse">
         <ul class="navbar-nav ml-auto">
+            {% if app.user is null and app.request.cookies.get('services') is not null %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('service_view') }}">
+                    <i class="fas fa-shopping-cart fa-2x"></i>
+                </a>
+            </li>
+            {% endif %}
             {% if is_granted('ROLE_USER') %}
                 {% if app.user.getServices is not empty %}
                 <li class="nav-item">
