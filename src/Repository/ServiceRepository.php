@@ -19,34 +19,21 @@ class ServiceRepository extends ServiceEntityRepository
         parent::__construct($registry, Service::class);
     }
 
-    public function findCategory()
+     /**
+      * @return Service[] Returns an array of Service objects
+      */
+    public function findByService($value)
     {
-        return $this->createQueryBuilder('s')
-            ->select('s.category')
-            ->where('s.status = :stat')
-            ->setParameter('stat', 'allowed')
-            ->distinct('s.category')
-            ->orderBy('s.category', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
 
-    // /**
-    //  * @return Service[] Returns an array of Service objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
         return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
+            ->innerJoin('s.category', 'c')
+            ->andWhere('c.name = :val')
             ->setParameter('val', $value)
             ->orderBy('s.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?Service

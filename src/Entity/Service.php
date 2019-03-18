@@ -39,11 +39,6 @@ class Service
     private $users;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $category;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="services")
      */
     private $boss;
@@ -68,10 +63,16 @@ class Service
      */
     private $image;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="services")
+     */
+    private $category;
+
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->category = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,18 +160,6 @@ class Service
         return $this;
     }
 
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): self
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
     public function getBoss(): ?Worker
     {
         return $this->boss;
@@ -227,6 +216,32 @@ class Service
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategory(): Collection
+    {
+        return $this->category;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->category->contains($category)) {
+            $this->category[] = $category;
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->category->contains($category)) {
+            $this->category->removeElement($category);
+        }
 
         return $this;
     }

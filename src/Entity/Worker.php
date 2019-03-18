@@ -35,11 +35,6 @@ class Worker
     private $office;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $category;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Service", mappedBy="boss")
      */
     private $services;
@@ -58,6 +53,11 @@ class Worker
      * @ORM\Column(type="integer")
      */
     private $startTime;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firmName;
 
     public function __construct()
     {
@@ -129,18 +129,6 @@ class Worker
         return $this;
     }
 
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): self
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Service[]
      */
@@ -204,6 +192,18 @@ class Worker
     public function setStartTime(int $startTime): self
     {
         $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    public function getFirmName(): ?string
+    {
+        return $this->firmName;
+    }
+
+    public function setFirmName(string $firmName): self
+    {
+        $this->firmName = $firmName;
 
         return $this;
     }

@@ -21,10 +21,10 @@
                         </a>
                     </li>
                 {% endif %}
-                {% for cat in category %}
+                {% for category in categories %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="{{ path('service_index' , {'category': cat.category}) }}">
-                            {{ cat.category }}
+                        <a href="{{ path('service_index' , {'category': category.name}) }}">
+                            {{ category.name }}
                         </a>
                     </li>
                 {% endfor %}

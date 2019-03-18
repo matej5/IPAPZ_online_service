@@ -29,8 +29,8 @@ class BossFormType extends AbstractType
                 return $user->getFirstname();
                 }
             ])
-            ->add('category', TextType::class, [
-                'label' => 'Add category'
+            ->add('firmName', TextType::class, [
+                'label' => 'Add firm name'
             ]);
     }
 

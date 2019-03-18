@@ -4,7 +4,7 @@
     {% if is_granted('ROLE_ADMIN') %}
         {{ form_start(form) }}
         {{ form_row(form.user) }}
-        {{ form_row(form.category) }}
+        {{ form_row(form.firmName) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
         {{ form_end(form) }}
     {% endif %}

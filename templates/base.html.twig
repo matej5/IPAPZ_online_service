@@ -25,21 +25,24 @@
             <li class="nav-item active">
                 <a class="nav-link" href="{{ path('post_index') }}"><i class="fa fa-home fa-2x" aria-hidden="true"></i></a>
             </li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('category_index') }}">Category</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('boss_index') }}">Boss</a>
+                </li>
+            {% endif %}
             <li class="nav-item active">
                 <a class="nav-link" href="{{ path('service_index') }}">Services</a>
             </li>
             {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('worker_index') }}"><i class="fa fa-users fa-2x" aria-hidden="true"></i></a>
+                    <a class="nav-link" href="{{ path('worker_index') }}">Workers</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ path('office_index') }}">Office</a>
                 </li>
-            {% endif %}
-            {% if is_granted('ROLE_ADMIN') %}
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ path('boss_index') }}">Add Boss</a>
-            </li>
             {% endif %}
             {% if is_granted('ROLE_WORKER') or is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
                 <li class="nav-item active">

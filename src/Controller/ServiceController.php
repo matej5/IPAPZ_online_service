@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Receipt;
 use App\Entity\Service;
 use App\Entity\Worker;
+use App\Form\ServiceAddFormType;
 use App\Form\ServiceFormType;
 use App\Form\WorkerFormType;
+use App\Repository\CategoryRepository;
 use App\Repository\OfficeRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\WorkerRepository;
@@ -25,38 +27,52 @@ class ServiceController extends AbstractController
     /**
      * @Route("/service/{category}", name="service_index")
      * @param Request $request
+     * @param CategoryRepository $categoryRepository
      * @param WorkerRepository $workerRepository
      * @param EntityManagerInterface $entityManager
      * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function index($category = null, Request $request, WorkerRepository $workerRepository, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    public function index($category = null, CategoryRepository $categoryRepository, Request $request, WorkerRepository $workerRepository, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
-        $form = $this->createForm(ServiceFormType::class);
+        $categories = $categoryRepository->findAll();
+
+        $form = $this->createForm(ServiceFormType::class, ['categories' => $categories]);
         $form->handleRequest($request);
+
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
             /** @var Service $service */
-            $service = $form->getData();
+            $data = $form->getData();
+
+            $service = new Service();
+
+            $service->setName($data['name']);
+            $service->setCost($data['cost']);
+            $service->setDuration($data['duration']);
+            $service->setDescription($data['description']);
+            $service->setImage($data['image']);
             $service->setStatus('queued');
-            $service->setCategory($workerRepository->findOneBy(['user' => $this->getUser()])->getCategory());
+            foreach ($data['category'] as $c){
+                $service->addCategory($c);
+            }
             $service->setBoss($workerRepository->findOneBy(['user' => $this->getUser()]));
+
             $entityManager->persist($service);
             $entityManager->flush();
             $this->addFlash('success', 'New service created!');
             return $this->redirectToRoute('service_index');
         }
 
-        $cat = $serviceRepository->findCategory();
 
         if(strtolower($request->get('category')) == 'queue' && $this->isGranted('ROLE_ADMIN')){
             $service = $serviceRepository->findBy(['status' => 'queued']);
         } else {
-            $service = $serviceRepository->findBy(['status' => 'allowed', 'category' => $category]);
+            $service = $serviceRepository->findByService($category, ['status' => 'allowed']);
         }
 
         return $this->render('service/service.html.twig', [
             'form' => $form->createView(),
-            'category' => $cat,
+            'category' => $categories,
             'services' => $service,
             'title' => $category
         ]);
@@ -65,17 +81,21 @@ class ServiceController extends AbstractController
     /**
      * @Route("/serviceEdit/{id}", name="service_edit")
      * @param Service $service
+     * @param CategoryRepository $categoryRepository
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function viewService(Service $service, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    public function viewService(Service $service, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
-        if (!($this->isGranted('ROLE_BOSS') && $this->getUser()->getWorker()->getCategory() == $service->getCategory())){
+        if (!($this->isGranted('ROLE_BOSS') && $this->getUser() == $service->getBoss()->getUser())){
             return $this->redirectToRoute('service_index');
         }
-        $form = $this->createForm(ServiceFormType::class, $service);
+
+        $categories = $categoryRepository->findAll();
+
+        $form = $this->createForm(ServiceFormType::class, ['categories' => $categories, 'service' => $service]);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
             /** @var Service $service */
@@ -90,11 +110,9 @@ class ServiceController extends AbstractController
             return $this->redirectToRoute('service_index');
         }
 
-        $cat = $serviceRepository->findCategory();
-
         return $this->render('service/view.html.twig', [
             'form' => $form->createView(),
-            'category' => $cat,
+            'categories' => $categories,
             'services' => $service,
             'title' => 'Edit service'
         ]);
@@ -129,7 +147,7 @@ class ServiceController extends AbstractController
      */
     public function add(Service $service, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
     {
-        $form = $this->createForm(ServiceFormType::class);
+        $form = $this->createForm(ServiceAddFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_USER')) {
             /** @var Service $service */
@@ -169,7 +187,7 @@ class ServiceController extends AbstractController
      */
     public function view(Request $request, WorkerRepository $workerRepository, ServiceRepository $serviceRepository)
     {
-        $form = $this->createForm(ServiceFormType::class);
+        $form = $this->createForm(ServiceAddFormType::class);
         $form->handleRequest($request);
         $service = null;
         if(!$this->isGranted('ROLE_USER') && isset($_COOKIE['services'])){
@@ -188,17 +206,14 @@ class ServiceController extends AbstractController
     }
     /**
      * @Route("/cart/{id}", name="service_buy")
-     * @param Worker $worker
+     * @param Service $service
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param WorkerRepository $workerRepository
      * @return Response
      */
-    public function buy(Worker $worker, Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
+    public function buy(Service $service, Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
     {
-        if(!$this->isGranted('ROLE_USER')){
-            return $this->redirectToRoute('post_index');
-        }
 
         $form = $this->createForm(WorkerFormType::class);
         $form->handleRequest($request);
@@ -213,7 +228,7 @@ class ServiceController extends AbstractController
 
         return $this->render('service/cart.html.twig', [
             'form' => $form->createView(),
-            'services' => $service
+            'service' => $service
         ]);
     }
 

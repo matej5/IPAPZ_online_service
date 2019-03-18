@@ -22,7 +22,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormTypeInterface;
 
-class ServiceFormType extends AbstractType
+class ServiceAddFormType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -42,21 +42,6 @@ class ServiceFormType extends AbstractType
             ])
             ->add('image', FileType::class, [
                 'label' => 'Image'
-            ])
-            ->add('category', ChoiceType::class, [
-                'choices' => $options['data'],
-                'choice_value' => function(Category $cat = null) {
-                    if (null === $cat) {
-                        return null;
-                    }
-
-                    return $cat->getId();
-                },
-                'label' => 'name',
-                'multiple' => true,
-                'expanded' => true,
-                'by_reference' => false,
-                'empty_data' => 0
             ]);
     }
 

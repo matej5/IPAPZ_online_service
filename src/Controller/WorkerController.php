@@ -34,15 +34,17 @@ class WorkerController extends AbstractController
         if(!($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS'))){
             return $this->redirectToRoute('post_index');
         }
+
         $form = $this->createForm(WorkerFormType::class);
         $form->handleRequest($request);
+
         if (($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) && ($form->isSubmitted() && $form->isValid())) {
             /** @var Worker $worker */
             $worker = $form->getData();
             $a=['ROLE_WORKER'];
             $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
-            $worker->setCategory($workerRepository->findOneBy(['user' => $this->getUser()])->getCategory());
+            $worker->setFirmName($workerRepository->findOneBy(['user' => $this->getUser()])->getFirmName());
             $entityManager->persist($worker);
             $entityManager->flush();
             $this->addFlash('success', 'New worker created!');
@@ -52,7 +54,7 @@ class WorkerController extends AbstractController
         if($this->isGranted('ROLE_ADMIN')){
             $workers = $workerRepository->findAll();
         }else{
-            $workers = $workerRepository->findBy(['category' => $workerRepository->findOneBy(['user' => $this->getUser()])->getCategory()]);
+            $workers = $workerRepository->findBy(['firmName' => $workerRepository->findOneBy(['user' => $this->getUser()])->getFirmName()]);
         }
 
         return $this->render('worker/index.html.twig', [
