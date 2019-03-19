@@ -48,6 +48,11 @@ class Office
      */
     private $worker;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="officesCreated")
+     */
+    private $owner;
+
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
@@ -167,5 +172,21 @@ class Office
         }
 
         return $this;
+    }
+
+    public function getOwner(): ?Worker
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?Worker $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function __toString() {
+        return $this->address . ', ' . $this->city;
     }
 }

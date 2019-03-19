@@ -1,51 +1,53 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
     {{ parent() }}
-    <link href='{{ asset("fullcalendar/core/main.css") }}' rel='stylesheet' />
-    <link href='{{ asset("fullcalendar/daygrid/main.css") }}' rel='stylesheet' />
+    <link href="{{ asset('fullcalendar/core/main.css') }}" rel='stylesheet' />
+    <link href="{{ asset('fullcalendar/daygrid/main.css') }}" rel='stylesheet' />
+    <link href="{{ asset('fullcalendar/timegrid/main.css') }}" rel='stylesheet' />
 {% endblock %}
 {% block body %}
 
 
-    <div id='calendar'></div>
+    {{ form_start(form) }}
 
-    <div class="row">
-        <div class="col-3" >
-            <ul class="list group">
-            </ul>
-        </div>
-    </div>
+    <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+    {{ form_end(form) }}
+
+    <div id="calendar"></div>
 {% endblock %}
 {% block javascripts %}
-
     {{ parent() }}
-    <script src='{{ asset("fullcalendar/core/main.js") }}'></script>
-    <script src='{{ asset("fullcalendar/daygrid/main.js") }}'></script>
-
+    <script src="{{ asset('js/receipt.js') }}"></script>
+    <script src='{{ asset('fullcalendar/core/main.js') }}'></script>
+    <script src='{{ asset('fullcalendar/daygrid/main.js') }}'></script>
+    <script src='{{ asset('fullcalendar/timegrid/main.js') }}'></script>
+    <script src='{{ asset('fullcalendar/interaction/main.js') }}'></script>
     <script>
-        db.transaction(function(transaction) {
-            transaction.executeSql('SELECT * FROM Employ where number = parseInt(val);',[], selectedRowValues, errorHandler);
 
-        });
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: [ 'dayGrid', 'timeGrid', 'list', 'bootstrap' ],
-                timeZone: 'UTC',
-                themeSystem: 'bootstrap',
+                plugins: [ 'interaction', 'dayGrid', 'timeGrid' ],
+                selectable: true,
                 header: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                weekNumbers: true,
-                eventLimit: true, // allow "more" link when too many events
-                events: 'https://fullcalendar.io/demo-events.json'
+                scrollTime: '07:00',
+                slotDuration: '00:15',
+                defaultView: 'timeGridWeek',
+                unselectAuto: false,
+                dateClick: function(info) {
+                    alert('Clicked on: ' + info.dateStr);
+                }
             });
 
             calendar.render();
         });
+
+
 
     </script>
 {% endblock %}

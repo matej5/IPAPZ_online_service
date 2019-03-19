@@ -59,10 +59,16 @@ class Worker
      */
     private $firmName;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Office", mappedBy="owner")
+     */
+    private $officesCreated;
+
     public function __construct()
     {
         $this->receipts = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->officesCreated = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -206,5 +212,40 @@ class Worker
         $this->firmName = $firmName;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Office[]
+     */
+    public function getOfficesCreated(): Collection
+    {
+        return $this->officesCreated;
+    }
+
+    public function addOfficesCreated(Office $officesCreated): self
+    {
+        if (!$this->officesCreated->contains($officesCreated)) {
+            $this->officesCreated[] = $officesCreated;
+            $officesCreated->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOfficesCreated(Office $officesCreated): self
+    {
+        if ($this->officesCreated->contains($officesCreated)) {
+            $this->officesCreated->removeElement($officesCreated);
+            // set the owning side to null (unless already changed)
+            if ($officesCreated->getOwner() === $this) {
+                $officesCreated->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString() {
+        return $this->getName();
     }
 }

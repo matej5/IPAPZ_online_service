@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Office;
 use App\Entity\Receipt;
 use App\Entity\Service;
 use App\Entity\Worker;
+use App\Form\ReceiptFormType;
 use App\Form\ServiceAddFormType;
 use App\Form\ServiceFormType;
 use App\Form\WorkerFormType;
@@ -209,22 +211,15 @@ class ServiceController extends AbstractController
      * @param Service $service
      * @param Request $request
      * @param EntityManagerInterface $entityManager
-     * @param WorkerRepository $workerRepository
+     * @param OfficeRepository $officeRepository
      * @return Response
      */
-    public function buy(Service $service, Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
+    public function buy(Service $service, Request $request, EntityManagerInterface $entityManager, OfficeRepository $officeRepository)
     {
+        $offices = $service->getBoss()->getOfficesCreated();
 
-        $form = $this->createForm(WorkerFormType::class);
+        $form = $this->createForm(ReceiptFormType::class, $offices, ['offices' => $offices]);
         $form->handleRequest($request);
-        /** @var Receipt $receipt */
-        $receipt = new Receipt();
-
-        if ($this->isGranted('ROLE_USER')) {
-
-        }
-
-        $service = $this->getUser()->getServices();
 
         return $this->render('service/cart.html.twig', [
             'form' => $form->createView(),
