@@ -44,6 +44,7 @@ class WorkerController extends AbstractController
             $a=['ROLE_WORKER'];
             $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
+            $worker->getUser()->setWorker($worker);
             $worker->setFirmName($workerRepository->findOneBy(['user' => $this->getUser()])->getFirmName());
             $entityManager->persist($worker);
             $entityManager->flush();

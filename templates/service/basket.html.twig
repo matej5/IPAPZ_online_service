@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-3" >
+            <ul class="list group">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('service_index', {'category': 'Queue'}) }}">
+                            Queue
+                        </a>
+                    </li>
+                {% endif %}
+                {% for service in services %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">{{ service.name }}
+                    <span class="badge">{{ service.cost }} kn</span>
+                    {% if service.status == 'allowed' %}
+                        <a href="{{ path('service_buy', {'id': service.id}) }}" class="card-link">Buy</a>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

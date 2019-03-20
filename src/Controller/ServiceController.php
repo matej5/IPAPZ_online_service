@@ -200,12 +200,12 @@ class ServiceController extends AbstractController
             $service = $this->getUser()->getServices();
         }
             $workers = $workerRepository->findAll();
-        return $this->render('service/cart.html.twig', [
+        return $this->render('service/basket.html.twig', [
             'form' => $form->createView(),
-            'services' => $service,
-            'workers' => $workers
+            'services' => $service
         ]);
     }
+
     /**
      * @Route("/cart/{id}", name="service_buy")
      * @param Service $service
@@ -225,6 +225,18 @@ class ServiceController extends AbstractController
             'form' => $form->createView(),
             'service' => $service
         ]);
+    }
+
+    /**
+     * @Route("/events/{id}", name="events")
+     * @param WorkerRepository $workerRepository
+     * @return Response
+     */
+    public function events($id = null, WorkerRepository $workerRepository)
+    {
+        $worker = $workerRepository->findById($id);
+        $response = new Response($worker);
+        return $response;
     }
 
     /**
