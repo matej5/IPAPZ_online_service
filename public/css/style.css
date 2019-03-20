@@ -3,3 +3,13 @@
     width: 37px;
     border-radius: 50%;
 }
+
+#img{
+    width: 100%;
+    height: auto;
+}
+
+#imgServ{
+    height: 60px;
+    width: auto;
+}

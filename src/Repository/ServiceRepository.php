@@ -22,11 +22,13 @@ class ServiceRepository extends ServiceEntityRepository
      /**
       * @return Service[] Returns an array of Service objects
       */
-    public function findByService($value)
+    public function findByService($value, array $criteria)
     {
 
         return $this->createQueryBuilder('s')
             ->innerJoin('s.category', 'c')
+            ->where('s.catalog = :crit')
+            ->setParameter('crit', $criteria['catalog'])
             ->andWhere('c.name = :val')
             ->setParameter('val', $value)
             ->orderBy('s.id', 'ASC')

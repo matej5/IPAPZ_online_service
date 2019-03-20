@@ -19,11 +19,6 @@ class Receipt
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Service", inversedBy="receipts")
-     */
-    private $service;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="receipts")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -46,6 +41,11 @@ class Receipt
      */
     private $startOfService;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Service", inversedBy="receipts")
+     */
+    private $service;
+
     public function __construct()
     {
         $this->service = new ArrayCollection();
@@ -54,32 +54,6 @@ class Receipt
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection|Service[]
-     */
-    public function getService(): Collection
-    {
-        return $this->service;
-    }
-
-    public function addService(Service $service): self
-    {
-        if (!$this->service->contains($service)) {
-            $this->service[] = $service;
-        }
-
-        return $this;
-    }
-
-    public function removeService(Service $service): self
-    {
-        if ($this->service->contains($service)) {
-            $this->service->removeElement($service);
-        }
-
-        return $this;
     }
 
     public function getOffice(): ?Office
@@ -135,6 +109,18 @@ class Receipt
     public function setStartOfService(\DateTimeInterface $startOfService): self
     {
         $this->startOfService = $startOfService;
+
+        return $this;
+    }
+
+    public function getService(): ?Service
+    {
+        return $this->service;
+    }
+
+    public function setService(?Service $service): self
+    {
+        $this->service = $service;
 
         return $this;
     }

@@ -16,6 +16,7 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
+                        <img id="img" src="{{ asset('images/posts/' ~post.image) }}">
                         <h6 class="card-subtitle mt-2 text-muted">{{ post.createdAt|date }}</h6>
                         <h1>{{ post.title }}</h1>
                         <p class="card-text">{{ post.content }}</p>

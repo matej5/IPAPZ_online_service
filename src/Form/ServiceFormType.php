@@ -27,6 +27,8 @@ class ServiceFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $choices = $options['data'];
+
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Service'
@@ -44,15 +46,9 @@ class ServiceFormType extends AbstractType
                 'label' => 'Image'
             ])
             ->add('category', ChoiceType::class, [
-                'choices' => $options['data'],
-                'choice_value' => function(Category $cat = null) {
-                    if (null === $cat) {
-                        return null;
-                    }
-
-                    return $cat->getId();
-                },
-                'label' => 'name',
+                'choices' => $choices,
+                'choice_label' => 'name',
+                'label' => 'Select category',
                 'multiple' => true,
                 'expanded' => true,
                 'by_reference' => false,

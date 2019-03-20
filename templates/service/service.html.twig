@@ -7,6 +7,9 @@
             {{ form_row(form.name) }}
             {{ form_row(form.cost) }}
             {{ form_row(form.duration) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.image) }}
+            {{ form_row(form.category) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
         {{ form_end(form) }}
     {% endif %}
@@ -21,10 +24,17 @@
                         </a>
                     </li>
                 {% endif %}
-                {% for cat in category %}
+                {% if is_granted('ROLE_BOSS') %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="{{ path('service_index' , {'category': cat.name}) }}">
-                            {{ cat.name }}
+                        <a href="{{ path('service_index', {'category': 'Allowed'}) }}">
+                            Allowed
+                        </a>
+                    </li>
+                {% endif %}
+                {% for category in categories %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('service_index' , {'category': category.name}) }}">
+                            {{ category.name }}
                         </a>
                     </li>
                 {% endfor %}
@@ -34,12 +44,14 @@
             <ul class="list group">
                 <h3>{{ title }}</h3>
                 {% for service in services %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <img id="imgServ" src="{{ asset('images/services/' ~service.image) }}">
                     {% if is_granted('ROLE_BOSS') and app.user == service.boss.user %}
                         <a href="{{ path('service_edit', {'id': service.id}) }}">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">{{ service.name }}
+                            {{ service.name }}
                         </a>
                     {% else %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">{{ service.name }}
+                        {{ service.name }}
                     {% endif %}
                         <span class="badge">{{ service.cost }} kn</span>
                         {% if service.status == 'allowed' %}
@@ -49,6 +61,15 @@
                         {% if is_granted('ROLE_ADMIN') and service.status == 'queued' %}
                             <a href="{{ path('service_allow', {'id': service.id}) }}">
                                 Allow
+                            </a>
+                        {% endif %}
+                        {% if is_granted('ROLE_BOSS') and service.status == 'allowed' and service.boss == app.user.worker and title == 'Allowed' %}
+                            <a href="{{ path('service_activate', {'id': service.id}) }}">
+                                {% if service.catalog == 'inactive' %}
+                                    <i class="fas fa-toggle-off"></i>
+                                {% elseif service.catalog == 'active' %}
+                                    <i class="fas fa-toggle-on"></i>
+                                {% endif %}
                             </a>
                         {% endif %}
                     </li>

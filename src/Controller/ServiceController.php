@@ -12,8 +12,11 @@ use App\Form\ServiceFormType;
 use App\Form\WorkerFormType;
 use App\Repository\CategoryRepository;
 use App\Repository\OfficeRepository;
+use App\Repository\ReceiptRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\WorkerRepository;
+use DateInterval;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -23,6 +26,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ServiceController extends AbstractController
 {
@@ -48,12 +52,23 @@ class ServiceController extends AbstractController
 
             $service = new Service();
 
+            $file = $form->get('image')->getData();
+
+            $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
+
+            // moves the file to the directory where brochures are stored
+            $file->move(
+                $this->getParameter('service_directory'),
+                $fileName
+            );
+
             $service->setName($data['name']);
             $service->setCost($data['cost']);
             $service->setDuration($data['duration']);
             $service->setDescription($data['description']);
-            $service->setImage($data['image']);
+            $service->setImage($fileName);
             $service->setStatus('queued');
+            $service->setCatalog('inactive');
             foreach ($data['category'] as $c){
                 $service->addCategory($c);
             }
@@ -68,13 +83,15 @@ class ServiceController extends AbstractController
 
         if(strtolower($request->get('category')) == 'queue' && $this->isGranted('ROLE_ADMIN')){
             $service = $serviceRepository->findBy(['status' => 'queued']);
+        } elseif(strtolower($request->get('category')) == 'allowed' && $this->isGranted('ROLE_BOSS')) {
+            $service = $serviceRepository->findBy(['status' => 'allowed', 'boss' => $this->getUser()->getWorker()]);
         } else {
-            $service = $serviceRepository->findByService($category, ['status' => 'allowed']);
+            $service = $serviceRepository->findByService($category, ['catalog' => 'active']);
         }
 
         return $this->render('service/service.html.twig', [
             'form' => $form->createView(),
-            'category' => $categories,
+            'categories' => $categories,
             'services' => $service,
             'title' => $category
         ]);
@@ -131,6 +148,30 @@ class ServiceController extends AbstractController
         if($this->isGranted('ROLE_ADMIN')){
             /** @var Service $service */
             $service->setStatus('allowed');
+            $service->setCatalog('inactive');
+            $entityManager->persist($service);
+            $entityManager->flush();
+            return $this->redirectToRoute('service_index');
+        }
+
+        return $this->redirectToRoute('service_index');
+    }
+
+    /**
+     * @Route("/activate/{id}", name="service_activate")
+     * @param Service $service
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function activate(Service $service, EntityManagerInterface $entityManager)
+    {
+        if($this->isGranted('ROLE_BOSS') && $this->getUser()->getWorker() === $service->getBoss()){
+            /** @var Service $service */
+            if($service->getCatalog() === 'inactive') {
+                $service->setCatalog('active');
+            }else{
+                $service->setCatalog('inactive');
+            }
             $entityManager->persist($service);
             $entityManager->flush();
             return $this->redirectToRoute('service_index');
@@ -144,10 +185,9 @@ class ServiceController extends AbstractController
      * @param Service $service
      * @param Request $request
      * @param EntityManagerInterface $entityManager
-     * @param ServiceRepository $serviceRepository
      * @return Response
      */
-    public function add(Service $service, Request $request, EntityManagerInterface $entityManager, ServiceRepository $serviceRepository)
+    public function add(Service $service, Request $request, EntityManagerInterface $entityManager)
     {
         $form = $this->createForm(ServiceAddFormType::class);
         $form->handleRequest($request);
@@ -174,9 +214,6 @@ class ServiceController extends AbstractController
             $response->send();
 
         }
-
-        $service = $serviceRepository->findAll();
-        $cart = [];
         return $this->redirectToRoute('service_index');
     }
 
@@ -229,13 +266,22 @@ class ServiceController extends AbstractController
 
     /**
      * @Route("/events/{id}", name="events")
-     * @param WorkerRepository $workerRepository
+     * @param ReceiptRepository $receiptRepository
      * @return Response
      */
-    public function events($id = null, WorkerRepository $workerRepository)
+    public function events($id = null, ReceiptRepository $receiptRepository)
     {
-        $worker = $workerRepository->findById($id);
-        $response = new Response($worker);
+        $receipts = $receiptRepository->findBy(['worker' => $id]);
+        foreach ($receipts as $receipt) {
+            $dateTime = new DateTime($receipt->getStartOfService()->format('Y-m-d H:i'));
+            $minutesToAdd = $receipt->getService()->getDuration();
+            $data[] = [
+                'title' => $receipt->getService()->getName(),
+                'start' => $dateTime,
+                'end' => (clone $dateTime)->add(new DateInterval('PT' . $minutesToAdd . 'M'))
+            ];
+        }
+        $response = new JsonResponse($data);
         return $response;
     }
 
@@ -252,5 +298,15 @@ class ServiceController extends AbstractController
         $entityManager->flush();
         $this->addFlash('success', 'Successfully deleted!');
         return $this->redirectToRoute('service_index');
+    }
+
+    /**
+     * @return string
+     */
+    private function generateUniqueFileName()
+    {
+        // md5() reduces the similarity of the file names generated by
+        // uniqid(), which is based on timestamps
+        return md5(uniqid());
     }
 }

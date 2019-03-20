@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ServiceRepository")
@@ -27,11 +29,6 @@ class Service
      * @ORM\Column(type="float")
      */
     private $cost;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Receipt", mappedBy="service")
-     */
-    private $receipts;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="services")
@@ -60,6 +57,8 @@ class Service
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="Upload your image")
+     * @Assert\File(mimeTypes={ "image/png", "image/jpeg" })
      */
     private $image;
 
@@ -67,6 +66,16 @@ class Service
      * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="services")
      */
     private $category;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $catalog;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="service")
+     */
+    private $receipts;
 
     public function __construct()
     {
@@ -100,34 +109,6 @@ class Service
     public function setCost(float $cost): self
     {
         $this->cost = $cost;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Receipt[]
-     */
-    public function getReceipts(): Collection
-    {
-        return $this->receipts;
-    }
-
-    public function addReceipt(Receipt $receipt): self
-    {
-        if (!$this->receipts->contains($receipt)) {
-            $this->receipts[] = $receipt;
-            $receipt->addService($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReceipt(Receipt $receipt): self
-    {
-        if ($this->receipts->contains($receipt)) {
-            $this->receipts->removeElement($receipt);
-            $receipt->removeService($this);
-        }
 
         return $this;
     }
@@ -241,6 +222,49 @@ class Service
     {
         if ($this->category->contains($category)) {
             $this->category->removeElement($category);
+        }
+
+        return $this;
+    }
+
+    public function getCatalog(): ?string
+    {
+        return $this->catalog;
+    }
+
+    public function setCatalog(string $catalog): self
+    {
+        $this->catalog = $catalog;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Receipt[]
+     */
+    public function getReceipts(): Collection
+    {
+        return $this->receipts;
+    }
+
+    public function addReceipt(Receipt $receipt): self
+    {
+        if (!$this->receipts->contains($receipt)) {
+            $this->receipts[] = $receipt;
+            $receipt->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceipt(Receipt $receipt): self
+    {
+        if ($this->receipts->contains($receipt)) {
+            $this->receipts->removeElement($receipt);
+            // set the owning side to null (unless already changed)
+            if ($receipt->getService() === $this) {
+                $receipt->setService(null);
+            }
         }
 
         return $this;

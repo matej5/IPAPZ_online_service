@@ -9,8 +9,8 @@
 
 
     {{ form_start(form) }}
-
-    <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        {{ form_row(form) }}
+    <button type="submit" id="button" class="btn btn-primary" formnovalidate>Select</button>
     {{ form_end(form) }}
 
     <div id="calendar"></div>
@@ -23,32 +23,85 @@
     <script src='{{ asset('fullcalendar/timegrid/main.js') }}'></script>
     <script src='{{ asset('fullcalendar/interaction/main.js') }}'></script>
     <script>
+        const Http = new XMLHttpRequest();
+        const url="polaznik23zavrsni.inchoo4u.net/index.php/events/3";
+        Http.open("POST", url);
+        Http.send();
+        Http.onreadystatechange=(e)=>{
+            console.log(Http.responseText)
+        }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var events = [];
+
+            $.ajax({
+                url:'{{ path('events') }}',
+                type: 'POST',
+                data: {'id': 3},
+                success: function (response) {
+                    $('#calendar').fullCalendar('destroy');
+                    for (var i=0;i<response.length;i++) {
+                        events[i] = {};
+                        events[i].title = value.title;
+                        events[i].start = value.start;
+                        events[i].end = value.end;
+                    }
+
+                    console.log(response);
+                }
+            });
+
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: [ 'interaction', 'dayGrid', 'timeGrid' ],
+                plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 selectable: true,
-                events: '',
                 header: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
+                events: events,
                 scrollTime: '07:00',
+                events: [
+                ],
+
+                {#events: function (start, end, groupSelectedArray, callback) {#}
+                    {#$.ajax({#}
+                        {#type: "POST",#}
+                        {#url: '{{ (path('events')) }}',#}
+                        {#data:  JSON.stringify(groupData),#}
+                        {#contentType: "application/json; charset=utf-8",#}
+                        {#dataType: "json",#}
+                        {#success: function (doc) {#}
+                            {#var events = [];#}
+                            {#$(doc).each(function () {#}
+                                {#events.push({#}
+                                    {#title: $(this).attr('title'),#}
+                                    {#start: $(this).attr('start'),#}
+                                    {#end: $(this).attr('end'),#}
+                                    {#id: $(this).attr('id'),#}
+                                    {#textColor: 'black'#}
+                                {#});#}
+
+                            {#});#}
+                            {#callback(events);#}
+                        {#},#}
+                        {#error: function () {#}
+                            {#alert("There was an error fetching events!")#}
+                        {#},#}
+                    {#})#}
+                {#},#}
                 slotDuration: '00:15',
                 defaultView: 'timeGridWeek',
                 unselectAuto: false,
-                dateClick: function(info) {
+                dateClick: function (info) {
                     alert('Clicked on: ' + info.dateStr);
                 }
             });
 
             calendar.render();
         });
-
-
-
     </script>
 {% endblock %}

@@ -10,6 +10,11 @@
             </tr>
             </thead>
             <tbody>
+            <tr>
+                <td>
+                    {{ form_row(form.name) }}
+                </td>
+            </tr>
             </tbody>
             <tfoot>
             <tr>
@@ -31,7 +36,9 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">{{ category.name }}</p>
+                        <a href="{{ path('category_view', {'id': category.id}) }}">
+                            <p class="card-text">{{ category.name }}</p>
+                        </a>
                     </div>
                 </div>
             </div>
