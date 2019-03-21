@@ -19,9 +19,9 @@ class ServiceRepository extends ServiceEntityRepository
         parent::__construct($registry, Service::class);
     }
 
-     /**
-      * @return Service[] Returns an array of Service objects
-      */
+    /**
+     * @return Service[] Returns an array of Service objects
+     */
     public function findByService($value, array $criteria)
     {
 

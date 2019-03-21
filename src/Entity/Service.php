@@ -56,9 +56,9 @@ class Service
     private $description;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string",       length=255, nullable=true)
      * @Assert\NotBlank(message="Upload your image")
-     * @Assert\File(mimeTypes={ "image/png", "image/jpeg" })
+     * @Assert\File(mimeTypes={         "image/png", "image/jpeg" })
      */
     private $image;
 

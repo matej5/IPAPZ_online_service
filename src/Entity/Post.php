@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Class Post
- * @package App\Entity
+ *
+ * @package                                                     App\Entity
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -56,14 +57,15 @@ class Post
     private $title;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string",       length=255, nullable=true)
      * @Assert\NotBlank(message="Upload your image")
-     * @Assert\File(mimeTypes={ "image/png", "image/jpeg" })
+     * @Assert\File(mimeTypes={         "image/png", "image/jpeg" })
      */
     private $image;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\LikeDislike", mappedBy="post", cascade={"persist","remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\LikeDislike",
+     *      mappedBy="post", cascade={"persist","remove"}, orphanRemoval=true)
      */
     private $likeDislikes;
 
@@ -122,7 +124,7 @@ class Post
     }
 
     /**
-     * @param Comment $comment
+     * @param  Comment $comment
      * @return $this
      */
     public function addComment(Comment $comment): self

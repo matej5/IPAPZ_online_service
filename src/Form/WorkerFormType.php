@@ -20,16 +20,22 @@ class WorkerFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('user', EntityType::class, [
-                'choice_label' => 'email',
-                'class' => User::class
-            ]);
+            ->add(
+                'user',
+                EntityType::class,
+                [
+                    'choice_label' => 'email',
+                    'class' => User::class
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => Worker::class
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Worker::class
+            ]
+        );
     }
 }

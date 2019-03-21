@@ -3,7 +3,6 @@
 
 namespace App\Form;
 
-
 use App\Entity\Post;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -17,23 +16,37 @@ class PostFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', TextType::class, [
-                'label' => 'Title of post'
-            ]);
+            ->add(
+                'title',
+                TextType::class,
+                [
+                    'label' => 'Title of post'
+                ]
+            );
         $builder
-            ->add('content', TextareaType::class, [
-                'label' => 'What\'s on your mind?'
-            ]);
+            ->add(
+                'content',
+                TextareaType::class,
+                [
+                    'label' => 'What\'s on your mind?'
+                ]
+            );
         $builder
-            ->add('image', FileType::class, [
-                'label' => 'What\'s on your mind?'
-            ]);
+            ->add(
+                'image',
+                FileType::class,
+                [
+                    'label' => 'What\'s on your mind?'
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-           'data_class' => Post::class
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Post::class
+            ]
+        );
     }
 }

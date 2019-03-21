@@ -141,5 +141,4 @@ class Comment
 
         return $this;
     }
-
 }

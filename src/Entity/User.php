@@ -30,7 +30,7 @@ class User implements UserInterface
     private $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var                       string The hashed password
      * @ORM\Column(type="string")
      */
     private $password;
@@ -130,7 +130,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -157,7 +157,7 @@ class User implements UserInterface
      */
     public function getPassword(): string
     {
-        return (string) $this->password;
+        return (string)$this->password;
     }
 
     public function setPassword(string $password): self
@@ -546,7 +546,6 @@ class User implements UserInterface
                     case 14:
                         ImageFilledRectangle($im, 175, 315, 245, 385, $color);
                         break;
-
                 }
             }
         }

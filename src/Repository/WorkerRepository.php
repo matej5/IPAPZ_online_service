@@ -20,9 +20,9 @@ class WorkerRepository extends ServiceEntityRepository
     }
 
 
-     /**
-      * @return Worker[] Returns an array of Worker objects
-      */
+    /**
+     * @return Worker[] Returns an array of Worker objects
+     */
     public function findById($id)
     {
         return $this->createQueryBuilder('w')
@@ -33,8 +33,7 @@ class WorkerRepository extends ServiceEntityRepository
             ->orderBy('w.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
 

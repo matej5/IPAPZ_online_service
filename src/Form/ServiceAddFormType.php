@@ -28,27 +28,49 @@ class ServiceAddFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'Service'
-            ])
-            ->add('cost', NumberType::class, [
-                'label' => 'Cost'
-            ])
-            ->add('duration', NumberType::class, [
-                'label' => 'Duration (min)'
-            ])
-            ->add('description', TextType::class, [
-                'label' => 'Description'
-            ])
-            ->add('image', FileType::class, [
-                'label' => 'Image'
-            ]);
+            ->add(
+                'name',
+                TextType::class,
+                [
+                    'label' => 'Service'
+                ]
+            )
+            ->add(
+                'cost',
+                NumberType::class,
+                [
+                    'label' => 'Cost'
+                ]
+            )
+            ->add(
+                'duration',
+                NumberType::class,
+                [
+                    'label' => 'Duration (min)'
+                ]
+            )
+            ->add(
+                'description',
+                TextType::class,
+                [
+                    'label' => 'Description'
+                ]
+            )
+            ->add(
+                'image',
+                FileType::class,
+                [
+                    'label' => 'Image'
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => null
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => null
+            ]
+        );
     }
 }

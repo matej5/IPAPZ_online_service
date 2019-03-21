@@ -12,16 +12,23 @@ class CategoryFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', TextType::class, [
-            'label' => 'Add a category',
-            'attr' => ['class' => 'required'],
-        ]);
+        $builder->add(
+            'name',
+            TextType::class,
+            [
+                'label' => 'Add a category',
+                'attr' => ['class' => 'required'],
+            ]
+        );
     }
+
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => Category::class,
-            'allow_extra_fields' => true,
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Category::class,
+                'allow_extra_fields' => true,
+            ]
+        );
     }
 }

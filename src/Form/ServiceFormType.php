@@ -30,36 +30,62 @@ class ServiceFormType extends AbstractType
         $choices = $options['data'];
 
         $builder
-            ->add('name', TextType::class, [
-                'label' => 'Service'
-            ])
-            ->add('cost', NumberType::class, [
-                'label' => 'Cost'
-            ])
-            ->add('duration', NumberType::class, [
-                'label' => 'Duration (min)'
-            ])
-            ->add('description', TextType::class, [
-                'label' => 'Description'
-            ])
-            ->add('image', FileType::class, [
-                'label' => 'Image'
-            ])
-            ->add('category', ChoiceType::class, [
-                'choices' => $choices,
-                'choice_label' => 'name',
-                'label' => 'Select category',
-                'multiple' => true,
-                'expanded' => true,
-                'by_reference' => false,
-                'empty_data' => 0
-            ]);
+            ->add(
+                'name',
+                TextType::class,
+                [
+                    'label' => 'Service'
+                ]
+            )
+            ->add(
+                'cost',
+                NumberType::class,
+                [
+                    'label' => 'Cost'
+                ]
+            )
+            ->add(
+                'duration',
+                NumberType::class,
+                [
+                    'label' => 'Duration (min)'
+                ]
+            )
+            ->add(
+                'description',
+                TextType::class,
+                [
+                    'label' => 'Description'
+                ]
+            )
+            ->add(
+                'image',
+                FileType::class,
+                [
+                    'label' => 'Image'
+                ]
+            )
+            ->add(
+                'category',
+                ChoiceType::class,
+                [
+                    'choices' => $choices,
+                    'choice_label' => 'name',
+                    'label' => 'Select category',
+                    'multiple' => true,
+                    'expanded' => true,
+                    'by_reference' => false,
+                    'empty_data' => 0
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => null
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => null
+            ]
+        );
     }
 }

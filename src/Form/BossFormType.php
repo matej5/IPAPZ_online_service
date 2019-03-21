@@ -23,21 +23,31 @@ class BossFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => function ($user){
-                return $user->getFirstname();
-                }
-            ])
-            ->add('firmName', TextType::class, [
-                'label' => 'Add firm name'
-            ]);
+            ->add(
+                'user',
+                EntityType::class,
+                [
+                    'class' => User::class,
+                    'choice_label' => function ($user) {
+                        return $user->getFirstname();
+                    }
+                ]
+            )
+            ->add(
+                'firmName',
+                TextType::class,
+                [
+                    'label' => 'Add firm name'
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => Worker::class
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Worker::class
+            ]
+        );
     }
 }

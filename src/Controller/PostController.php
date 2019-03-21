@@ -26,23 +26,27 @@ class PostController extends AbstractController
 {
     /**
      * @Route("/", name="post_index")
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param PostRepository $postRepository
-     * @return Response
+     * @param      Request $request
+     * @param      EntityManagerInterface $entityManager
+     * @param      PostRepository $postRepository
+     * @return     Response
      */
     public function index(Request $request, EntityManagerInterface $entityManager, PostRepository $postRepository)
     {
         $form = $this->createForm(PostFormType::class);
         $form->handleRequest($request);
 
-        if (($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) && ($form->isSubmitted() && $form->isValid())) {
-            /** @var Post $post */
+        if (($this->isGranted('ROLE_ADMIN')
+                || $this->isGranted('ROLE_BOSS'))
+            && ($form->isSubmitted() && $form->isValid())) {
+            /**
+             * @var Post $post
+             */
             $post = $form->getData();
 
             $file = $form->get('image')->getData();
 
-            $fileName = $this->generateUniqueFileName().'.'.$file->guessExtension();
+            $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
 
             // moves the file to the directory where brochures are stored
             $file->move(
@@ -60,53 +64,70 @@ class PostController extends AbstractController
         }
         $posts = $postRepository->getAllInLastWeek();
 
-        return $this->render('post/index.html.twig', [
-            'form' => $form->createView(),
-            'posts' => $posts
-        ]);
+        return $this->render(
+            'post/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'posts' => $posts
+            ]
+        );
     }
 
     /**
      * @Route("/view/{id}", name="post_view")
-     * @param Post $post
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param LikeDislikeRepository $likeDislikeRepository
-     * @return Response
+     * @param               Post $post
+     * @param               Request $request
+     * @param               EntityManagerInterface $entityManager
+     * @param               LikeDislikeRepository $likeDislikeRepository
+     * @return              Response
      */
-    public function show(Post $post, Request $request, EntityManagerInterface $entityManager, LikeDislikeRepository $likeDislikeRepository)
-    {
+    public function show(
+        Post $post,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        LikeDislikeRepository $likeDislikeRepository
+    ) {
         $form = $this->createForm(CommentFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_USER') && $form->isSubmitted() && $form->isValid()) {
-            /** @var Comment $comment */
+            /**
+             * @var Comment $comment
+             */
             $comment = $form->getData();
             $comment->setUser($this->getUser());
             $post->addComment($comment);
             $date = new DateTime();
             $comment->setCreatedAt($date);
             $entityManager->flush();
-            return $this->redirectToRoute('post_view', [
-                'id' => $post->getId()
-            ]);
+            return $this->redirectToRoute(
+                'post_view',
+                [
+                    'id' => $post->getId()
+                ]
+            );
         }
-        $userLikesPost = $likeDislikeRepository->findBy([
-            'user' => $this->getUser(),
-            'post' => $post
-        ]);
-        return $this->render('post/view.html.twig', [
-            'post' => $post,
-            'commentForm' => $form->createView(),
-            'userLikesPost' => $userLikesPost
-        ]);
+        $userLikesPost = $likeDislikeRepository->findBy(
+            [
+                'user' => $this->getUser(),
+                'post' => $post
+            ]
+        );
+        return $this->render(
+            'post/view.html.twig',
+            [
+                'post' => $post,
+                'commentForm' => $form->createView(),
+                'userLikesPost' => $userLikesPost
+            ]
+        );
     }
 
     /**
-     * @Security("user == post.getUser()")
+     * @Security("user             == post.getUser()")
      * @Route("/post/{id}/delete", name="post_delete")
-     * @param Post $post
-     * @param EntityManagerInterface $entityManager
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @param                      Post $post
+     * @param                      EntityManagerInterface $entityManager
+     * @return                     \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deletePost(Post $post, EntityManagerInterface $entityManager)
     {
@@ -119,19 +140,24 @@ class PostController extends AbstractController
     /**
      * @IsGranted("ROLE_USER")
      * @Route("/post/{id}/like", name="post_like", methods={"POST"})
-     * @param Post $post
-     * @param EntityManagerInterface $entityManager
-     * @param LikeDislikeRepository $likeDislikeRepository
-     * @return JsonResponse
+     * @param                    Post $post
+     * @param                    EntityManagerInterface $entityManager
+     * @param                    LikeDislikeRepository $likeDislikeRepository
+     * @return                   JsonResponse
      */
-    public function likePost(Post $post, EntityManagerInterface $entityManager, LikeDislikeRepository $likeDislikeRepository)
-    {
-        $like = $likeDislikeRepository->findOneBy([
-            'user' => $this->getUser(),
-            'post' => $post
-        ]);
+    public function likePost(
+        Post $post,
+        EntityManagerInterface $entityManager,
+        LikeDislikeRepository $likeDislikeRepository
+    ) {
+        $like = $likeDislikeRepository->findOneBy(
+            [
+                'user' => $this->getUser(),
+                'post' => $post
+            ]
+        );
 
-        if (!$like || $like->getType()==2) {
+        if (!$like || $like->getType() == 2) {
             $like = new LikeDislike();
             $like->setUser($this->getUser());
             $like->setType(1);
@@ -141,25 +167,32 @@ class PostController extends AbstractController
         }
 
         $entityManager->flush();
-        return new JsonResponse([
-            'likes' => $post->getLikeDislikesCount()
-        ]);
+        return new JsonResponse(
+            [
+                'likes' => $post->getLikeDislikesCount()
+            ]
+        );
     }
 
     /**
      * @IsGranted("ROLE_USER")
      * @Route("/post/{id}/dislike", name="post_dislike", methods={"POST"})
-     * @param Post $post
-     * @param EntityManagerInterface $entityManager
-     * @param LikeDislikeRepository $likeDislikeRepository
-     * @return JsonResponse
+     * @param                       Post $post
+     * @param                       EntityManagerInterface $entityManager
+     * @param                       LikeDislikeRepository $likeDislikeRepository
+     * @return                      JsonResponse
      */
-    public function dislikePost(Post $post, EntityManagerInterface $entityManager, LikeDislikeRepository $likeDislikeRepository)
-    {
-        $like = $likeDislikeRepository->findOneBy([
-            'user' => $this->getUser(),
-            'post' => $post
-        ]);
+    public function dislikePost(
+        Post $post,
+        EntityManagerInterface $entityManager,
+        LikeDislikeRepository $likeDislikeRepository
+    ) {
+        $like = $likeDislikeRepository->findOneBy(
+            [
+                'user' => $this->getUser(),
+                'post' => $post
+            ]
+        );
 
         if (!$like || $like->getType() == 1) {
             $like = new PostLike();
@@ -171,9 +204,11 @@ class PostController extends AbstractController
         }
 
         $entityManager->flush();
-        return new JsonResponse([
-            'likes' => $post->getLikesCount()
-        ]);
+        return new JsonResponse(
+            [
+                'likes' => $post->getLikesCount()
+            ]
+        );
     }
 
     /**

@@ -19,17 +19,19 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
  * Class UserController
+ *
  * @package App\Controller
  *
- * Security annotation on login will throw 403 and on register route we use redirect to route. Both examples are correct.
+ * Security annotation on login will throw 403 and on register route we use redirect to route.
+ * Both examples are correct.
  */
 class UserController extends AbstractController
 {
     /**
      * @Route("/login", name="app_login")
-     * @Security("not is_granted('ROLE_USER')")
-     * @param AuthenticationUtils $authenticationUtils
-     * @return Response
+     * @Security("not   is_granted('ROLE_USER')")
+     * @param           AuthenticationUtils $authenticationUtils
+     * @return          Response
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -43,12 +45,12 @@ class UserController extends AbstractController
 
     /**
      * @Route("/register", name="app_register")
-     * @param Request $request
-     * @param UserPasswordEncoderInterface $passwordEncoder
-     * @param GuardAuthenticatorHandler $guardHandler
-     * @param LoginFormAuthenticator $authenticator
-     * @param EntityManagerInterface $entityManager
-     * @return null|Response
+     * @param              Request $request
+     * @param              UserPasswordEncoderInterface $passwordEncoder
+     * @param              GuardAuthenticatorHandler $guardHandler
+     * @param              LoginFormAuthenticator $authenticator
+     * @param              EntityManagerInterface $entityManager
+     * @return             null|Response
      */
     public function register(
         Request $request,
@@ -67,8 +69,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             //todo insert worker and other roles
-//            $a=['ROLE_ADMIN'];
-//            $user->setRoles($a);
+            //            $a=['ROLE_ADMIN'];
+            //            $user->setRoles($a);
             $user->setMoney(200);
             $user->createAvatar();
             $user->setImage('avatar.jpeg');
@@ -92,23 +94,26 @@ class UserController extends AbstractController
             );
         }
 
-        return $this->render('security/register.html.twig', [
-            'registrationForm' => $form->createView(),
-        ]);
+        return $this->render(
+            'security/register.html.twig',
+            [
+                'registrationForm' => $form->createView(),
+            ]
+        );
     }
 
     /**
      * @Route("/profile", name="app_profile")
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @return null|Response
+     * @param             Request $request
+     * @param             EntityManagerInterface $entityManager
+     * @return            null|Response
      */
     public function profile(
         Request $request,
         EntityManagerInterface $entityManager
     ) {
 
-        if(!$this->isGranted('ROLE_USER')){
+        if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
         }
 
@@ -123,41 +128,49 @@ class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->render('user/index.html.twig', [
-            'form' => $form->createView(),
-            'user' => $user
-        ]);
+        return $this->render(
+            'user/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'user' => $user
+            ]
+        );
     }
 
     /**
      * @Route("/user/{id}", name="app_user")
-     * @param User $user
-     * @param UserRepository $userRepository
-     * @return null|Response
+     * @param               User $user
+     * @param               UserRepository $userRepository
+     * @return              null|Response
      */
-    public function user(User $user,
+    public function user(
+        User $user,
         UserRepository $userRepository
     ) {
 
-        if(!$this->isGranted('ROLE_USER')){
+        if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
         }
 
         $user = $userRepository->findOneBy(['id' => $user->getId()]);
 
-        return $this->render('user/view.html.twig', [
-            'user' => $user
-        ]);
+        return $this->render(
+            'user/view.html.twig',
+            [
+                'user' => $user
+            ]
+        );
     }
 
     /**
      * @Route("/generate", name="app_generate")
-     * @param Request $request
-     * @return null|Response
+     * @param              Request $request
+     * @return             null|Response
      */
-    public function generate(Request $request) {
+    public function generate(Request $request)
+    {
 
-        if(!$this->isGranted('ROLE_USER')){
+        if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
         }
 
@@ -170,12 +183,10 @@ class UserController extends AbstractController
     }
 
 
-
     /**
      * @Route("/logout", name="app_logout")
      */
     public function logout()
     {
-
     }
 }

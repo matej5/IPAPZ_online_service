@@ -26,65 +26,93 @@ class OffWorFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $choices = ['Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 4, 'Thursday' => 8, 'Friday' => 16, 'Saturday' => 32, 'Sunday' => 64];
+        $choices = [
+            'Monday' => 1,
+            'Tuesday' => 2,
+            'Wednesday' => 4,
+            'Thursday' => 8,
+            'Friday' => 16,
+            'Saturday' => 32,
+            'Sunday' => 64
+        ];
         $builder
-            ->add('office', EntityType::class, [
-                'choice_label' => 'address',
-                'class' => Office::class
-            ])
-            ->add('workTime', NumberType::class,[
-                'label' => 'Work time',
-            ])
-            ->add('workDays', ChoiceType::class, [
-                'choices' => $choices,
-                'multiple' => true,
-                'expanded' => true,
-                'by_reference' => false,
-                'empty_data' => 0
-            ])
-            ->add('startTime', NumberType::class, [
-                'label' => 'Start of work'
-            ]);
+            ->add(
+                'office',
+                [
+                    'choice_label' => 'address',
+                    'class' => Office::class
+                ]
+            )
+            ->add(
+                'workTime',
+                NumberType::class,
+                [
+                    'label' => 'Work time',
+                ]
+            )
+            ->add(
+                'workDays',
+                ChoiceType::class,
+                [
+                    'choices' => $choices,
+                    'multiple' => true,
+                    'expanded' => true,
+                    'by_reference' => false,
+                    'empty_data' => 0
+                ]
+            )
+            ->add(
+                'startTime',
+                NumberType::class,
+                [
+                    'label' => 'Start of work'
+                ]
+            );
         $builder->get('workDays')
-            ->addModelTransformer(new CallbackTransformer(
-                function ($intToDays){
-                    $array =[];
-                    if($intToDays & 1){
-                        $array['Monday'] = 1;
+            ->addModelTransformer(
+                new CallbackTransformer(
+                    function ($intToDays) {
+                        $array = [];
+                        if ($intToDays & 1) {
+                            $array['Monday'] = 1;
+                        }
+                        if ($intToDays & 2) {
+                            $array['Tuesday'] = 2;
+                        }
+                        if ($intToDays & 4) {
+                            $array['Wednesday'] = 4;
+                        }
+                        if ($intToDays & 8) {
+                            $array['Thursday'] = 8;
+                        }
+                        if ($intToDays & 16) {
+                            $array['Friday'] = 16;
+                        }
+                        if ($intToDays & 32) {
+                            $array['Saturday'] = 32;
+                        }
+                        if ($intToDays & 64) {
+                            $array['Sunday'] = 64;
+                        }
+                        return $array;
+                    },
+                    function ($workDaysAsInt) {
+                        $i = 0;
+                        foreach ($workDaysAsInt as $day) {
+                            $i += $day;
+                        }
+                        return $i;
                     }
-                    if($intToDays & 2){
-                        $array['Tuesday'] = 2;
-                    }
-                    if($intToDays & 4){
-                        $array['Wednesday'] = 4;
-                    }
-                    if($intToDays & 8){
-                        $array['Thursday'] = 8;
-                    }
-                    if($intToDays & 16){
-                        $array['Friday'] = 16;
-                    }
-                    if($intToDays & 32){
-                        $array['Saturday'] = 32;
-                    }
-                    if($intToDays & 64){
-                        $array['Sunday'] = 64;
-                    }
-                    return $array;
-                },
-                function ($workDaysAsInt) {
-                    $i = 0;
-                    foreach ($workDaysAsInt as $day) {
-                        $i += $day;
-                    }
-                    return $i;
-                }));
+                )
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => Worker::class
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Worker::class
+            ]
+        );
     }
 }

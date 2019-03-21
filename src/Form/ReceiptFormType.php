@@ -26,33 +26,42 @@ class ReceiptFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('office', EntityType::class,[
-                'class' => Office::class,
-                'placeholder' => 'Select office',
-                'choices' => $options['offices'],
-                'mapped' => false
-            ]);
+            ->add(
+                'office',
+                EntityType::class,
+                [
+                    'class' => Office::class,
+                    'placeholder' => 'Select office',
+                    'choices' => $options['offices'],
+                    'mapped' => false
+                ]
+            );
 
         $builder->get('office')->addEventListener(
             FormEvents::POST_SUBMIT,
-            function (FormEvent $event)
-            {
+            function (FormEvent $event) {
                 $form = $event->getForm();
 
-                $form->getParent()->add('worker', EntityType::class, [
-                    'class' => Worker::class,
-                    'placeholder' => 'Select worker',
-                    'choices' => $form->getData()->getWorker()
-                ]);
+                $form->getParent()->add(
+                    'worker',
+                    EntityType::class,
+                    [
+                        'class' => Worker::class,
+                        'placeholder' => 'Select worker',
+                        'choices' => $form->getData()->getWorker()
+                    ]
+                );
             }
         );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => null,
-            'offices' => ''
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => null,
+                'offices' => ''
+            ]
+        );
     }
 }

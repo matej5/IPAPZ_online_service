@@ -24,24 +24,28 @@ class WorkerController extends AbstractController
 {
     /**
      * @Route("/worker", name="worker_index")
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param WorkerRepository $workerRepository
-     * @return Response
+     * @param            Request $request
+     * @param            EntityManagerInterface $entityManager
+     * @param            WorkerRepository $workerRepository
+     * @return           Response
      */
     public function index(Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
     {
-        if(!($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS'))){
+        if (!($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS'))) {
             return $this->redirectToRoute('post_index');
         }
 
         $form = $this->createForm(WorkerFormType::class);
         $form->handleRequest($request);
 
-        if (($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) && ($form->isSubmitted() && $form->isValid())) {
-            /** @var Worker $worker */
+        if (($this->isGranted('ROLE_ADMIN')
+                || $this->isGranted('ROLE_BOSS'))
+            && ($form->isSubmitted() && $form->isValid())) {
+            /**
+             * @var Worker $worker
+             */
             $worker = $form->getData();
-            $a=['ROLE_WORKER'];
+            $a = ['ROLE_WORKER'];
             $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
             $worker->getUser()->setWorker($worker);
@@ -52,37 +56,49 @@ class WorkerController extends AbstractController
             return $this->redirectToRoute('worker_index');
         }
 
-        if($this->isGranted('ROLE_ADMIN')){
+        if ($this->isGranted('ROLE_ADMIN')) {
             $workers = $workerRepository->findAll();
-        }else{
-            $workers = $workerRepository->findBy(['firmName' => $workerRepository->findOneBy(['user' => $this->getUser()])->getFirmName()]);
+        } else {
+            $workers = $workerRepository->findBy([
+                'firmName' => $workerRepository->findOneBy([
+                    'user' => $this->getUser()])->getFirmName()
+            ]);
         }
 
-        return $this->render('worker/index.html.twig', [
-            'form' => $form->createView(),
-            'workers' => $workers
-        ]);
+        return $this->render(
+            'worker/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'workers' => $workers
+            ]
+        );
     }
 
     /**
      * @Route("/boss", name="boss_index")
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param WorkerRepository $workerRepository
-     * @param UserRepository $userRepository
-     * @return Response
+     * @param          Request $request
+     * @param          EntityManagerInterface $entityManager
+     * @param          WorkerRepository $workerRepository
+     * @param          UserRepository $userRepository
+     * @return         Response
      */
-    public function boss(Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository, UserRepository $userRepository)
-    {
-        if(!$this->isGranted('ROLE_ADMIN')){
+    public function boss(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        WorkerRepository $workerRepository,
+        UserRepository $userRepository
+    ) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         }
         $form = $this->createForm(BossFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
-            /** @var Worker $worker */
+            /**
+             * @var Worker $worker
+             */
             $worker = $form->getData();
-            $a=['ROLE_BOSS'];
+            $a = ['ROLE_BOSS'];
             $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
             $entityManager->persist($worker);
@@ -93,26 +109,36 @@ class WorkerController extends AbstractController
 
         $workers = $workerRepository->findBy(['user' => $userRepository->findByRole('ROLE_BOSS')]);
 
-        return $this->render('boss/index.html.twig', [
-            'form' => $form->createView(),
-            'workers' => $workers
-        ]);
+        return $this->render(
+            'boss/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'workers' => $workers
+            ]
+        );
     }
 
     /**
      * @Route("/worker/{id}", name="app_worker")
-     * @param Worker $worker
-     * @param WorkerRepository $workerRepository
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @return null|Response
+     * @param                 Worker $worker
+     * @param                 WorkerRepository $workerRepository
+     * @param                 Request $request
+     * @param                 EntityManagerInterface $entityManager
+     * @return                null|Response
      */
-    public function worker(Worker $worker, WorkerRepository $workerRepository, Request $request, EntityManagerInterface $entityManager) {
+    public function worker(
+        Worker $worker,
+        WorkerRepository $workerRepository,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ) {
 
-        if(!($this->isGranted('ROLE_BOSS') || $this->isGranted('ROLE_ADMIN'))){
+        if (!($this->isGranted('ROLE_BOSS') || $this->isGranted('ROLE_ADMIN'))) {
             return $this->redirectToRoute('post_index');
         }
-        /** @var Worker $worker */
+        /**
+         * @var Worker $worker
+         */
         $worker = $workerRepository->findOneBy(['id' => $worker->getId()]);
 
         $form = $this->createForm(OffWorFormType::class, $worker);
@@ -124,9 +150,12 @@ class WorkerController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->render('worker/view.html.twig', [
-            'form' => $form->createView(),
-            'worker' => $worker
-        ]);
+        return $this->render(
+            'worker/view.html.twig',
+            [
+                'form' => $form->createView(),
+                'worker' => $worker
+            ]
+        );
     }
 }

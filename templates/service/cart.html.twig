@@ -6,8 +6,6 @@
     <link href="{{ asset('fullcalendar/timegrid/main.css') }}" rel='stylesheet' />
 {% endblock %}
 {% block body %}
-
-
     {{ form_start(form) }}
         {{ form_row(form) }}
     <button type="submit" id="button" class="btn btn-primary" formnovalidate>Select</button>
@@ -23,29 +21,18 @@
     <script src='{{ asset('fullcalendar/timegrid/main.js') }}'></script>
     <script src='{{ asset('fullcalendar/interaction/main.js') }}'></script>
     <script>
-        const Http = new XMLHttpRequest();
-        const url="polaznik23zavrsni.inchoo4u.net/index.php/events/3";
-        Http.open("POST", url);
-        Http.send();
-        Http.onreadystatechange=(e)=>{
-            console.log(Http.responseText)
-        }
-
         document.addEventListener('DOMContentLoaded', function () {
 
-            var events = [];
+            var events = {};
 
             $.ajax({
-                url:'{{ path('events') }}',
-                type: 'POST',
-                data: {'id': 3},
+                url: 'http://polaznik23zavrsni.inchoo4u.net/index.php/events/3',
                 success: function (response) {
-                    $('#calendar').fullCalendar('destroy');
+                    $('#calendar').destroy;
                     for (var i=0;i<response.length;i++) {
-                        events[i] = {};
-                        events[i].title = value.title;
-                        events[i].start = value.start;
-                        events[i].end = value.end;
+                        events[i]['title'] = response[i].title;
+                        events[i]['start'] = response[i].start.date;
+                        events[i]['end'] = response[i].end.date;
                     }
 
                     console.log(response);

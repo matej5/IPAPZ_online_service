@@ -16,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class UserFormType
+ *
  * @package App\Form
  */
 class UserFormType extends AbstractType
@@ -23,19 +24,29 @@ class UserFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('firstname', TextType::class, [
-                'label' => 'Change firstname'
-            ]);
+            ->add(
+                'firstname',
+                TextType::class,
+                [
+                    'label' => 'Change firstname'
+                ]
+            );
         $builder
-            ->add('lastname', TextType::class, [
-                'label' => 'Change lastname'
-            ]);
+            ->add(
+                'lastname',
+                TextType::class,
+                [
+                    'label' => 'Change lastname'
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => User::class
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => User::class
+            ]
+        );
     }
 }

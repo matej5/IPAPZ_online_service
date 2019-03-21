@@ -8,7 +8,6 @@
 
 namespace App\Controller;
 
-
 use App\Entity\Category;
 use App\Form\CategoryFormType;
 use App\Repository\CategoryRepository;
@@ -27,14 +26,17 @@ class CategoryController extends AbstractController
 {
     /**
      * @Route("/categories", name="category_index")
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param CategoryRepository $categoryRepository
-     * @return Response
+     * @param                Request $request
+     * @param                EntityManagerInterface $entityManager
+     * @param                CategoryRepository $categoryRepository
+     * @return               Response
      */
-    public function index(Request $request, EntityManagerInterface $entityManager, CategoryRepository $categoryRepository)
-    {
-        if(!$this->isGranted('ROLE_ADMIN')){
+    public function index(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CategoryRepository $categoryRepository
+    ) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         }
         $form = $this->createForm(CategoryFormType::class);
@@ -48,7 +50,7 @@ class CategoryController extends AbstractController
             $entityManager->persist($category);
             $entityManager->flush();
 
-            foreach ($data as $f){
+            foreach ($data as $f) {
                 $category = new Category();
                 $category->setName($f['name']);
                 $entityManager->persist($category);
@@ -60,22 +62,25 @@ class CategoryController extends AbstractController
         }
         $categories = $categoryRepository->findAll();
 
-        return $this->render('category/index.html.twig', [
-            'form' => $form->createView(),
-            'categories' => $categories,
-        ]);
+        return $this->render(
+            'category/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'categories' => $categories,
+            ]
+        );
     }
 
     /**
      * @Route("/categories/{id}", name="category_view")
-     * @param Category $category
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @return Response
+     * @param                     Category $category
+     * @param                     Request $request
+     * @param                     EntityManagerInterface $entityManager
+     * @return                    Response
      */
     public function view(Category $category, Request $request, EntityManagerInterface $entityManager)
     {
-        if(!$this->isGranted('ROLE_ADMIN')){
+        if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         }
         $form = $this->createForm(CategoryFormType::class, $category);
@@ -90,19 +95,24 @@ class CategoryController extends AbstractController
             return $this->redirectToRoute('category_index');
         }
 
-        return $this->render('category/view.html.twig', [
-            'form' => $form->createView(),
-            'category' => $category,
-        ]);
+        return $this->render(
+            'category/view.html.twig',
+            [
+                'form' => $form->createView(),
+                'category' => $category,
+            ]
+        );
     }
 
     //todo navodno ne postoji ruta
 
-    /**)
+    /**
+     * )
+     *
      * @Route("/category/{id}/delete", name="category_delete")
-     * @param Category $category
-     * @param EntityManagerInterface $entityManager
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @param                          Category $category
+     * @param                          EntityManagerInterface $entityManager
+     * @return                         \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function delete(Category $category, EntityManagerInterface $entityManager)
     {

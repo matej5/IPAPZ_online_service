@@ -20,7 +20,7 @@ class Worker
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
-     * @var User
+     * @var                                          User
      */
     private $user;
 
@@ -111,6 +111,7 @@ class Worker
 
         return $this;
     }
+
     public function getUser(): ?User
     {
         return $this->user;
@@ -245,7 +246,8 @@ class Worker
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->getName();
     }
 }

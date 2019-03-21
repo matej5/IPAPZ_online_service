@@ -15,21 +15,25 @@ class OfficeController extends AbstractController
 {
     /**
      * @Route("/office", name="office_index")
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param OfficeRepository $officeRepository
-     * @return Response
+     * @param            Request $request
+     * @param            EntityManagerInterface $entityManager
+     * @param            OfficeRepository $officeRepository
+     * @return           Response
      */
     public function index(Request $request, EntityManagerInterface $entityManager, OfficeRepository $officeRepository)
     {
-        if(!$this->isGranted('ROLE_USER')){
+        if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
         }
 
         $form = $this->createForm(OfficeFormType::class);
         $form->handleRequest($request);
-        if (($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) && ($form->isSubmitted() && $form->isValid())) {
-            /** @var Office $office */
+        if (($this->isGranted('ROLE_ADMIN')
+                || $this->isGranted('ROLE_BOSS'))
+            && ($form->isSubmitted() && $form->isValid())) {
+            /**
+             * @var Office $office
+             */
             $office = $form->getData();
             $entityManager->persist($office);
             $entityManager->flush();
@@ -38,9 +42,12 @@ class OfficeController extends AbstractController
         }
         $offices = $officeRepository->findAll();
 
-        return $this->render('office/view.html.twig', [
-            'form' => $form->createView(),
-            'offices' => $offices
-        ]);
+        return $this->render(
+            'office/view.html.twig',
+            [
+                'form' => $form->createView(),
+                'offices' => $offices
+            ]
+        );
     }
 }
