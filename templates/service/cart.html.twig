@@ -21,25 +21,15 @@
     <script src='{{ asset('fullcalendar/timegrid/main.js') }}'></script>
     <script src='{{ asset('fullcalendar/interaction/main.js') }}'></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        $("#receipt_form_worker").on('change',function() {
+            var id = $(this).val();
 
-            var events = {};
+            renderCal(id);
 
-            $.ajax({
-                url: 'http://polaznik23zavrsni.inchoo4u.net/index.php/events/3',
-                success: function (response) {
-                    $('#calendar').destroy;
-                    for (var i=0;i<response.length;i++) {
-                        events[i]['title'] = response[i].title;
-                        events[i]['start'] = response[i].start.date;
-                        events[i]['end'] = response[i].end.date;
-                    }
-
-                    console.log(response);
-                }
-            });
-
+        });
+        function renderCal(id){
             var calendarEl = document.getElementById('calendar');
+            calendarEl.innerHTML = '';
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
@@ -49,38 +39,10 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: events,
+                events: '{{ path('events') }}'.concat('/').concat(id),
+                type: 'POST',
                 scrollTime: '07:00',
-                events: [
-                ],
-
-                {#events: function (start, end, groupSelectedArray, callback) {#}
-                    {#$.ajax({#}
-                        {#type: "POST",#}
-                        {#url: '{{ (path('events')) }}',#}
-                        {#data:  JSON.stringify(groupData),#}
-                        {#contentType: "application/json; charset=utf-8",#}
-                        {#dataType: "json",#}
-                        {#success: function (doc) {#}
-                            {#var events = [];#}
-                            {#$(doc).each(function () {#}
-                                {#events.push({#}
-                                    {#title: $(this).attr('title'),#}
-                                    {#start: $(this).attr('start'),#}
-                                    {#end: $(this).attr('end'),#}
-                                    {#id: $(this).attr('id'),#}
-                                    {#textColor: 'black'#}
-                                {#});#}
-
-                            {#});#}
-                            {#callback(events);#}
-                        {#},#}
-                        {#error: function () {#}
-                            {#alert("There was an error fetching events!")#}
-                        {#},#}
-                    {#})#}
-                {#},#}
-                slotDuration: '00:15',
+                slotDuration: '00:10',
                 defaultView: 'timeGridWeek',
                 unselectAuto: false,
                 dateClick: function (info) {
@@ -89,6 +51,10 @@
             });
 
             calendar.render();
+        }
+
+        $( document ).ready(function () {
+            renderCal(0);
         });
     </script>
 {% endblock %}

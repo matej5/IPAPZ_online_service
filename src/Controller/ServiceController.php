@@ -295,11 +295,14 @@ class ServiceController extends AbstractController
     /**
      * @Route("/events/{id}", name="events")
      * @param                 ReceiptRepository $receiptRepository
+     * @param                 null $id
      * @return                Response
      * @throws \Exception
      */
-    public function events(ReceiptRepository $receiptRepository, $id = null)
-    {
+    public function events(
+        ReceiptRepository $receiptRepository,
+        $id = null
+    ) {
         $data = [];
         $receipts = $receiptRepository->findBy(['worker' => $id]);
         foreach ($receipts as $receipt) {
@@ -307,8 +310,8 @@ class ServiceController extends AbstractController
             $minutesToAdd = $receipt->getService()->getDuration();
             $data[] = [
                 'title' => $receipt->getService()->getName(),
-                'start' => $dateTime,
-                'end' => (clone $dateTime)->add(new DateInterval('PT' . $minutesToAdd . 'M'))
+                'start' => $dateTime->format('Y-m-d H:i:s'),
+                'end' => (clone $dateTime)->add(new DateInterval('PT' . $minutesToAdd . 'M'))->format('Y-m-d H:i:s')
             ];
         }
         $response = new JsonResponse($data);
