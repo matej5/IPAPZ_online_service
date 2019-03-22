@@ -23,7 +23,7 @@ class WorkerRepository extends ServiceEntityRepository
     /**
      * @return Worker[] Returns an array of Worker objects
      */
-    public function findById($id)
+    public function checkIfWorkTimeAvaliable($startOfService, $endOfService)
     {
         return $this->createQueryBuilder('w')
             ->innerJoin('w.', 'w')

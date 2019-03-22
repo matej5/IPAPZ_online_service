@@ -4,12 +4,17 @@
     <link href="{{ asset('fullcalendar/core/main.css') }}" rel='stylesheet' />
     <link href="{{ asset('fullcalendar/daygrid/main.css') }}" rel='stylesheet' />
     <link href="{{ asset('fullcalendar/timegrid/main.css') }}" rel='stylesheet' />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block body %}
     {{ form_start(form) }}
         {{ form_row(form) }}
     <button type="submit" id="button" class="btn btn-primary" formnovalidate>Select</button>
     {{ form_end(form) }}
+
+    <div id="dialog-confirm" title="Order dialog" >
+        <div id="text"></div>
+    </div>
 
     <div id="calendar"></div>
 {% endblock %}
@@ -20,6 +25,8 @@
     <script src='{{ asset('fullcalendar/daygrid/main.js') }}'></script>
     <script src='{{ asset('fullcalendar/timegrid/main.js') }}'></script>
     <script src='{{ asset('fullcalendar/interaction/main.js') }}'></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         $("#receipt_form_worker").on('change',function() {
             var id = $(this).val();
@@ -31,6 +38,8 @@
             var calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
 
+            var value = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
+
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 selectable: true,
@@ -39,14 +48,63 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: '{{ path('events') }}'.concat('/').concat(id),
+                eventSources: [
+                    '{{ path('events') }}'.concat('/' + id)
+
+                ],
                 type: 'POST',
                 scrollTime: '07:00',
                 slotDuration: '00:10',
+                allDaySlot: false,
                 defaultView: 'timeGridWeek',
                 unselectAuto: false,
                 dateClick: function (info) {
-                    alert('Clicked on: ' + info.dateStr);
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ path('check_for_reservation') }}' + '/' + id + '/' + value + '/' + info.dateStr,
+                        dataType: "html",
+                        success:function(result){
+                            console.log(JSON.parse(result));
+                            var r  = JSON.parse(result);
+                            var text_value = '';
+                            if (!r.Radi){
+                                text_value = "Radnik nije dostupan u ovo vrijeme";
+                            } else if (!r.Dostupnost){
+                                    text_value = "Određeni servis smeta";
+                            } else {
+                                //TODO: popraviti format datuma
+                                text_value = "Odabrali ste servis za " + info.dateStr;
+                            }
+
+                            $("#text").text(text_value);
+                            $( "#dialog-confirm" ).dialog({
+                                text: text_value,
+                                resizable: false,
+                                height: "auto",
+                                width: 400,
+                                modal: true,
+                                buttons: {
+                                    Cancel: function() {
+                                        $( this ).dialog( "close" );
+                                    }
+                                }
+                            });
+                            if(r.Radi && r.Dostupnost) {
+                                $("#dialog-confirm").dialog("option", "buttons", {
+                                    "PAYPAL": function () {
+                                        $(this).dialog("close");
+                                    },
+                                    "Pouzeče": function () {
+                                        $(this).dialog("close");
+                                    },
+                                    Cancel: function() {
+                                        $( this ).dialog( "close" );
+                                    }
+                                });
+                            }
+                        }
+                    })
+
                 }
             });
 
