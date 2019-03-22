@@ -95,7 +95,10 @@
                                         $(this).dialog("close");
                                     },
                                     "Pouzeče": function () {
-                                        $(this).dialog("close");
+                                        $.ajax({
+                                           type: 'POST',
+                                           url: '{{ path('pouzece') }}'  + '/' + id + '/' + value + '/' + {{ app.user }} + '/' + info.dateStr
+                                        });
                                     },
                                     Cancel: function() {
                                         $( this ).dialog( "close" );
