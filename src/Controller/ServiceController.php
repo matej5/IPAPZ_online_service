@@ -47,7 +47,7 @@ class ServiceController extends AbstractController
         ServiceRepository $serviceRepository,
         $category = null
     ) {
-        $categories = $categoryRepository->findAll();
+        $categories = $categoryRepository->findAllASC();
 
         $form = $this->createForm(ServiceFormType::class, ['categories' => $categories]);
         $form->handleRequest($request);

@@ -211,6 +211,7 @@ class WorkerController extends AbstractController
 
         //vrijeme u sekundama od odabranog vremena
         $chosenTime = strtotime($date);
+
         $time = date('H:i', $chosenTime);
         list($hours, $minutes) = explode(':', $time, 2);
         $sec = $hours * 3600 + $minutes * 60;

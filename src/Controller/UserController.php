@@ -80,10 +80,8 @@ class UserController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
-
             $entityManager->persist($user);
             $entityManager->flush();
-
             // do anything else you need here, like send an email
 
             return $guardHandler->authenticateUserAndHandleSuccess(
@@ -100,6 +98,12 @@ class UserController extends AbstractController
                 'registrationForm' => $form->createView(),
             ]
         );
+    }
+
+    private function insertData($em, $data)
+    {
+        $em->persist($data);
+        $em->flush();
     }
 
     /**
