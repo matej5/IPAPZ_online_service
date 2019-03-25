@@ -32,11 +32,12 @@ class ServiceController extends AbstractController
 {
     /**
      * @Route("/service/{category}", name="service_index")
-     * @param                        Request $request
      * @param                        CategoryRepository $categoryRepository
+     * @param                        Request $request
      * @param                        WorkerRepository $workerRepository
      * @param                        EntityManagerInterface $entityManager
      * @param                        ServiceRepository $serviceRepository
+     * @param                        null $category
      * @return                       Response
      */
     public function index(
@@ -80,6 +81,7 @@ class ServiceController extends AbstractController
             foreach ($data['category'] as $c) {
                 $service->addCategory($c);
             }
+
             $service->setBoss($workerRepository->findOneBy(['user' => $this->getUser()]));
 
             $entityManager->persist($service);
@@ -195,6 +197,7 @@ class ServiceController extends AbstractController
             } else {
                 $service->setCatalog('inactive');
             }
+
             $entityManager->persist($service);
             $entityManager->flush();
             return $this->redirectToRoute('service_index');
@@ -230,14 +233,17 @@ class ServiceController extends AbstractController
             if (isset($_COOKIE['services'][0])) {
                 $count = count($_COOKIE['services']);
             }
+
             $cookieServices = array(
                 'name' => "services[$count]",
                 'service' => $service->getId()
             );
+
             $cookie = new Cookie($cookieServices['name'], $cookieServices['service']);
             $response->headers->setCookie($cookie, '', 1);
             $response->send();
         }
+
         return $this->redirectToRoute('service_index');
     }
 
@@ -260,7 +266,7 @@ class ServiceController extends AbstractController
         } elseif ($this->isGranted('ROLE_USER')) {
             $service = $this->getUser()->getServices();
         }
-        $workers = $workerRepository->findAll();
+
         return $this->render(
             'service/basket.html.twig',
             [
@@ -297,7 +303,7 @@ class ServiceController extends AbstractController
      * @param                 ReceiptRepository $receiptRepository
      * @param                 null $id
      * @return                Response
-     * @throws \Exception
+     * @throws                \Exception
      */
     public function events(
         ReceiptRepository $receiptRepository,
@@ -314,6 +320,7 @@ class ServiceController extends AbstractController
                 'end' => (clone $dateTime)->add(new DateInterval('PT' . $minutesToAdd . 'M'))->format('Y-m-d H:i:s')
             ];
         }
+
         $response = new JsonResponse($data);
         return $response;
     }

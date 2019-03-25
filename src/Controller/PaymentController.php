@@ -31,13 +31,17 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class PaymentController extends AbstractController
 {
     /**
-     * @Route("/pouzece/{worker}/{service}/{user}/{date}", name="service_index")
-     * @param                        Request $request
+     * @Route("/pouzece/{worker}/{service}/{user}/{date}", name="pouzece")
      * @param                        CategoryRepository $categoryRepository
+     * @param                        Request $request
      * @param                        WorkerRepository $workerRepository
      * @param                        EntityManagerInterface $entityManager
      * @param                        ServiceRepository $serviceRepository
-     * @return                       Response
+     * @param                        null $worker
+     * @param                        null $service
+     * @param                        null $user
+     * @param                        null $date
+     * @return int
      */
     public function pouzece(
         CategoryRepository $categoryRepository,
@@ -45,7 +49,37 @@ class PaymentController extends AbstractController
         WorkerRepository $workerRepository,
         EntityManagerInterface $entityManager,
         ServiceRepository $serviceRepository,
-        $category = null
+        $worker = null,
+        $service = null,
+        $user = null,
+        $date = null
+    ) {
+        return 0;
+    }
+
+    /**
+     * @Route("/paypal/{worker}/{service}/{user}/{date}", name="paypal")
+     * @param                        CategoryRepository $categoryRepository
+     * @param                        Request $request
+     * @param                        WorkerRepository $workerRepository
+     * @param                        EntityManagerInterface $entityManager
+     * @param                        ServiceRepository $serviceRepository
+     * @param                        null $worker
+     * @param                        null $service
+     * @param                        null $user
+     * @param                        null $date
+     * @return int
+     */
+    public function paypal(
+        CategoryRepository $categoryRepository,
+        Request $request,
+        WorkerRepository $workerRepository,
+        EntityManagerInterface $entityManager,
+        ServiceRepository $serviceRepository,
+        $worker = null,
+        $service = null,
+        $user = null,
+        $date = null
     ) {
     }
 }

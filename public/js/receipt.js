@@ -14,5 +14,4 @@ $receipt_form_office.change(function () {
             $(response).find("#receipt_form_worker")
         )
     })
-    
 })

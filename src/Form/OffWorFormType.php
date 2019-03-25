@@ -38,9 +38,10 @@ class OffWorFormType extends AbstractType
         $builder
             ->add(
                 'office',
+                EntityType::class,
                 [
-                    'choice_label' => 'address',
-                    'class' => Office::class
+                    'class' => Office::class,
+                    'choice_label' => 'address'
                 ]
             )
             ->add(
@@ -76,24 +77,31 @@ class OffWorFormType extends AbstractType
                         if ($intToDays & 1) {
                             $array['Monday'] = 1;
                         }
+
                         if ($intToDays & 2) {
                             $array['Tuesday'] = 2;
                         }
+
                         if ($intToDays & 4) {
                             $array['Wednesday'] = 4;
                         }
+
                         if ($intToDays & 8) {
                             $array['Thursday'] = 8;
                         }
+
                         if ($intToDays & 16) {
                             $array['Friday'] = 16;
                         }
+
                         if ($intToDays & 32) {
                             $array['Saturday'] = 32;
                         }
+
                         if ($intToDays & 64) {
                             $array['Sunday'] = 64;
                         }
+
                         return $array;
                     },
                     function ($workDaysAsInt) {
@@ -101,6 +109,7 @@ class OffWorFormType extends AbstractType
                         foreach ($workDaysAsInt as $day) {
                             $i += $day;
                         }
+
                         return $i;
                     }
                 )
