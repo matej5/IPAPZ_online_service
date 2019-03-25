@@ -494,12 +494,15 @@ class User implements UserInterface
     {
         $startX = 35;
         $startY = 35;
-
-        for ($i = 2, $j = 0; $j < 14; $j++) {
-            if (pow($i, $j) & $total) {
-                ImageFilledRectangle($im, $startX, $startY, $startX +70, $startY + 70, $color);
-                ImageFilledRectangle($im, $startX + 70 * 4, $startY, $startX + 70 * 5, $startY + 70, $color);
+        for ($i = 0; $i < 5; $i++) {
+            for ($j = 0; $j < 3; $j++) {
+                if (pow(2, $i * 3 + $i) & $total) {
+                    ImageFilledRectangle($im, $startX, $startY, $startX + 70, $startY + 70, $color);
+                    ImageFilledRectangle($im, 385 - $startX * $i, $startY, 315 - $startX * $i, $startY + 70, $color);
+                }
             }
+
+            $startY += 70;
         }
 
         return $im;
