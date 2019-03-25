@@ -2,33 +2,33 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\PointsRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\PointsRepository")
  */
 class Points
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="points", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\OneToOne(targetEntity="App\Entity\User",
+     *     inversedBy="points", cascade={"persist", "remove"})
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $user;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @Doctrine\ORM\Mapping\Column(type="integer", nullable=true)
      */
     private $moneySpent;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @Doctrine\ORM\Mapping\Column(type="integer", nullable=true)
      */
     private $numberOfServices;
 
@@ -37,12 +37,12 @@ class Points
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): \App\Entity\User
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(\App\Entity\User $user): self
     {
         $this->user = $user;
 

@@ -8,11 +8,9 @@ use App\Form\UserFormType;
 use App\Repository\UserRepository;
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -28,8 +26,8 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class UserController extends AbstractController
 {
     /**
-     * @Route("/login", name="app_login")
-     * @Security("not   is_granted('ROLE_USER')")
+     * @Symfony\Component\Routing\Annotation\Route("/login", name="app_login")
+     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("not   is_granted('ROLE_USER')")
      * @param           AuthenticationUtils $authenticationUtils
      * @return          Response
      */
@@ -44,7 +42,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="app_register")
+     * @Symfony\Component\Routing\Annotation\Route("/register", name="app_register")
      * @param              Request $request
      * @param              UserPasswordEncoderInterface $passwordEncoder
      * @param              GuardAuthenticatorHandler $guardHandler
@@ -62,18 +60,17 @@ class UserController extends AbstractController
         if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
         }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            //todo insert worker and other roles
-            //            $a=['ROLE_ADMIN'];
-            //            $user->setRoles($a);
             $user->setMoney(200);
             $user->createAvatar();
             $user->setImage('avatar.jpeg');
+
+            // encode the plain password
             $user->setPassword(
                 $passwordEncoder->encodePassword(
                     $user,
@@ -107,7 +104,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/profile", name="app_profile")
+     * @Symfony\Component\Routing\Annotation\Route("/profile", name="app_profile")
      * @param             Request $request
      * @param             EntityManagerInterface $entityManager
      * @return            null|Response
@@ -142,7 +139,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user/{id}", name="app_user")
+     * @Symfony\Component\Routing\Annotation\Route("/user/{id}", name="app_user")
      * @param               User $user
      * @param               UserRepository $userRepository
      * @return              null|Response
@@ -167,7 +164,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/generate", name="app_generate")
+     * @Symfony\Component\Routing\Annotation\Route("/generate", name="app_generate")
      * @param              Request $request
      * @return             null|Response
      */
@@ -188,7 +185,7 @@ class UserController extends AbstractController
 
 
     /**
-     * @Route("/logout", name="app_logout")
+     * @Symfony\Component\Routing\Annotation\Route("/logout", name="app_logout")
      */
     public function logout()
     {

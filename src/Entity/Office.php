@@ -4,52 +4,51 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\OfficeRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\OfficeRepository")
  */
 class Office
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $state;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $city;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $address;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $phoneNumber;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="office")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="office")
      */
     private $receipts;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Worker", mappedBy="office")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Worker", mappedBy="office")
      */
     private $worker;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="officesCreated")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="officesCreated")
      */
     private $owner;
 
@@ -120,7 +119,7 @@ class Office
         return $this->receipts;
     }
 
-    public function addReceipt(Receipt $receipt): self
+    public function addReceipt(\App\Entity\Receipt $receipt): self
     {
         if (!$this->receipts->contains($receipt)) {
             $this->receipts[] = $receipt;
@@ -130,7 +129,7 @@ class Office
         return $this;
     }
 
-    public function removeReceipt(Receipt $receipt): self
+    public function removeReceipt(\App\Entity\Receipt $receipt): self
     {
         if ($this->receipts->contains($receipt)) {
             $this->receipts->removeElement($receipt);
@@ -151,7 +150,7 @@ class Office
         return $this->worker;
     }
 
-    public function addWorker(Worker $worker): self
+    public function addWorker(\App\Entity\Worker $worker): self
     {
         if (!$this->worker->contains($worker)) {
             $this->worker[] = $worker;
@@ -161,7 +160,7 @@ class Office
         return $this;
     }
 
-    public function removeWorker(Worker $worker): self
+    public function removeWorker(\App\Entity\Worker $worker): self
     {
         if ($this->worker->contains($worker)) {
             $this->worker->removeElement($worker);
@@ -174,12 +173,12 @@ class Office
         return $this;
     }
 
-    public function getOwner(): ?Worker
+    public function getOwner(): \App\Entity\Worker
     {
         return $this->owner;
     }
 
-    public function setOwner(?Worker $owner): self
+    public function setOwner(\App\Entity\Worker $owner): self
     {
         $this->owner = $owner;
 

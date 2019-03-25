@@ -12,24 +12,17 @@ use App\Entity\Category;
 use App\Form\CategoryFormType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use function Sodium\add;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 class CategoryController extends AbstractController
 {
     /**
-     * @Route("/categories", name="category_index")
+     * @Symfony\Component\Routing\Annotation\Route("/categories", name="category_index")
      * @param                Request $request
      * @param                EntityManagerInterface $entityManager
      * @param                CategoryRepository $categoryRepository
-     * @return               Response
+     * @return               \Symfony\Component\HttpFoundation\Response
      */
     public function index(
         Request $request,
@@ -39,6 +32,7 @@ class CategoryController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         }
+
         $form = $this->createForm(CategoryFormType::class);
         $form->handleRequest($request);
 
@@ -60,6 +54,7 @@ class CategoryController extends AbstractController
             $this->addFlash('success', 'New category created!');
             return $this->redirectToRoute('category_index');
         }
+
         $categories = $categoryRepository->findAll();
 
         return $this->render(
@@ -72,17 +67,18 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/categories/{id}", name="category_view")
+     * @Symfony\Component\Routing\Annotation\Route("/categories/{id}", name="category_view")
      * @param                     Category $category
      * @param                     Request $request
      * @param                     EntityManagerInterface $entityManager
-     * @return                    Response
+     * @return                      \Symfony\Component\HttpFoundation\Response
      */
     public function view(Category $category, Request $request, EntityManagerInterface $entityManager)
     {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         }
+
         $form = $this->createForm(CategoryFormType::class, $category);
         $form->handleRequest($request);
 
@@ -104,12 +100,8 @@ class CategoryController extends AbstractController
         );
     }
 
-    //todo navodno ne postoji ruta
-
     /**
-     * )
-     *
-     * @Route("/category/{id}/delete", name="category_delete")
+     * @Symfony\Component\Routing\Annotation\Route("/category/{id}/delete", name="category_delete")
      * @param                          Category $category
      * @param                          EntityManagerInterface $entityManager
      * @return                         \Symfony\Component\HttpFoundation\RedirectResponse

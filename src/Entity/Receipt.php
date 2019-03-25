@@ -3,46 +3,44 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ReceiptRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\ReceiptRepository")
  */
 class Receipt
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="receipts")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Office", inversedBy="receipts")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $office;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="receipts")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\User", inversedBy="receipts")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $buyer;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="receipts")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="receipts")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $worker;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @Doctrine\ORM\Mapping\Column(type="datetime")
      */
     private $startOfService;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Service", inversedBy="receipts")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Service", inversedBy="receipts")
      */
     private $service;
 
@@ -56,36 +54,36 @@ class Receipt
         return $this->id;
     }
 
-    public function getOffice(): ?Office
+    public function getOffice(): \App\Entity\Office
     {
         return $this->office;
     }
 
-    public function setOffice(?Office $office): self
+    public function setOffice(\App\Entity\Office $office): self
     {
         $this->office = $office;
 
         return $this;
     }
 
-    public function getBuyer(): ?User
+    public function getBuyer(): \App\Entity\User
     {
         return $this->buyer;
     }
 
-    public function setBuyer(?User $buyer): self
+    public function setBuyer(\App\Entity\User $buyer): self
     {
         $this->buyer = $buyer;
 
         return $this;
     }
 
-    public function getWorker(): ?Worker
+    public function getWorker(): \App\Entity\Worker
     {
         return $this->worker;
     }
 
-    public function setWorker(?Worker $worker): self
+    public function setWorker(\App\Entity\Worker $worker): self
     {
         $this->worker = $worker;
 
@@ -98,6 +96,7 @@ class Receipt
         foreach ($this->service as $r) {
             $i += $r->getCost();
         }
+
         return $i;
     }
 
@@ -113,12 +112,12 @@ class Receipt
         return $this;
     }
 
-    public function getService(): ?Service
+    public function getService(): \App\Entity\Service
     {
         return $this->service;
     }
 
-    public function setService(?Service $service): self
+    public function setService(\App\Entity\Service $service): self
     {
         $this->service = $service;
 

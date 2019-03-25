@@ -2,36 +2,27 @@
 
 namespace App\Controller;
 
-use App\Entity\Office;
-use App\Entity\Receipt;
 use App\Entity\Service;
-use App\Entity\Worker;
 use App\Form\ReceiptFormType;
 use App\Form\ServiceAddFormType;
 use App\Form\ServiceFormType;
-use App\Form\WorkerFormType;
 use App\Repository\CategoryRepository;
-use App\Repository\OfficeRepository;
 use App\Repository\ReceiptRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\WorkerRepository;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ServiceController extends AbstractController
 {
     /**
-     * @Route("/service/{category}", name="service_index")
+     * @Symfony\Component\Routing\Annotation\Route("/service/{category}", name="service_index")
      * @param                        CategoryRepository $categoryRepository
      * @param                        Request $request
      * @param                        WorkerRepository $workerRepository
@@ -111,7 +102,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/serviceEdit/{id}", name="service_edit")
+     * @Symfony\Component\Routing\Annotation\Route("/serviceEdit/{id}", name="service_edit")
      * @param                      Service $service
      * @param                      CategoryRepository $categoryRepository
      * @param                      Request $request
@@ -159,7 +150,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/allow/{id}", name="service_allow")
+     * @Symfony\Component\Routing\Annotation\Route("/allow/{id}", name="service_allow")
      * @param                Service $service
      * @param                EntityManagerInterface $entityManager
      * @return               Response
@@ -181,7 +172,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/activate/{id}", name="service_activate")
+     * @Symfony\Component\Routing\Annotation\Route("/activate/{id}", name="service_activate")
      * @param                   Service $service
      * @param                   EntityManagerInterface $entityManager
      * @return                  Response
@@ -207,7 +198,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/add/{id}", name="service_add")
+     * @Symfony\Component\Routing\Annotation\Route("/add/{id}", name="service_add")
      * @param              Service $service
      * @param              Request $request
      * @param              EntityManagerInterface $entityManager
@@ -248,7 +239,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/cart", name="service_view")
+     * @Symfony\Component\Routing\Annotation\Route("/cart", name="service_view")
      * @param          Request $request
      * @param          WorkerRepository $workerRepository
      * @param          ServiceRepository $serviceRepository
@@ -258,6 +249,7 @@ class ServiceController extends AbstractController
     {
         $form = $this->createForm(ServiceAddFormType::class);
         $form->handleRequest($request);
+
         $service = null;
         if (!$this->isGranted('ROLE_USER') && isset($_COOKIE['services'])) {
             foreach ($_COOKIE['services'] as $s) {
@@ -277,7 +269,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/cart/{id}", name="service_buy")
+     * @Symfony\Component\Routing\Annotation\Route("/cart/{id}", name="service_buy")
      * @param               Service $service
      * @param               Request $request
      * @return              Response
@@ -286,7 +278,7 @@ class ServiceController extends AbstractController
     {
         $offices = $service->getBoss()->getOfficesCreated();
 
-        $form = $this->createForm(ReceiptFormType::class, $offices, ['offices' => $offices]);
+        $form = $this->createForm(ReceiptFormType::class, null, ['offices' => $offices]);
         $form->handleRequest($request);
 
         return $this->render(
@@ -299,7 +291,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Route("/events/{id}", name="events")
+     * @Symfony\Component\Routing\Annotation\Route("/events/{id}", name="events")
      * @param                 ReceiptRepository $receiptRepository
      * @param                 null $id
      * @return                Response
@@ -326,8 +318,8 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Security("user                == post.getUser()")
-     * @Route("/service/{id}/delete", name="service_delete")
+     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("user                == post.getUser()")
+     * @Symfony\Component\Routing\Annotation\Route("/service/{id}/delete", name="service_delete")
      * @param                         Service $service
      * @param                         EntityManagerInterface $entityManager
      * @return                        \Symfony\Component\HttpFoundation\RedirectResponse

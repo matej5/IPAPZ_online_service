@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\Worker;
 use App\Form\WorkerFormType;
 use App\Form\BossFormType;
@@ -12,26 +11,18 @@ use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpParser\Node\Scalar\String_;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use function Sodium\add;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 
 class WorkerController extends AbstractController
 {
     /**
-     * @Route("/worker", name="worker_index")
+     * @Symfony\Component\Routing\Annotation\Route("/worker", name="worker_index")
      * @param            Request $request
      * @param            EntityManagerInterface $entityManager
      * @param            WorkerRepository $workerRepository
-     * @return           Response
+     * @return           \Symfony\Component\HttpFoundation\Response
      */
     public function index(Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
     {
@@ -63,10 +54,15 @@ class WorkerController extends AbstractController
         if ($this->isGranted('ROLE_ADMIN')) {
             $workers = $workerRepository->findAll();
         } else {
-            $workers = $workerRepository->findBy([
-                'firmName' => $workerRepository->findOneBy([
-                    'user' => $this->getUser()])->getFirmName()
-            ]);
+            $workers = $workerRepository->findBy(
+                [
+                'firmName' => $workerRepository->findOneBy(
+                    [
+                    'user' => $this->getUser()
+                    ]
+                )->getFirmName()
+                ]
+            );
         }
 
         return $this->render(
@@ -79,12 +75,12 @@ class WorkerController extends AbstractController
     }
 
     /**
-     * @Route("/boss", name="boss_index")
+     * @Symfony\Component\Routing\Annotation\Route("/boss", name="boss_index")
      * @param          Request $request
      * @param          EntityManagerInterface $entityManager
      * @param          WorkerRepository $workerRepository
      * @param          UserRepository $userRepository
-     * @return         Response
+     * @return         \Symfony\Component\HttpFoundation\Response
      */
     public function boss(
         Request $request,
@@ -95,6 +91,7 @@ class WorkerController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         }
+
         $form = $this->createForm(BossFormType::class);
         $form->handleRequest($request);
         if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
@@ -123,12 +120,12 @@ class WorkerController extends AbstractController
     }
 
     /**
-     * @Route("/worker/{id}", name="app_worker")
+     * @Symfony\Component\Routing\Annotation\Route("/worker/{id}", name="app_worker")
      * @param                 Worker $worker
      * @param                 WorkerRepository $workerRepository
      * @param                 Request $request
      * @param                 EntityManagerInterface $entityManager
-     * @return                null|Response
+     * @return                null|  \Symfony\Component\HttpFoundation\Response
      */
     public function worker(
         Worker $worker,
@@ -140,6 +137,7 @@ class WorkerController extends AbstractController
         if (!($this->isGranted('ROLE_BOSS') || $this->isGranted('ROLE_ADMIN'))) {
             return $this->redirectToRoute('post_index');
         }
+
         /**
          * @var Worker $worker
          */
@@ -164,10 +162,10 @@ class WorkerController extends AbstractController
     }
 
     /**
-     * @Route("/avaliable/{id}", name="worker_avaliable")
+     * @Symfony\Component\Routing\Annotation\Route("/avaliable/{id}", name="worker_avaliable")
      * @param                 WorkerRepository $workerRepository
      * @param                 null $id
-     * @return                Response
+     * @return                \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
     public function avaliable(
@@ -187,7 +185,7 @@ class WorkerController extends AbstractController
     }
 
     /**
-     * @Route("/check/{worker}/{service}/{date}", name="check_for_reservation")
+     * @Symfony\Component\Routing\Annotation\Route("/check/{worker}/{service}/{date}", name="check_for_reservation")
      * @param                 ReceiptRepository $receiptRepository
      * @param                 WorkerRepository $workerRepository
      * @param                 ServiceRepository $serviceRepository
@@ -207,6 +205,7 @@ class WorkerController extends AbstractController
         if ($worker != null) {
             $worker = $workerRepository->findOneBy(['id' => $worker]);
         }
+
         $day = pow(2, date('N', strtotime($date)) - 1);
 
         //vrijeme u sekundama od odabranog vremena
@@ -255,6 +254,7 @@ class WorkerController extends AbstractController
                 $avaliable = true;
             }
         }
+
         $data = ['Radi' => $radniDan, 'Dostupnost' => $avaliable];
         $response = new JsonResponse($data);
         return $response;

@@ -97,7 +97,7 @@
                                     "Pouzeče": function () {
                                         $.ajax({
                                            type: 'POST',
-                                           url: '{{ path('pouzece') }}'  + '/' + id + '/' + value + '/' + {{ app.user.id }} + '/' + info.dateStr
+                                           url: '{{ path('pouzece') }}'  + '/' + id + '/' + value + '/' + 5 + '/' + info.dateStr
                                         });
                                     },
                                     Cancel: function() {

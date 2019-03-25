@@ -4,76 +4,73 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ServiceRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\ServiceRepository")
  */
 class Service
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="float")
+     * @Doctrine\ORM\Mapping\Column(type="float")
      */
     private $cost;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="services")
+     * @Doctrine\ORM\Mapping\ManyToMany(targetEntity="App\Entity\User", mappedBy="services")
      */
     private $users;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="services")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Worker", inversedBy="services")
      */
     private $boss;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $status;
 
     /**
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $duration;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=500)
      */
     private $description;
 
     /**
-     * @ORM\Column(type="string",       length=255, nullable=true)
-     * @Assert\NotBlank(message="Upload your image")
-     * @Assert\File(mimeTypes={         "image/png", "image/jpeg" })
+     * @Doctrine\ORM\Mapping\Column(type="string",       length=255, nullable=true)
+     * @Symfony\Component\Validator\Constraints\NotBlank(message="Upload your image")
+     * @Symfony\Component\Validator\Constraints\File(mimeTypes={         "image/png", "image/jpeg" })
      */
     private $image;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Category", inversedBy="services")
+     * @Doctrine\ORM\Mapping\ManyToMany(targetEntity="App\Entity\Category", inversedBy="services")
      */
     private $category;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $catalog;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="service")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="service")
      */
     private $receipts;
 
@@ -121,7 +118,7 @@ class Service
         return $this->users;
     }
 
-    public function addUser(User $user): self
+    public function addUser(\App\Entity\User $user): self
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
@@ -131,7 +128,7 @@ class Service
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeUser(\App\Entity\User $user): self
     {
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
@@ -141,12 +138,12 @@ class Service
         return $this;
     }
 
-    public function getBoss(): ?Worker
+    public function getBoss(): \App\Entity\Worker
     {
         return $this->boss;
     }
 
-    public function setBoss(?Worker $boss): self
+    public function setBoss(\App\Entity\Worker $boss): self
     {
         $this->boss = $boss;
 
@@ -209,7 +206,7 @@ class Service
         return $this->category;
     }
 
-    public function addCategory(Category $category): self
+    public function addCategory(\App\Entity\Category $category): self
     {
         if (!$this->category->contains($category)) {
             $this->category[] = $category;
@@ -218,7 +215,7 @@ class Service
         return $this;
     }
 
-    public function removeCategory(Category $category): self
+    public function removeCategory(\App\Entity\Category $category): self
     {
         if ($this->category->contains($category)) {
             $this->category->removeElement($category);
@@ -247,7 +244,7 @@ class Service
         return $this->receipts;
     }
 
-    public function addReceipt(Receipt $receipt): self
+    public function addReceipt(\App\Entity\Receipt $receipt): self
     {
         if (!$this->receipts->contains($receipt)) {
             $this->receipts[] = $receipt;
@@ -257,7 +254,7 @@ class Service
         return $this;
     }
 
-    public function removeReceipt(Receipt $receipt): self
+    public function removeReceipt(\App\Entity\Receipt $receipt): self
     {
         if ($this->receipts->contains($receipt)) {
             $this->receipts->removeElement($receipt);

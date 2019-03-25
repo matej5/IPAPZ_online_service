@@ -36,16 +36,4 @@ class ServiceRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    /*
-    public function findOneBySomeField($value): ?Service
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

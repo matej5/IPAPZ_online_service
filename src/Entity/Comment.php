@@ -4,44 +4,43 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\CommentRepository")
  */
 class Comment
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="text")
+     * @Doctrine\ORM\Mapping\Column(type="text")
      */
     private $content;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @Doctrine\ORM\Mapping\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Post", inversedBy="comments")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $post;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Report", mappedBy="comment")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Report", mappedBy="comment")
      */
     private $reports;
 
@@ -87,24 +86,24 @@ class Comment
         return $this;
     }
 
-    public function getPost(): ?Post
+    public function getPost(): \App\Entity\Post
     {
         return $this->post;
     }
 
-    public function setPost(?Post $post): self
+    public function setPost(\App\Entity\Post $post): self
     {
         $this->post = $post;
 
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): \App\Entity\User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(\App\Entity\User $user): self
     {
         $this->user = $user;
 
@@ -119,7 +118,7 @@ class Comment
         return $this->reports;
     }
 
-    public function addReport(Report $report): self
+    public function addReport(\App\Entity\Report $report): self
     {
         if (!$this->reports->contains($report)) {
             $this->reports[] = $report;
@@ -129,7 +128,7 @@ class Comment
         return $this;
     }
 
-    public function removeReport(Report $report): self
+    public function removeReport(\App\Entity\Report $report): self
     {
         if ($this->reports->contains($report)) {
             $this->reports->removeElement($report);

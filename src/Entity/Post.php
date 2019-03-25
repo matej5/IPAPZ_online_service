@@ -4,67 +4,65 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Class Post
  *
  * @package                                                     App\Entity
- * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
- * @ORM\HasLifecycleCallbacks()
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\PostRepository")
+ * @Doctrine\ORM\Mapping\HasLifecycleCallbacks()
  */
 class Post
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $content;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @Doctrine\ORM\Mapping\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="post", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"createdAt"="DESC"})
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Comment",
+     *     mappedBy="post", cascade={"persist", "remove"})
+     * @Doctrine\ORM\Mapping\OrderBy({"createdAt"="DESC"})
      */
     private $comments;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Report", mappedBy="post")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Report", mappedBy="post")
      */
     private $reports;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $user;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $title;
 
     /**
-     * @ORM\Column(type="string",       length=255, nullable=true)
-     * @Assert\NotBlank(message="Upload your image")
-     * @Assert\File(mimeTypes={         "image/png", "image/jpeg" })
+     * @Doctrine\ORM\Mapping\Column(type="string",       length=255, nullable=true)
+     * @Symfony\Component\Validator\Constraints\NotBlank(message="Upload your image")
+     * @Symfony\Component\Validator\Constraints\File(mimeTypes={         "image/png", "image/jpeg" })
      */
     private $image;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\LikeDislike",
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\LikeDislike",
      *      mappedBy="post", cascade={"persist","remove"}, orphanRemoval=true)
      */
     private $likeDislikes;
@@ -107,7 +105,7 @@ class Post
 
 
     /**
-     * @ORM\PrePersist()
+     * @Doctrine\ORM\Mapping\PrePersist()
      */
     public function onPrePersist()
     {
@@ -127,7 +125,7 @@ class Post
      * @param  Comment $comment
      * @return $this
      */
-    public function addComment(Comment $comment): self
+    public function addComment(\App\Entity\Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
@@ -137,7 +135,7 @@ class Post
         return $this;
     }
 
-    public function removeComment(Comment $comment): self
+    public function removeComment(\App\Entity\Comment $comment): self
     {
         if ($this->comments->contains($comment)) {
             $this->comments->removeElement($comment);
@@ -166,7 +164,7 @@ class Post
         return $this->reports;
     }
 
-    public function addReport(Report $report): self
+    public function addReport(\App\Entity\Report $report): self
     {
         if (!$this->reports->contains($report)) {
             $this->reports[] = $report;
@@ -176,7 +174,7 @@ class Post
         return $this;
     }
 
-    public function removeReport(Report $report): self
+    public function removeReport(\App\Entity\Report $report): self
     {
         if ($this->reports->contains($report)) {
             $this->reports->removeElement($report);
@@ -189,12 +187,12 @@ class Post
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): \App\Entity\User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(\App\Entity\User $user): self
     {
         $this->user = $user;
 
@@ -233,7 +231,7 @@ class Post
         return $this->likeDislikes;
     }
 
-    public function addLikeDislike(LikeDislike $likeDislike): self
+    public function addLikeDislike(\App\Entity\LikeDislike $likeDislike): self
     {
         if (!$this->likeDislikes->contains($likeDislike)) {
             $this->likeDislikes[] = $likeDislike;
@@ -243,7 +241,7 @@ class Post
         return $this;
     }
 
-    public function removeLikeDislike(LikeDislike $likeDislike): self
+    public function removeLikeDislike(\App\Entity\LikeDislike $likeDislike): self
     {
         if ($this->likeDislikes->contains($likeDislike)) {
             $this->likeDislikes->removeElement($likeDislike);

@@ -2,34 +2,26 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment;
 use App\Entity\LikeDislike;
 use App\Entity\Post;
 use App\Form\CommentFormType;
 use App\Form\PostFormType;
 use App\Repository\LikeDislikeRepository;
 use App\Repository\PostRepository;
-use App\Repository\ReceiptRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PostController extends AbstractController
 {
     /**
-     * @Route("/", name="post_index")
+     * @Symfony\Component\Routing\Annotation\Route("/", name="post_index")
      * @param      Request $request
      * @param      EntityManagerInterface $entityManager
      * @param      PostRepository $postRepository
-     * @return     Response
+     * @return       \Symfony\Component\HttpFoundation\Response
      */
     public function index(Request $request, EntityManagerInterface $entityManager, PostRepository $postRepository)
     {
@@ -62,6 +54,7 @@ class PostController extends AbstractController
             $this->addFlash('success', 'New post created!');
             return $this->redirectToRoute('post_index');
         }
+
         $posts = $postRepository->getAllInLastWeek();
 
         return $this->render(
@@ -74,12 +67,12 @@ class PostController extends AbstractController
     }
 
     /**
-     * @Route("/view/{id}", name="post_view")
+     * @Symfony\Component\Routing\Annotation\Route("/view/{id}", name="post_view")
      * @param               Post $post
      * @param               Request $request
      * @param               EntityManagerInterface $entityManager
      * @param               LikeDislikeRepository $likeDislikeRepository
-     * @return              Response
+     * @return                \Symfony\Component\HttpFoundation\Response
      */
     public function show(
         Post $post,
@@ -106,12 +99,14 @@ class PostController extends AbstractController
                 ]
             );
         }
+
         $userLikesPost = $likeDislikeRepository->findBy(
             [
                 'user' => $this->getUser(),
                 'post' => $post
             ]
         );
+
         return $this->render(
             'post/view.html.twig',
             [
@@ -123,8 +118,8 @@ class PostController extends AbstractController
     }
 
     /**
-     * @Security("user             == post.getUser()")
-     * @Route("/post/{id}/delete", name="post_delete")
+     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("user             == post.getUser()")
+     * @Symfony\Component\Routing\Annotation\Route("/post/{id}/delete", name="post_delete")
      * @param                      Post $post
      * @param                      EntityManagerInterface $entityManager
      * @return                     \Symfony\Component\HttpFoundation\RedirectResponse
@@ -138,8 +133,8 @@ class PostController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_USER")
-     * @Route("/post/{id}/like", name="post_like", methods={"POST"})
+     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted("ROLE_USER")
+     * @Symfony\Component\Routing\Annotation\Route("/post/{id}/like", name="post_like", methods={"POST"})
      * @param                    Post $post
      * @param                    EntityManagerInterface $entityManager
      * @param                    LikeDislikeRepository $likeDislikeRepository
@@ -175,8 +170,8 @@ class PostController extends AbstractController
     }
 
     /**
-     * @IsGranted("ROLE_USER")
-     * @Route("/post/{id}/dislike", name="post_dislike", methods={"POST"})
+     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted("ROLE_USER")
+     * @Symfony\Component\Routing\Annotation\Route("/post/{id}/dislike", name="post_dislike", methods={"POST"})
      * @param                       Post $post
      * @param                       EntityManagerInterface $entityManager
      * @param                       LikeDislikeRepository $likeDislikeRepository
@@ -195,7 +190,7 @@ class PostController extends AbstractController
         );
 
         if (!$like || $like->getType() == 1) {
-            $like = new PostLike();
+            $like = new LikeDislike();
             $like->setUser($this->getUser());
             $like->setType(2);
             $post->addLike($like);

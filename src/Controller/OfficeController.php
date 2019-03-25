@@ -2,23 +2,20 @@
 
 namespace App\Controller;
 
-use App\Entity\Office;
 use App\Form\OfficeFormType;
 use App\Repository\OfficeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 class OfficeController extends AbstractController
 {
     /**
-     * @Route("/office", name="office_index")
+     * @Symfony\Component\Routing\Annotation\Route("/office", name="office_index")
      * @param            Request $request
      * @param            EntityManagerInterface $entityManager
      * @param            OfficeRepository $officeRepository
-     * @return           Response
+     * @return           \Symfony\Component\HttpFoundation\Response
      */
     public function index(Request $request, EntityManagerInterface $entityManager, OfficeRepository $officeRepository)
     {
@@ -31,15 +28,13 @@ class OfficeController extends AbstractController
         if (($this->isGranted('ROLE_ADMIN')
                 || $this->isGranted('ROLE_BOSS'))
             && ($form->isSubmitted() && $form->isValid())) {
-            /**
-             * @var Office $office
-             */
             $office = $form->getData();
             $entityManager->persist($office);
             $entityManager->flush();
             $this->addFlash('success', 'New office created!');
             return $this->redirectToRoute('office_index');
         }
+
         $offices = $officeRepository->findAll();
 
         return $this->render(

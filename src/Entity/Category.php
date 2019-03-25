@@ -4,27 +4,26 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\CategoryRepository")
  */
 class Category
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Service", mappedBy="category")
+     * @Doctrine\ORM\Mapping\ManyToMany(targetEntity="App\Entity\Service", mappedBy="category")
      */
     private $services;
 
@@ -58,7 +57,7 @@ class Category
         return $this->services;
     }
 
-    public function addService(Service $service): self
+    public function addService(\App\Entity\Service $service): self
     {
         if (!$this->services->contains($service)) {
             $this->services[] = $service;
@@ -68,7 +67,7 @@ class Category
         return $this;
     }
 
-    public function removeService(Service $service): self
+    public function removeService(\App\Entity\Service $service): self
     {
         if ($this->services->contains($service)) {
             $this->services->removeElement($service);

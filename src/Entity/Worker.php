@@ -4,63 +4,62 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\WorkerRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\WorkerRepository")
  */
 class Worker
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     * @Doctrine\ORM\Mapping\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
      * @var                                          User
      */
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="worker")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Receipt", mappedBy="worker")
      */
     private $receipts;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Office", inversedBy="worker")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Office", inversedBy="worker")
      */
     private $office;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Service", mappedBy="boss")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Service", mappedBy="boss")
      */
     private $services;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @Doctrine\ORM\Mapping\Column(type="integer", nullable=true)
      */
     private $workTime;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @Doctrine\ORM\Mapping\Column(type="integer", nullable=true)
      */
     private $workDays;
 
     /**
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $startTime;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
      */
     private $firmName;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Office", mappedBy="owner")
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Office", mappedBy="owner")
      */
     private $officesCreated;
 
@@ -89,7 +88,7 @@ class Worker
         return $this->receipts;
     }
 
-    public function addReceipt(Receipt $receipt): self
+    public function addReceipt(\App\Entity\Receipt $receipt): self
     {
         if (!$this->receipts->contains($receipt)) {
             $this->receipts[] = $receipt;
@@ -99,7 +98,7 @@ class Worker
         return $this;
     }
 
-    public function removeReceipt(Receipt $receipt): self
+    public function removeReceipt(\App\Entity\Receipt $receipt): self
     {
         if ($this->receipts->contains($receipt)) {
             $this->receipts->removeElement($receipt);
@@ -112,24 +111,24 @@ class Worker
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): \App\Entity\User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(\App\Entity\User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getOffice(): ?Office
+    public function getOffice(): \App\Entity\Office
     {
         return $this->office;
     }
 
-    public function setOffice(?Office $office): self
+    public function setOffice(\App\Entity\Office $office): self
     {
         $this->office = $office;
 
@@ -144,7 +143,7 @@ class Worker
         return $this->services;
     }
 
-    public function addService(Service $service): self
+    public function addService(\App\Entity\Service $service): self
     {
         if (!$this->services->contains($service)) {
             $this->services[] = $service;
@@ -154,7 +153,7 @@ class Worker
         return $this;
     }
 
-    public function removeService(Service $service): self
+    public function removeService(\App\Entity\Service $service): self
     {
         if ($this->services->contains($service)) {
             $this->services->removeElement($service);
@@ -223,7 +222,7 @@ class Worker
         return $this->officesCreated;
     }
 
-    public function addOfficesCreated(Office $officesCreated): self
+    public function addOfficesCreated(\App\Entity\Office $officesCreated): self
     {
         if (!$this->officesCreated->contains($officesCreated)) {
             $this->officesCreated[] = $officesCreated;
@@ -233,7 +232,7 @@ class Worker
         return $this;
     }
 
-    public function removeOfficesCreated(Office $officesCreated): self
+    public function removeOfficesCreated(\App\Entity\Office $officesCreated): self
     {
         if ($this->officesCreated->contains($officesCreated)) {
             $this->officesCreated->removeElement($officesCreated);

@@ -2,33 +2,31 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ReportRepository")
+ * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\ReportRepository")
  */
 class Report
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @Doctrine\ORM\Mapping\Id()
+     * @Doctrine\ORM\Mapping\GeneratedValue()
+     * @Doctrine\ORM\Mapping\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reports")
-     * @ORM\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\User", inversedBy="reports")
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
      */
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reports")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reports")
      */
     private $comment;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="reports")
+     * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\Post", inversedBy="reports")
      */
     private $post;
 
@@ -37,36 +35,36 @@ class Report
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): \App\Entity\User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(\App\Entity\User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getComment(): ?Comment
+    public function getComment(): \App\Entity\Comment
     {
         return $this->comment;
     }
 
-    public function setComment(?Comment $comment): self
+    public function setComment(\App\Entity\Comment $comment): self
     {
         $this->comment = $comment;
 
         return $this;
     }
 
-    public function getPost(): ?Post
+    public function getPost(): \App\Entity\Post
     {
         return $this->post;
     }
 
-    public function setPost(?Post $post): self
+    public function setPost(\App\Entity\Post $post): self
     {
         $this->post = $post;
 
