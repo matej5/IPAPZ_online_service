@@ -18,4 +18,51 @@ class ReceiptRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Receipt::class);
     }
+
+    public function all($user)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->andWhere('s.buyer = :id')
+            ->setParameter('id', $user)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function jobs($worker)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->andWhere('s.worker = :id')
+            ->setParameter('id', $worker)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function firmJobs($firm)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->innerJoin('s.worker', 'w')
+            ->andWhere('w.firmName = :firmname')
+            ->setParameter('firmname', $firm)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function allJobs()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
 }

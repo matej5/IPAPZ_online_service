@@ -98,7 +98,7 @@ class ServiceController extends AbstractController
             [
                 'form' => $form->createView(),
                 'categories' => $categories,
-                'services' => $service,
+                'services' =>$service,
                 'title' => $category
             ]
         );
