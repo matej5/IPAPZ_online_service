@@ -46,10 +46,17 @@
             {% endif %}
             {% if is_granted('ROLE_WORKER') or is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_view') }}">Jobs</a>
+                    <a class="nav-link" href="{{ path('receipt_view') }}">Job history</a>
                 </li>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('receipt_incoming') }}">Incoming
+                    {% if app.user.receipts is not empty %}
+                        <i class="fas fa-exclamation"></i>
+                    {% endif %}
+                    </a>
+                </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ path('receipt_index') }}">Shop history</a>
                 </li>

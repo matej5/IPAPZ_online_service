@@ -36,6 +36,7 @@ class ReceiptRepository extends ServiceEntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('s')
             ->from($this->_entityName, 's')
+            ->where('s.startOfService < CURRENT_TIMESTAMP()')
             ->andWhere('s.worker = :id')
             ->setParameter('id', $worker)
             ->orderBy('s.startOfService', 'DESC');
@@ -49,6 +50,7 @@ class ReceiptRepository extends ServiceEntityRepository
         $qb->select('s')
             ->from($this->_entityName, 's')
             ->innerJoin('s.worker', 'w')
+            ->where('s.startOfService < CURRENT_TIMESTAMP()')
             ->andWhere('w.firmName = :firmname')
             ->setParameter('firmname', $firm)
             ->orderBy('s.startOfService', 'DESC');
@@ -61,6 +63,45 @@ class ReceiptRepository extends ServiceEntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('s')
             ->from($this->_entityName, 's')
+            ->where('s.startOfService < CURRENT_TIMESTAMP()')
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function incomingJobs($worker)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->where('s.startOfService > CURRENT_TIMESTAMP()')
+            ->andWhere('s.worker = :id')
+            ->setParameter('id', $worker)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function firmIncomingJobs($firm)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->innerJoin('s.worker', 'w')
+            ->where('s.startOfService > CURRENT_TIMESTAMP()')
+            ->andWhere('w.firmName = :firmname')
+            ->setParameter('firmname', $firm)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function allIncomingJobs()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->where('s.startOfService > CURRENT_TIMESTAMP()')
             ->orderBy('s.startOfService', 'DESC');
 
         return $qb->getQuery()->getResult();

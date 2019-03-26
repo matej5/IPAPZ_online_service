@@ -36,7 +36,7 @@ class PostFormType extends AbstractType
                 'image',
                 FileType::class,
                 [
-                    'label' => 'What\'s on your mind?'
+                    'label' => 'Upload Image'
                 ]
             );
     }

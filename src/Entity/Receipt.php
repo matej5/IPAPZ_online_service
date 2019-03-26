@@ -44,6 +44,11 @@ class Receipt
      */
     private $service;
 
+    /**
+     * @Doctrine\ORM\Mapping\Column(type="string", length=255)
+     */
+    private $method;
+
     public function __construct()
     {
         $this->service = new ArrayCollection();
@@ -110,6 +115,18 @@ class Receipt
     public function setService(\App\Entity\Service $service): self
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    public function getMethod(): ?string
+    {
+        return $this->method;
+    }
+
+    public function setMethod(string $method): self
+    {
+        $this->method = $method;
 
         return $this;
     }
