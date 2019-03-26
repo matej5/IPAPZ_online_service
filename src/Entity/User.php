@@ -496,19 +496,24 @@ class User implements UserInterface
         $startY = 35;
         for ($i = 0; $i < 5; $i++) {
             for ($j = 0; $j < 3; $j++) {
-                if (pow(2, $i * 3 + $i) & $total) {
+                if (pow(2, $i * 3 + $j) & $total) {
                     ImageFilledRectangle($im, $startX, $startY, $startX + 70, $startY + 70, $color);
-                    ImageFilledRectangle($im, 385 - $startX * $i, $startY, 315 - $startX * $i, $startY + 70, $color);
+                    if ($j != 2) {
+                        ImageFilledRectangle($im, 315 - 70 * $j, $startY, 385 - 70 * $j, $startY + 70, $color);
+                    }
                 }
+
+                $startX += 70;
             }
 
+            $startX = 35;
             $startY += 70;
         }
 
         return $im;
     }
 
-    public function getWorker(): \App\Entity\Worker
+    public function getWorker(): ?\App\Entity\Worker
     {
         return $this->worker;
     }

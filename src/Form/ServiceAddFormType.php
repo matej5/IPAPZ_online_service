@@ -32,7 +32,7 @@ class ServiceAddFormType extends AbstractType
                 'cost',
                 NumberType::class,
                 [
-                    'label' => 'Cost'
+                    'label' => 'Cost (€)'
                 ]
             )
             ->add(

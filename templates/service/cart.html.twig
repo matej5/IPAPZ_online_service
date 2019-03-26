@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 {% block body %}
+    <div class="js-user-rating" data-is-authenticated="{{ app.user ? 'true' : 'false' }}">
+    </div>
     {{ form_start(form) }}
         {{ form_row(form) }}
     <button type="submit" id="button" class="btn btn-primary" formnovalidate>Select</button>
@@ -30,10 +32,14 @@
     <script>
         $("#receipt_form_worker").on('change',function() {
             var id = $(this).val();
-
             renderCal(id);
-
         });
+
+        var isAuthenticated = false;
+
+        var userRating = document.querySelector('.js-user-rating');
+        isAuthenticated = userRating.dataset.isAuthenticated;
+
         function renderCal(id){
             var calendarEl = document.getElementById('calendar');
             calendarEl.innerHTML = '';
@@ -90,20 +96,32 @@
                                 }
                             });
                             if(r.Radi && r.Dostupnost) {
-                                $("#dialog-confirm").dialog("option", "buttons", {
-                                    "PAYPAL": function () {
-                                        $(this).dialog("close");
-                                    },
-                                    "Pouzeče": function () {
-                                        $.ajax({
-                                           type: 'POST',
-                                           url: '{{ path('pouzece') }}'  + '/' + id + '/' + value + '/' + 5 + '/' + info.dateStr
-                                        });
-                                    },
-                                    Cancel: function() {
-                                        $( this ).dialog( "close" );
-                                    }
-                                });
+                                if (isAuthenticated == 'true')
+                                {
+                                    $("#dialog-confirm").dialog("option", "buttons", {
+                                        "PAYPAL": function () {
+                                            $(this).dialog("close");
+                                            window.location.href = '{{ path('paypal-pay') }}' + '/' + id + '/' + value + '/' + info.dateStr
+                                        },
+                                        "Pouzeče": function () {
+                                            $(this).dialog("close");
+                                            window.location.href = '{{ path('pouzece') }}' + '/' + id + '/' + value + '/' + info.dateStr
+                                        },
+                                        Cancel: function () {
+                                            $(this).dialog("close");
+                                        }
+                                    });
+                                } else {
+                                    $("#dialog-confirm").dialog("option", "buttons", {
+                                        "PAYPAL": function () {
+                                            $(this).dialog("close");
+                                            window.location.href = '{{ path('paypal-pay') }}' + '/' + id + '/' + value + '/' + info.dateStr
+                                        },
+                                        Cancel: function () {
+                                            $(this).dialog("close");
+                                        }
+                                    });
+                                }
                             }
                         }
                     })

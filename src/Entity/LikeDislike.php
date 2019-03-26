@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-
 /**
  * @Doctrine\ORM\Mapping\Entity(repositoryClass="App\Repository\LikeDislikeRepository")
  */

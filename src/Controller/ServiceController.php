@@ -51,16 +51,19 @@ class ServiceController extends AbstractController
             $data = $form->getData();
 
             $service = new Service();
+            if (!empty($form->get('image')->getData())) {
+                $file = $form->get('image')->getData();
 
-            $file = $form->get('image')->getData();
+                $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
 
-            $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
-
-            // moves the file to the directory where brochures are stored
-            $file->move(
-                $this->getParameter('service_directory'),
-                $fileName
-            );
+                // moves the file to the directory where brochures are stored
+                $file->move(
+                    $this->getParameter('service_directory'),
+                    $fileName
+                );
+            } else {
+                $fileName = null;
+            }
 
             $service->setName($data['name']);
             $service->setCost($data['cost']);

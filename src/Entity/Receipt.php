@@ -24,7 +24,7 @@ class Receipt
 
     /**
      * @Doctrine\ORM\Mapping\ManyToOne(targetEntity="App\Entity\User", inversedBy="receipts")
-     * @Doctrine\ORM\Mapping\JoinColumn(nullable=false)
+     * @Doctrine\ORM\Mapping\JoinColumn(nullable=true)
      */
     private $buyer;
 
@@ -54,7 +54,7 @@ class Receipt
         return $this->id;
     }
 
-    public function getOffice(): \App\Entity\Office
+    public function getOffice(): ?\App\Entity\Office
     {
         return $this->office;
     }
@@ -66,7 +66,7 @@ class Receipt
         return $this;
     }
 
-    public function getBuyer(): \App\Entity\User
+    public function getBuyer(): ?\App\Entity\User
     {
         return $this->buyer;
     }
@@ -78,7 +78,7 @@ class Receipt
         return $this;
     }
 
-    public function getWorker(): \App\Entity\Worker
+    public function getWorker(): ?\App\Entity\Worker
     {
         return $this->worker;
     }
@@ -88,16 +88,6 @@ class Receipt
         $this->worker = $worker;
 
         return $this;
-    }
-
-    public function getTotal()
-    {
-        $i = 0;
-        foreach ($this->service as $r) {
-            $i += $r->getCost();
-        }
-
-        return $i;
     }
 
     public function getStartOfService(): ?\DateTimeInterface

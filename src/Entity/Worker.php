@@ -111,7 +111,7 @@ class Worker
         return $this;
     }
 
-    public function getUser(): \App\Entity\User
+    public function getUser(): ?\App\Entity\User
     {
         return $this->user;
     }
@@ -123,7 +123,7 @@ class Worker
         return $this;
     }
 
-    public function getOffice(): \App\Entity\Office
+    public function getOffice(): ?\App\Entity\Office
     {
         return $this->office;
     }

@@ -53,7 +53,7 @@
                     {% else %}
                         {{ service.name }}
                     {% endif %}
-                        <span class="badge">{{ service.cost }} kn</span>
+                        <span class="badge">{{ service.cost }} €</span>
                         {% if service.status == 'allowed' %}
                             <a href="{{ path('service_buy', {'id': service.id}) }}" class="card-link">Buy</a>
                             <a href="{{ path('service_add', {'id': service.id}) }}" class="card-link">Add to wishlist</a>

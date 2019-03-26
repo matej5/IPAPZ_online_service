@@ -100,8 +100,9 @@ class WorkerController extends AbstractController
              */
             $worker = $form->getData();
             $a = ['ROLE_BOSS'];
-            $worker->setStartTime(0);
             $worker->getUser()->setRoles($a);
+            $worker->getUser()->setWorker($worker);
+            $worker->setStartTime(0);
             $entityManager->persist($worker);
             $entityManager->flush();
             $this->addFlash('success', 'New boss created!');
@@ -232,6 +233,8 @@ class WorkerController extends AbstractController
         }
 
         $receipts = $receiptRepository->findAll(['worker' => $worker]);
+
+        $avaliable = true;
 
         foreach ($receipts as $receipt) {
             //svaka narudzba (pocetak i kraj) u sekundama

@@ -29,6 +29,7 @@ class OfficeController extends AbstractController
                 || $this->isGranted('ROLE_BOSS'))
             && ($form->isSubmitted() && $form->isValid())) {
             $office = $form->getData();
+            $office->setOwner($this->getUser()->getWorker());
             $entityManager->persist($office);
             $entityManager->flush();
             $this->addFlash('success', 'New office created!');
