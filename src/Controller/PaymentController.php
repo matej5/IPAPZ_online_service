@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Receipt;
+use App\Form\PaymentFormType;
+use App\Repository\PaymentRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,11 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 class PaymentController extends AbstractController
 {
     /**
-     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Route("/pouzece/{worker}/{service}/{date}",
+     * @Symfony\Component\Routing\Annotation\Route("/pouzece/{worker}/{service}/{date}",
      *     name="pouzece")
      * @param                        EntityManagerInterface $entityManager
      * @param                        WorkerRepository $workerRepository
      * @param                        ServiceRepository $serviceRepository
+     * @param PaymentRepository $paymentRepository
      * @param                        null $worker
      * @param                        null $service
      * @param                        null $date
@@ -26,53 +29,58 @@ class PaymentController extends AbstractController
         EntityManagerInterface $entityManager,
         WorkerRepository $workerRepository,
         ServiceRepository $serviceRepository,
+        PaymentRepository $paymentRepository,
         $worker = null,
         $service = null,
         $date = null
     ) {
-        if ($worker != null and
-            $service != null and
-            $this->getUser() != null and
-            $date != null and
-            $this->getUser() != null
-        ) {
-            $worker = $workerRepository->findOneBy(['id' => $worker]);
-            $service = $serviceRepository->findOneBy(['id' => $service]);
-            $date = strtotime($date);
+        if (!$paymentRepository->findOneBy(['id' => 1])->getPouzece()) {
+            $this->addFlash('alert', 'Something went wrong!');
 
-            $date = date_create_from_format('Y-m-d H:i:s', date('Y-m-d H:i:s', $date));
-            $receipt = new Receipt();
-            $receipt->setWorker($worker);
-            $receipt->setService($service);
-            $receipt->setStartOfService($date);
-            $receipt->setBuyer($this->getUser());
-            $receipt->setOffice($worker->getOffice());
-            $receipt->setMethod('Pouzeće');
+            return $this->redirectToRoute('post_index');
+        } elseif ($worker != null and
+                $service != null and
+                $this->getUser() != null and
+                $date != null
+            ) {
+                $worker = $workerRepository->findOneBy(['id' => $worker]);
+                $service = $serviceRepository->findOneBy(['id' => $service]);
+                $date = strtotime($date);
 
-            $entityManager->persist($receipt);
-            $entityManager->flush();
+                $date = date_create_from_format('Y-m-d H:i:s', date('Y-m-d H:i:s', $date));
+                $receipt = new Receipt();
+                $receipt->setWorker($worker);
+                $receipt->setService($service);
+                $receipt->setStartOfService($date);
+                $receipt->setBuyer($this->getUser());
+                $receipt->setOffice($worker->getOffice());
+                $receipt->setMethod('Pouzeće');
 
-            $this->addFlash(
-                'success',
-                'You ordered service: ' .
-                $service->getName() .
-                ' at ' .
-                $date->format('Y-m-d H:i:s') .
-                '!'
-            );
+                $entityManager->persist($receipt);
+                $entityManager->flush();
 
-            return $this->redirectToRoute('office_index');
+                $this->addFlash(
+                    'success',
+                    'You ordered service: ' .
+                    $service->getName() .
+                    ' at ' .
+                    $date->format('Y-m-d H:i:s') .
+                    '!'
+                );
+
+                return $this->redirectToRoute('post_index');
         }
 
-        $this->addFlash('alert', 'Something went wrong!');
+            $this->addFlash('alert', 'Something went wrong!');
 
-        return $this->redirectToRoute('post_index');
+            return $this->redirectToRoute('post_index');
     }
 
     /**
-     * @Symfony\Component\Routing\Annotation\Route("/paypal/{worker}/{service}/{date}", name="paypal-pay")
+     * @Symfony\Component\Routing\Annotation\Route("/payment/{worker}/{service}/{date}", name="payment-pay")
      * @param WorkerRepository $workerRepository
      * @param ServiceRepository $serviceRepository
+     * @param PaymentRepository $paymentRepository
      * @param null $worker
      * @param null $service
      * @param null $date
@@ -81,33 +89,41 @@ class PaymentController extends AbstractController
     public function payPalShow(
         WorkerRepository $workerRepository,
         ServiceRepository $serviceRepository,
+        PaymentRepository $paymentRepository,
         $worker = null,
         $service = null,
         $date = null
     ) {
-        $gateway = self::gateway();
-        $worker = $workerRepository->findOneBy(['id' => $worker]);
-        $service = $serviceRepository->findOneBy(['id' => $service]);
 
-        return $this->render(
-            'paypal/paypal.html.twig',
-            [
-                'gateway' => $gateway,
-                'service' => $service,
-                'worker' => $worker,
-                'date' => $date
-            ]
-        );
+        if (!$paymentRepository->findOneBy(['id' => 1])->getPouzece()) {
+            $this->addFlash('alert', 'Something went wrong!');
+
+            return $this->redirectToRoute('post_index');
+        } else {
+            $gateway = self::gateway();
+            $worker = $workerRepository->findOneBy(['id' => $worker]);
+            $service = $serviceRepository->findOneBy(['id' => $service]);
+
+            return $this->render(
+                'payment/paypal.html.twig',
+                [
+                    'gateway' => $gateway,
+                    'service' => $service,
+                    'worker' => $worker,
+                    'date' => $date
+                ]
+            );
+        }
     }
 
     /**
-     * @Symfony\Component\Routing\Annotation\Route("/transaction/paypal-payment/{worker}/{service}/{date}", name="paypal-payment")
+     * @Symfony\Component\Routing\Annotation\Route("/transaction/payment-payment/{worker}/{service}/{date}", name="payment-payment")
      * @param EntityManagerInterface $entityManager
      * @param WorkerRepository $workerRepository
      * @param ServiceRepository $serviceRepository
      * @param Request $request
      * @param null $worker
-     * @param Service $service
+     * @param null $service
      * @param null $date
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -170,5 +186,40 @@ class PaymentController extends AbstractController
             ]
         );
         return $gateway;
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/method", name="method_index")
+     * @param EntityManagerInterface $entityManager
+     * @param PaymentRepository $paymentRepository
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function paymentMethod(
+        EntityManagerInterface $entityManager,
+        PaymentRepository $paymentRepository,
+        Request $request
+    ) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('post_index');
+        }
+
+        $payment = $paymentRepository->findOneBy(['id' => 1]);
+
+
+        $form = $this->createForm(PaymentFormType::class, $payment);
+        $form->handleRequest($request);
+
+        if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($payment);
+            $entityManager->flush();
+        }
+
+        return $this->render(
+            'payment/method.html.twig',
+            [
+                'form' => $form->createView()
+            ]
+        );
     }
 }
