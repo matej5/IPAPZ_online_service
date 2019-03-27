@@ -24,8 +24,39 @@ class ReceiptRepository extends ServiceEntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('s')
             ->from($this->_entityName, 's')
+            ->where('s.startOfService < CURRENT_TIMESTAMP()')
             ->andWhere('s.buyer = :id')
             ->setParameter('id', $user)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function allByOffice($user, $value)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->innerJoin('s.worker', 'w')
+            ->where('s.startOfService < CURRENT_TIMESTAMP()')
+            ->andWhere('w.firmName like :query')
+            ->setParameter('query', "%" . $value . "%")
+            ->andWhere('s.buyer = :id')
+            ->setParameter('id', $user)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findInTwoWeeks($worker, $twoWeeks)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->where('s.startOfService BETWEEN CURRENT_DATE() and :date')
+            ->andWhere('s.worker = :id')
+            ->setParameter('id', $worker)
+            ->setParameter('date', $twoWeeks)
             ->orderBy('s.startOfService', 'DESC');
 
         return $qb->getQuery()->getResult();

@@ -11,6 +11,7 @@ use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,10 +23,15 @@ class WorkerController extends AbstractController
      * @param            Request $request
      * @param            EntityManagerInterface $entityManager
      * @param            WorkerRepository $workerRepository
+     * @param            PaginatorInterface $paginator
      * @return           \Symfony\Component\HttpFoundation\Response
      */
-    public function index(Request $request, EntityManagerInterface $entityManager, WorkerRepository $workerRepository)
-    {
+    public function index(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        WorkerRepository $workerRepository,
+        PaginatorInterface $paginator
+    ) {
         if (!($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS'))) {
             return $this->redirectToRoute('post_index');
         }
@@ -65,11 +71,17 @@ class WorkerController extends AbstractController
             );
         }
 
+        $pagination = $paginator->paginate(
+            $workers,
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render(
             'worker/index.html.twig',
             [
                 'form' => $form->createView(),
-                'workers' => $workers
+                'workers' => $pagination
             ]
         );
     }
@@ -94,6 +106,7 @@ class WorkerController extends AbstractController
 
         $form = $this->createForm(BossFormType::class);
         $form->handleRequest($request);
+
         if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
             /**
              * @var Worker $worker
@@ -163,29 +176,6 @@ class WorkerController extends AbstractController
     }
 
     /**
-     * @Symfony\Component\Routing\Annotation\Route("/avaliable/{id}", name="worker_avaliable")
-     * @param                 WorkerRepository $workerRepository
-     * @param                 null $id
-     * @return                \Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function avaliable(
-        WorkerRepository $workerRepository,
-        $id = null
-    ) {
-        $data = [];
-        $worker = $workerRepository->findOneBy(['id' => $id]);
-        $start = $worker->getStartTime();
-        $end = $start + $worker->getWorkTime();
-        $days = $worker->getWorkDays();
-        $data[] = [
-
-        ];
-        $response = new JsonResponse($data);
-        return $response;
-    }
-
-    /**
      * @Symfony\Component\Routing\Annotation\Route("/check/{worker}/{service}/{date}", name="check_for_reservation")
      * @param                 ReceiptRepository $receiptRepository
      * @param                 WorkerRepository $workerRepository
@@ -207,58 +197,63 @@ class WorkerController extends AbstractController
             $worker = $workerRepository->findOneBy(['id' => $worker]);
         }
 
-        $day = pow(2, date('N', strtotime($date)) - 1);
-
         //vrijeme u sekundama od odabranog vremena
         $chosenTime = strtotime($date);
 
-        $time = date('H:i', $chosenTime);
-        list($hours, $minutes) = explode(':', $time, 2);
-        $sec = $hours * 3600 + $minutes * 60;
+        $avaliable = false;
+        $radniDan = false;
+        $correctTime = false;
 
-        if ($service != null) {
-            $service = $serviceRepository->findOneBy(['id' => $service]);
-        }
+        if ($chosenTime > strtotime("now") && $chosenTime < strtotime("now") + 14*24*3600) {
+            $correctTime = true;
+            $day = pow(2, date('N', strtotime($date)) - 1);
 
-        //duzina trajanja servisa u sekundama
-        $chosenServDur = $service->getDuration()*60;
+            $time = date('H:i', $chosenTime);
+            list($hours, $minutes) = explode(':', $time, 2);
+            $sec = $hours * 3600 + $minutes * 60;
 
-        if ($worker->getWorkDays() & $day &&
-            $worker->getStartTime()*3600 <= $sec &&
-            ($worker->getStartTime() + $worker->getWorkTime())*3600 >=
-                    $sec + $chosenServDur) {
-            $radniDan = true;
-        } else {
-            $radniDan = false;
-        }
+            if ($service != null) {
+                $service = $serviceRepository->findOneBy(['id' => $service]);
+            }
 
-        $receipts = $receiptRepository->findAll(['worker' => $worker]);
+            //duzina trajanja servisa u sekundama
+            $chosenServDur = $service->getDuration() * 60;
 
-        $avaliable = true;
-
-        foreach ($receipts as $receipt) {
-            //svaka narudzba (pocetak i kraj) u sekundama
-            $startOfServ = date_timestamp_get($receipt->getStartOfService());
-            $servDur = $receipt->getService()->getDuration()*60;
-
-            if ($startOfServ > $chosenTime &&
-                $startOfServ < $chosenTime + $chosenServDur) {
-                $avaliable = false;
-                break;
-            } elseif ($startOfServ + $servDur > $chosenTime &&
-                $startOfServ + $servDur < $chosenTime + $chosenServDur) {
-                $avaliable = false;
-                break;
-            } elseif ($startOfServ < $chosenTime &&
-                $startOfServ + $servDur > $chosenTime + $chosenServDur) {
-                $avaliable = false;
-                break;
+            if ($worker->getWorkDays() & $day &&
+                $worker->getStartTime() * 3600 <= $sec &&
+                ($worker->getStartTime() + $worker->getWorkTime()) * 3600 >=
+                $sec + $chosenServDur) {
+                $radniDan = true;
             } else {
-                $avaliable = true;
+                $radniDan = false;
+            }
+
+            $receipts = $receiptRepository->findAll(['worker' => $worker]);
+
+            foreach ($receipts as $receipt) {
+                //svaka narudzba (pocetak i kraj) u sekundama
+                $startOfServ = date_timestamp_get($receipt->getStartOfService());
+                $servDur = $receipt->getService()->getDuration() * 60;
+
+                if ($startOfServ > $chosenTime &&
+                    $startOfServ < $chosenTime + $chosenServDur) {
+                    $avaliable = false;
+                    break;
+                } elseif ($startOfServ + $servDur > $chosenTime &&
+                    $startOfServ + $servDur < $chosenTime + $chosenServDur) {
+                    $avaliable = false;
+                    break;
+                } elseif ($startOfServ < $chosenTime &&
+                    $startOfServ + $servDur > $chosenTime + $chosenServDur) {
+                    $avaliable = false;
+                    break;
+                } else {
+                    $avaliable = true;
+                }
             }
         }
 
-        $data = ['Radi' => $radniDan, 'Dostupnost' => $avaliable];
+        $data = ['works' => $radniDan, 'avaliable' => $avaliable, 'correctTime' => $correctTime];
         $response = new JsonResponse($data);
         return $response;
     }

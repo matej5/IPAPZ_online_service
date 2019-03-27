@@ -61,9 +61,9 @@ class ReceiptController extends AbstractController
 
         if ($this->isGranted('ROLE_ADMIN')) {
             $receipts = $receiptRepository->allJobs();
-        } else if ($this->isGranted('ROLE_BOSS')) {
+        } elseif ($this->isGranted('ROLE_BOSS')) {
             $receipts = $receiptRepository->firmJobs($this->getUser()->getWorker()->getFirmName());
-        } else if ($this->isGranted('ROLE_WORKER')) {
+        } elseif ($this->isGranted('ROLE_WORKER')) {
             $receipts = $receiptRepository->jobs($this->getUser()->getWorker());
         }
 
@@ -74,7 +74,7 @@ class ReceiptController extends AbstractController
         );
 
         return $this->render(
-            'receipt/jobs.html.twig',
+            'receipt/index.html.twig',
             [
                 'form' => $form->createView(),
                 'pagination' => $pagination
@@ -101,9 +101,9 @@ class ReceiptController extends AbstractController
 
         if ($this->isGranted('ROLE_ADMIN')) {
             $receipts = $receiptRepository->allIncomingJobs();
-        } else if ($this->isGranted('ROLE_BOSS')) {
+        } elseif ($this->isGranted('ROLE_BOSS')) {
             $receipts = $receiptRepository->firmIncomingJobs($this->getUser()->getWorker()->getFirmName());
-        } else if ($this->isGranted('ROLE_WORKER')) {
+        } elseif ($this->isGranted('ROLE_WORKER')) {
             $receipts = $receiptRepository->incomingJobs($this->getUser()->getWorker());
         }
 
@@ -114,7 +114,7 @@ class ReceiptController extends AbstractController
         );
 
         return $this->render(
-            'receipt/incoming.html.twig',
+            'receipt/index.html.twig',
             [
                 'form' => $form->createView(),
                 'pagination' => $pagination

@@ -49,6 +49,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 selectable: true,
+                firstDay: 1,
                 header: {
                     left: 'prev,next today',
                     center: 'title',
@@ -73,15 +74,15 @@
                             console.log(JSON.parse(result));
                             var r  = JSON.parse(result);
                             var text_value = '';
-                            if (!r.Radi){
-                                text_value = "Radnik nije dostupan u ovo vrijeme";
-                            } else if (!r.Dostupnost){
-                                    text_value = "Određeni servis smeta";
+                            if (!r.correctTime) {
+                                text_value = "Narudžbe moguće samo od trenutnog vremena pa do naredna 2 tjedna!";
+                            } else if(!r.works) {
+                                text_value = "Radnik nije dostupan u ovo vrijeme!";
+                            } else if (!r.avaliable) {
+                                    text_value = "Određeni servis smeta!";
                             } else {
-                                //TODO: popraviti format datuma
                                 text_value = "Odabrali ste servis za " + info.dateStr;
                             }
-
                             $("#text").text(text_value);
                             $( "#dialog-confirm" ).dialog({
                                 text: text_value,
@@ -95,13 +96,13 @@
                                     }
                                 }
                             });
-                            if(r.Radi && r.Dostupnost) {
+                            if(r.works && r.avaliable && r.correctTime) {
                                 if (isAuthenticated == 'true')
                                 {
                                     $("#dialog-confirm").dialog("option", "buttons", {
                                         "PAYPAL": function () {
                                             $(this).dialog("close");
-                                            window.location.href = '{{ path('paypal-pay') }}' + '/' + id + '/' + value + '/' + info.dateStr
+                                            window.location.href = '{{ path('payment-pay') }}' + '/' + id + '/' + value + '/' + info.dateStr
                                         },
                                         "Pouzeče": function () {
                                             $(this).dialog("close");
@@ -115,7 +116,7 @@
                                     $("#dialog-confirm").dialog("option", "buttons", {
                                         "PAYPAL": function () {
                                             $(this).dialog("close");
-                                            window.location.href = '{{ path('paypal-pay') }}' + '/' + id + '/' + value + '/' + info.dateStr
+                                            window.location.href = '{{ path('payment-pay') }}' + '/' + id + '/' + value + '/' + info.dateStr
                                         },
                                         Cancel: function () {
                                             $(this).dialog("close");

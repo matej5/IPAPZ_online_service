@@ -11,7 +11,7 @@
             </header>
             <h3>Product: {{ service.name }}</h3>
             <h3>Price: {{ service.cost }}€</h3>
-            <form method="post" id="payment-form" action="{{ path('paypal-payment')}}/{{ worker.id }}/{{ service.id }}/{{ date }}">
+            <form method="post" id="payment-form" action="{{ path('payment-payment')}}/{{ worker.id }}/{{ service.id }}/{{ date }}">
                 <section>
                     <div class="bt-drop-in-wrapper">
                         <div id="bt-dropin"></div>

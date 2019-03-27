@@ -13,6 +13,7 @@ use App\Repository\WorkerRepository;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,8 +29,8 @@ class ServiceController extends AbstractController
      * @param                        WorkerRepository $workerRepository
      * @param                        EntityManagerInterface $entityManager
      * @param                        ServiceRepository $serviceRepository
-     * @param                        null $category
-     * @return                       Response
+     * @param                        PaginatorInterface $paginator
+     * @return void
      */
     public function index(
         CategoryRepository $categoryRepository,
@@ -37,6 +38,7 @@ class ServiceController extends AbstractController
         WorkerRepository $workerRepository,
         EntityManagerInterface $entityManager,
         ServiceRepository $serviceRepository,
+        PaginatorInterface $paginator,
         $category = null
     ) {
         $categories = $categoryRepository->findAllASC();
@@ -93,12 +95,18 @@ class ServiceController extends AbstractController
             $service = $serviceRepository->findByService($category, ['catalog' => 'active']);
         }
 
+        $services = $paginator->paginate(
+            $service,
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render(
             'service/service.html.twig',
             [
                 'form' => $form->createView(),
                 'categories' => $categories,
-                'services' =>$service,
+                'services' =>$services,
                 'title' => $category
             ]
         );
@@ -244,11 +252,10 @@ class ServiceController extends AbstractController
     /**
      * @Symfony\Component\Routing\Annotation\Route("/cart", name="service_view")
      * @param          Request $request
-     * @param          WorkerRepository $workerRepository
      * @param          ServiceRepository $serviceRepository
      * @return         Response
      */
-    public function view(Request $request, WorkerRepository $workerRepository, ServiceRepository $serviceRepository)
+    public function view(Request $request, ServiceRepository $serviceRepository)
     {
         $form = $this->createForm(ServiceAddFormType::class);
         $form->handleRequest($request);
@@ -305,7 +312,8 @@ class ServiceController extends AbstractController
         $id = null
     ) {
         $data = [];
-        $receipts = $receiptRepository->findBy(['worker' => $id]);
+        $date = date('Y-m-d', mktime(0, 0, 0, date('m'), date('d') + 5, date('Y')));
+        $receipts = $receiptRepository->findInTwoWeeks($id, $date);
         foreach ($receipts as $receipt) {
             $dateTime = new DateTime($receipt->getStartOfService()->format('Y-m-d H:i'));
             $minutesToAdd = $receipt->getService()->getDuration();

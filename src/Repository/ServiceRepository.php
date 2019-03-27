@@ -24,7 +24,6 @@ class ServiceRepository extends ServiceEntityRepository
      */
     public function findByService($value, array $criteria)
     {
-
         return $this->createQueryBuilder('s')
             ->innerJoin('s.category', 'c')
             ->where('s.catalog = :crit')
