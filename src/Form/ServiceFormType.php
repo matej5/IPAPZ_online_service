@@ -18,7 +18,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ServiceFormType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $choices = $options['data'];
@@ -28,7 +27,8 @@ class ServiceFormType extends AbstractType
                 'name',
                 TextType::class,
                 [
-                    'label' => 'Service'
+                    'label' => 'Service',
+                    'attr' => ['pattern' => '[a-zA-Z]*']
                 ]
             )
             ->add(
