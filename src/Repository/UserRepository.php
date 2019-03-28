@@ -29,8 +29,22 @@ class UserRepository extends ServiceEntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
             ->from($this->_entityName, 'u')
-            ->where('u.roles LIKE :roles')
+            ->where('u.roles like :roles')
             ->setParameter('roles', '%"' . $role . '"%');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array
+     */
+    public function findWithoutRole()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+            ->from($this->_entityName, 'u')
+            ->where('u.roles not like :role')
+            ->setParameter('role', '%ROLE%');
 
         return $qb->getQuery()->getResult();
     }

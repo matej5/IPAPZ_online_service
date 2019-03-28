@@ -51,17 +51,20 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ path('receipt_view') }}">Job history</a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ path('receipt_incoming_jobs') }}">Incoming Jobs</a>
+                </li>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_incoming') }}">Incoming
-                    {% if app.user.receipts is not empty %}
-                        <i class="fas fa-exclamation"></i>
-                    {% endif %}
-                    </a>
+                    <a class="nav-link" href="{{ path('receipt_index') }}">Shop history</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_index') }}">Shop history</a>
+                    <a class="nav-link" href="{{ path('receipt_incoming') }}">Incoming
+                        {% if app.user.receipts is not empty %}
+                            <i class="fas fa-exclamation"></i>
+                        {% endif %}
+                    </a>
                 </li>
             {% endif %}
         </ul>

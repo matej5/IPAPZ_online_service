@@ -137,4 +137,17 @@ class ReceiptRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function incoming($user)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')
+            ->from($this->_entityName, 's')
+            ->where('s.startOfService > CURRENT_TIMESTAMP()')
+            ->andWhere('s.buyer = :id')
+            ->setParameter('id', $user)
+            ->orderBy('s.startOfService', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
 }

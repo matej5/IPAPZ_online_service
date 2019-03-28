@@ -26,9 +26,8 @@ class BossFormType extends AbstractType
                 EntityType::class,
                 [
                     'class' => User::class,
-                    'choice_label' => function ($user) {
-                        return $user->getFirstname();
-                    }
+                    'placeholder' => 'Select boss',
+                    'choices' => $options['users']
                 ]
             )
             ->add(
@@ -44,7 +43,8 @@ class BossFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Worker::class
+                'data_class' => Worker::class,
+                'users' => ''
             ]
         );
     }

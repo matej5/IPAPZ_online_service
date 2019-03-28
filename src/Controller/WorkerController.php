@@ -23,6 +23,7 @@ class WorkerController extends AbstractController
      * @param            Request $request
      * @param            EntityManagerInterface $entityManager
      * @param            WorkerRepository $workerRepository
+     * @param UserRepository $userRepository
      * @param            PaginatorInterface $paginator
      * @return           \Symfony\Component\HttpFoundation\Response
      */
@@ -30,18 +31,20 @@ class WorkerController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         WorkerRepository $workerRepository,
+        UserRepository $userRepository,
         PaginatorInterface $paginator
     ) {
         if (!($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS'))) {
             return $this->redirectToRoute('post_index');
         }
 
-        $form = $this->createForm(WorkerFormType::class);
+        $users = $userRepository->findWithoutRole();
+
+        $form = $this->createForm(WorkerFormType::class, null, ['users' => $users]);
         $form->handleRequest($request);
 
-        if (($this->isGranted('ROLE_ADMIN')
-                || $this->isGranted('ROLE_BOSS'))
-            && ($form->isSubmitted() && $form->isValid())) {
+        if ($this->isGranted('ROLE_BOSS')
+            && $form->isSubmitted() && $form->isValid()) {
             /**
              * @var Worker $worker
              */
@@ -104,7 +107,9 @@ class WorkerController extends AbstractController
             return $this->redirectToRoute('post_index');
         }
 
-        $form = $this->createForm(BossFormType::class);
+        $users = $userRepository->findWithoutRole();
+
+        $form = $this->createForm(BossFormType::class, null, ['users' => $users]);
         $form->handleRequest($request);
 
         if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {

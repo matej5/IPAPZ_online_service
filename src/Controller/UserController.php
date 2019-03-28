@@ -27,12 +27,15 @@ class UserController extends AbstractController
 {
     /**
      * @Symfony\Component\Routing\Annotation\Route("/login", name="app_login")
-     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("not   is_granted('ROLE_USER')")
      * @param           AuthenticationUtils $authenticationUtils
      * @return          Response
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if ($this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('post_index');
+        }
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
@@ -69,6 +72,8 @@ class UserController extends AbstractController
             $user->setMoney(200);
             $user->createAvatar();
             $user->setImage('avatar.jpeg');
+            $a = ["ROLE_ADMIN"];
+            $user->setRoles($a);
 
             // encode the plain password
             $user->setPassword(

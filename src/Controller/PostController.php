@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 class PostController extends AbstractController
 {
@@ -73,6 +72,7 @@ class PostController extends AbstractController
      * @param               EntityManagerInterface $entityManager
      * @param               LikeDislikeRepository $likeDislikeRepository
      * @return                \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function show(
         Post $post,
@@ -89,7 +89,7 @@ class PostController extends AbstractController
             $comment = $form->getData();
             $comment->setUser($this->getUser());
             $post->addComment($comment);
-            $date = new DateTime();
+            $date = new \DateTime("now");
             $comment->setCreatedAt($date);
             $entityManager->flush();
             return $this->redirectToRoute(
