@@ -27,7 +27,16 @@
                             <div class="col-md-3">{{ receipt.service.cost }}€</div>
                         </div>
                         <hr>
-                        <p class="card-text">{{ receipt.office.address }}, {{ receipt.office.city }}, {{ receipt.office.getState }}</p>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <p class="card-text">{{ receipt.office.address }}, {{ receipt.office.city }}, {{ receipt.office.getState }}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <a class="btn btn-secondary" role="button" href="{{ path('print_receipt', {'id': receipt.id}) }}">
+                                    Print receipt
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

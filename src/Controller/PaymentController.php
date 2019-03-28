@@ -9,7 +9,9 @@ use App\Repository\ServiceRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class PaymentController extends AbstractController
 {
@@ -156,24 +158,43 @@ class PaymentController extends AbstractController
 
         $receipt = new Receipt();
         $receipt->setService($service);
-        if ($this->getUser()) {
-            $receipt->setBuyer($this->getUser());
-        }
-
         $receipt->setWorker($worker);
         $receipt->setOffice($worker->getOffice());
         $receipt->setMethod('Paypal');
         $receipt->setActivity(1);
+        if ($this->getUser()) {
+            $receipt->setBuyer($this->getUser());
+        }
 
         $date = strtotime($date);
-
         $date = date_create_from_format('Y-m-d H:i:s', date('Y-m-d H:i:s', $date));
         $receipt->setStartOfService($date);
 
         $entityManager->persist($receipt);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Uspiješno ste platili');
+
+        if (!$this->getUser()) {
+            $response = new Response();
+            $count = 0;
+            if (isset($_COOKIE['Buy'][0])) {
+                $count = count($_COOKIE['Buy']);
+            }
+
+            $cookie = new Cookie("Buy[$count]", $receipt->getId());
+            $response->headers->setCookie($cookie, '', 1);
+            $response->send();
+        }
+
+        $entityManager->persist($receipt);
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success', 'Početak servisa je ' .
+            $receipt->getStartOfService()->format("H:i:s d. m. Y") .
+            ' na mjestu ' . $receipt->getOffice()->getAddress() .
+            ' u ' . $receipt->getOffice()->getCity() . 'u'
+        );
         return $this->redirectToRoute('service_index');
     }
 

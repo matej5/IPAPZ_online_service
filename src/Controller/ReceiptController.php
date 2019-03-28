@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Receipt;
 use App\Form\ReceiptFormType;
 use App\Repository\ReceiptRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -228,5 +232,50 @@ class ReceiptController extends AbstractController
                 'pagination' => $pagination
             ]
         );
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/print/{id}", name="print_receipt")
+     * @param          Receipt $receipt
+     * @param          EntityManagerInterface $entityManager
+     * @return         \Symfony\Component\HttpFoundation\Response
+     */
+    public function print(
+        Receipt $receipt,
+        EntityManagerInterface $entityManager
+    ) {
+        if ($this->isGranted('ROLE_WORKER')) {
+            $receipt->setActivity(0);
+
+            $entityManager->persist($receipt);
+            $entityManager->flush();
+        }
+
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        $dompdf = new Dompdf($pdfOptions);
+
+        $view = $this->render(
+            'invoice/index.html.twig',
+            [
+                'receipt' => $receipt
+            ]
+        );
+
+        $dompdf->loadHtml($view);
+
+        $dompdf->setPaper('A4', 'portrait');
+
+        $dompdf->render();
+
+        $dompdf->stream(
+            "receipt.pdf",
+            [
+                "Attachment" => true
+            ]
+        );
+
+        return $this->redirectToRoute('post_index');
     }
 }
