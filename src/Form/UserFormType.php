@@ -28,7 +28,8 @@ class UserFormType extends AbstractType
                 'firstname',
                 TextType::class,
                 [
-                    'label' => 'Change firstname'
+                    'label' => 'Change firstname',
+                    'attr' => ['pattern' => '[a-zA-Z]*']
                 ]
             );
         $builder
@@ -36,7 +37,8 @@ class UserFormType extends AbstractType
                 'lastname',
                 TextType::class,
                 [
-                    'label' => 'Change lastname'
+                    'label' => 'Change lastname',
+                    'attr' => ['pattern' => '[a-zA-Z]*']
                 ]
             );
     }

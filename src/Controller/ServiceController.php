@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Service;
 use App\Form\ReceiptFormType;
-use App\Form\ServiceAddFormType;
 use App\Form\ServiceFormType;
 use App\Repository\CategoryRepository;
 use App\Repository\ReceiptRepository;
@@ -212,20 +211,16 @@ class ServiceController extends AbstractController
     /**
      * @Symfony\Component\Routing\Annotation\Route("/add/{id}", name="service_add")
      * @param              Service $service
-     * @param              Request $request
      * @param              EntityManagerInterface $entityManager
      * @return             Response
      */
-    public function add(Service $service, Request $request, EntityManagerInterface $entityManager)
+    public function add(Service $service, EntityManagerInterface $entityManager)
     {
-        $form = $this->createForm(ServiceAddFormType::class);
-        $form->handleRequest($request);
         if ($this->isGranted('ROLE_USER')) {
             /**
              * @var Service $service
              */
             $this->getUser()->addService($service);
-            $form->get('image')->setData('');
             $entityManager->persist($service);
             $entityManager->flush();
             $this->addFlash('success', 'New service added to cart!');
@@ -252,15 +247,11 @@ class ServiceController extends AbstractController
 
     /**
      * @Symfony\Component\Routing\Annotation\Route("/cart", name="service_view")
-     * @param          Request $request
      * @param          ServiceRepository $serviceRepository
      * @return         Response
      */
-    public function view(Request $request, ServiceRepository $serviceRepository)
+    public function view(ServiceRepository $serviceRepository)
     {
-        $form = $this->createForm(ServiceAddFormType::class);
-        $form->handleRequest($request);
-
         $service = null;
         if (!$this->isGranted('ROLE_USER') && isset($_COOKIE['services'])) {
             foreach ($_COOKIE['services'] as $s) {
@@ -273,7 +264,6 @@ class ServiceController extends AbstractController
         return $this->render(
             'service/basket.html.twig',
             [
-                'form' => $form->createView(),
                 'services' => $service
             ]
         );
@@ -288,9 +278,6 @@ class ServiceController extends AbstractController
      */
     public function bought(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
     {
-        $form = $this->createForm(ServiceAddFormType::class);
-        $form->handleRequest($request);
-
         $service = null;
         if (!$this->isGranted('ROLE_USER') && isset($_COOKIE['Buy'])) {
             foreach ($_COOKIE['Buy'] as $r) {
@@ -309,7 +296,6 @@ class ServiceController extends AbstractController
         return $this->render(
             'receipt/index.html.twig',
             [
-                'form' => $form->createView(),
                 'pagination' => $pagination
             ]
         );

@@ -28,7 +28,8 @@ class ServiceFormType extends AbstractType
                 'name',
                 TextType::class,
                 [
-                    'label' => 'Service'
+                    'label' => 'Service',
+                    'attr' => ['pattern' => '[a-zA-Z]*']
                 ]
             )
             ->add(
