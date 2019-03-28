@@ -26,57 +26,75 @@
                 <a class="nav-link" href="{{ path('post_index') }}"><i class="fa fa-home fa-2x" aria-hidden="true"></i></a>
             </li>
             {% if is_granted('ROLE_ADMIN') %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('method_index') }}">Payment method</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('category_index') }}">Category</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('boss_index') }}">Boss</a>
-                </li>
+                <div class="btn-group">
+                    <li class="nav-item active">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Administration
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{ path('method_index') }}">Payment Method</a>
+                        <a class="dropdown-item" href="{{ path('category_index') }}">Category</a>
+                        <a class="dropdown-item" href="{{ path('boss_index') }}">Add Boss</a>
+                    </div>
+                    </li>
+                </div>
             {% endif %}
             <li class="nav-item active">
-                <a class="nav-link" href="{{ path('service_index') }}">Services</a>
+                <a class="btn btn-secondary" role="button" href="{{ path('service_index') }}">Services</a>
             </li>
             {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('worker_index') }}">Workers</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('office_index') }}">Office</a>
-                </li>
+                <div class="btn-group">
+                    <li class="nav-item active">
+                        <a class="btn btn-secondary" role="button" href="{{ path('worker_index') }}">Workers</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="btn btn-secondary" role="button" href="{{ path('office_index') }}">Office</a>
+                    </li>
+                </div>
             {% endif %}
             {% if is_granted('ROLE_WORKER') or is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_view') }}">Job history</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_incoming_jobs') }}">Incoming Jobs</a>
-                </li>
+                <div class="btn-group">
+                    <li class="nav-item active">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Jobs
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('receipt_view') }}">History</a>
+                            <a class="dropdown-item" href="{{ path('receipt_missed_jobs') }}">Missed</a>
+                            <a class="dropdown-item" href="{{ path('receipt_incoming_jobs') }}">Incoming</a>
+                        </div>
+                    </li>
+                </div>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_index') }}">Shop history</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ path('receipt_incoming') }}">Incoming
-                        {% if app.user.receipts is not empty %}
-                            <i class="fas fa-exclamation"></i>
-                        {% endif %}
-                    </a>
-                </li>
+                <div class="btn-group">
+                    <li class="nav-item active">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Shop
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('receipt_index') }}">History</a>
+                            <a class="dropdown-item" href="{{ path('receipt_missed') }}">Missed</a>
+                            <a class="dropdown-item" href="{{ path('receipt_incoming') }}">Incoming
+                                {% if app.user.checkForIncomingReceipts is not empty %}
+                                    <i class="fas fa-exclamation"></i>
+                                {% endif %}</a>
+                        </div>
+                    </li>
+                </div>
             {% endif %}
         </ul>
     </div>
     <div class="navbar-collapse">
         <ul class="navbar-nav ml-auto">
             {% if app.user is null and app.request.cookies.get('services') is not null %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ path('service_view') }}">
-                    <i class="fas fa-shopping-cart fa-2x"></i>
-                </a>
-            </li>
+            <div class="btn-group">
+                <li class="nav-item">
+                    <a class="btn btn-secondary" role="button" href="{{ path('service_view') }}">
+                        <i class="fas fa-shopping-cart fa-2x"></i>
+                    </a>
+                </li>
+            </div>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
                 {% if app.user.getServices is not empty %}
@@ -86,16 +104,20 @@
                     </a>
                 </li>
                     {% endif %}
+            <div class="btn-group">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+                    <a class="btn btn-secondary" role="button" href="{{ path('app_logout') }}">Logout</a>
                 </li>
+            </div>
             {% else %}
+            <div class="btn-group">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                    <a class="btn btn-secondary" role="button" href="{{ path('app_login') }}">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_register') }}">Registration</a>
+                    <a class="btn btn-secondary" role="button" href="{{ path('app_register') }}">Registration</a>
                 </li>
+            </div>
             {% endif %}
         </ul>
     </div>

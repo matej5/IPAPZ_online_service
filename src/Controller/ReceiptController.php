@@ -155,4 +155,78 @@ class ReceiptController extends AbstractController
             ]
         );
     }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/missed", name="receipt_missed")
+     * @param          Request $request
+     * @param          ReceiptRepository $receiptRepository
+     * @param          PaginatorInterface $paginator
+     * @return         \Symfony\Component\HttpFoundation\Response
+     */
+    public function missed(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
+    {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('post_index');
+        }
+
+        $receipts = null;
+        $form = $this->createForm(ReceiptFormType::class);
+        $form->handleRequest($request);
+
+        $receipts = $receiptRepository->missed($this->getUser());
+
+        $pagination = $paginator->paginate(
+            $receipts,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        return $this->render(
+            'receipt/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'pagination' => $pagination
+            ]
+        );
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/missedJobs", name="receipt_missed_jobs")
+     * @param          Request $request
+     * @param          ReceiptRepository $receiptRepository
+     * @param          PaginatorInterface $paginator
+     * @return         \Symfony\Component\HttpFoundation\Response
+     */
+    public function missedJobs(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
+    {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('post_index');
+        }
+
+        $receipts = null;
+        $form = $this->createForm(ReceiptFormType::class);
+        $form->handleRequest($request);
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $receipts = $receiptRepository->allMissedJobs();
+        } else if ($this->isGranted('ROLE_BOSS')) {
+            $receipts = $receiptRepository->missedFirmJobs($this->getUser()->getWorker()->getFirmName());
+        } else if ($this->isGranted('ROLE_WORKER')) {
+            $receipts = $receiptRepository->missedJobs($this->getUser()->getWorker());
+        }
+
+        $pagination = $paginator->paginate(
+            $receipts,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        return $this->render(
+            'receipt/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'pagination' => $pagination
+            ]
+        );
+    }
 }

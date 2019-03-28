@@ -49,6 +49,11 @@ class Receipt
      */
     private $method;
 
+    /**
+     * @Doctrine\ORM\Mapping\Column(type="boolean")
+     */
+    private $activity;
+
     public function __construct()
     {
         $this->service = new ArrayCollection();
@@ -127,6 +132,18 @@ class Receipt
     public function setMethod(string $method): self
     {
         $this->method = $method;
+
+        return $this;
+    }
+
+    public function getActivity(): ?bool
+    {
+        return $this->activity;
+    }
+
+    public function setActivity(bool $activity): self
+    {
+        $this->activity = $activity;
 
         return $this;
     }
