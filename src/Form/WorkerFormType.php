@@ -25,7 +25,8 @@ class WorkerFormType extends AbstractType
                 EntityType::class,
                 [
                     'choice_label' => 'email',
-                    'class' => User::class
+                    'class' => User::class,
+                    'choices' => $options['users']
                 ]
             );
     }
@@ -34,7 +35,8 @@ class WorkerFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Worker::class
+                'data_class' => Worker::class,
+                'users' => []
             ]
         );
     }

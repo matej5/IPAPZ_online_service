@@ -67,7 +67,7 @@ class Comment
     }
 
     /**
-     * @ORM\PrePersist()
+     * @Doctrine\ORM\Mapping\PrePersist()
      */
     public function onPrePersist()
     {

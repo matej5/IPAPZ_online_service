@@ -99,11 +99,45 @@ class ReceiptController extends AbstractController
         $form = $this->createForm(ReceiptFormType::class);
         $form->handleRequest($request);
 
+        $receipts = $receiptRepository->incoming($this->getUser());
+
+        $pagination = $paginator->paginate(
+            $receipts,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        return $this->render(
+            'receipt/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'pagination' => $pagination
+            ]
+        );
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/incomingJobs", name="receipt_incoming_jobs")
+     * @param          Request $request
+     * @param          ReceiptRepository $receiptRepository
+     * @param          PaginatorInterface $paginator
+     * @return         \Symfony\Component\HttpFoundation\Response
+     */
+    public function incomingJobs(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
+    {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('post_index');
+        }
+
+        $receipts = null;
+        $form = $this->createForm(ReceiptFormType::class);
+        $form->handleRequest($request);
+
         if ($this->isGranted('ROLE_ADMIN')) {
             $receipts = $receiptRepository->allIncomingJobs();
-        } elseif ($this->isGranted('ROLE_BOSS')) {
+        } else if ($this->isGranted('ROLE_BOSS')) {
             $receipts = $receiptRepository->firmIncomingJobs($this->getUser()->getWorker()->getFirmName());
-        } elseif ($this->isGranted('ROLE_WORKER')) {
+        } else if ($this->isGranted('ROLE_WORKER')) {
             $receipts = $receiptRepository->incomingJobs($this->getUser()->getWorker());
         }
 
