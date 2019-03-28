@@ -32,6 +32,7 @@ class RegistrationFormType extends AbstractType
                     'attr' => ['pattern' => '[a-zA-Z]*']
                 ]
             )
+
             ->add('email', EmailType::class)
             ->add(
                 'plainPassword',

@@ -16,7 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class UserFormType
- *
  * @package App\Form
  */
 class UserFormType extends AbstractType
