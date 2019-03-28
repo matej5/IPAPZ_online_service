@@ -6,12 +6,12 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h3>{{ receipt.worker.firmName }}</h3>
-                        <h4>Receipt number: {{ receipt.id }}</h4>
                         {% if is_granted('ROLE_ADMIN') %}
+                            <h3>{{ receipt.worker.firmName }}</h3>
                             <p>Plačanje: {{ receipt.method }}</p>
-                            <p>Worker: {{ receipt.worker.user.firstname }} {{ receipt.worker.user.lastname }}</p>
                         {% endif %}
+                        <h4>Receipt number: {{ receipt.id }}</h4>
+                        <p>Worker: {{ receipt.worker.user.firstname }} {{ receipt.worker.user.lastname }}</p>
                         <div class="row">
                             {% if receipt.buyer is null %}
                                 <div class="col-md-8">Paypal Buyer</div>

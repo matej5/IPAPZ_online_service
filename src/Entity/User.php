@@ -525,6 +525,17 @@ class User implements UserInterface
         return $this;
     }
 
+    public function checkForIncomingReceipts()
+    {
+        foreach ($this->receipts as $receipt) {
+            if ($receipt->getActivity()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return mixed
      */

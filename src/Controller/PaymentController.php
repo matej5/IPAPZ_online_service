@@ -55,6 +55,7 @@ class PaymentController extends AbstractController
                 $receipt->setBuyer($this->getUser());
                 $receipt->setOffice($worker->getOffice());
                 $receipt->setMethod('Pouzeće');
+                $receipt->setActivity(1);
 
                 $entityManager->persist($receipt);
                 $entityManager->flush();
@@ -162,6 +163,7 @@ class PaymentController extends AbstractController
         $receipt->setWorker($worker);
         $receipt->setOffice($worker->getOffice());
         $receipt->setMethod('Paypal');
+        $receipt->setActivity(1);
 
         $date = strtotime($date);
 
