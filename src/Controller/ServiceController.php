@@ -13,6 +13,7 @@ use App\Repository\WorkerRepository;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface as PaginatorInterfaceAlias;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -29,7 +30,7 @@ class ServiceController extends AbstractController
      * @param                        WorkerRepository $workerRepository
      * @param                        EntityManagerInterface $entityManager
      * @param                        ServiceRepository $serviceRepository
-     * @param                        PaginatorInterface $paginator
+     * @param                        PaginatorInterfaceAlias $paginator
      * @return void
      */
     public function index(
@@ -38,7 +39,7 @@ class ServiceController extends AbstractController
         WorkerRepository $workerRepository,
         EntityManagerInterface $entityManager,
         ServiceRepository $serviceRepository,
-        PaginatorInterface $paginator,
+        PaginatorInterfaceAlias $paginator,
         $category = null
     ) {
         $categories = $categoryRepository->findAllASC();
@@ -274,6 +275,42 @@ class ServiceController extends AbstractController
             [
                 'form' => $form->createView(),
                 'services' => $service
+            ]
+        );
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/bought", name="bought_view")
+     * @param          Request $request
+     * @param          ReceiptRepository $receiptRepository
+     * @param          PaginatorInterface $paginator
+     * @return         Response
+     */
+    public function bought(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
+    {
+        $form = $this->createForm(ServiceAddFormType::class);
+        $form->handleRequest($request);
+
+        $service = null;
+        if (!$this->isGranted('ROLE_USER') && isset($_COOKIE['Buy'])) {
+            foreach ($_COOKIE['Buy'] as $r) {
+                $receipt[] = $receiptRepository->findOneBy(['id' => $r]);
+            }
+        } elseif ($this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('post_index');
+        }
+
+        $pagination = $paginator->paginate(
+            $receipt,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        return $this->render(
+            'receipt/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'pagination' => $pagination
             ]
         );
     }
