@@ -237,9 +237,8 @@ class ServiceController extends AbstractController
                 'name' => "services[$count]",
                 'service' => $service->getId()
             );
-
             $cookie = new Cookie($cookieServices['name'], $cookieServices['service']);
-            $response->headers->setCookie($cookie, '', 1);
+            $response->headers->setCookie($cookie);
             $response->send();
         }
 
