@@ -40,43 +40,43 @@ class PaymentController extends AbstractController
             $this->addFlash('alert', 'Something went wrong!');
 
             return $this->redirectToRoute('post_index');
-        } elseif ($worker != null and
+        } else if ($worker != null and
                 $service != null and
                 $this->getUser() != null and
                 $date != null
-            ) {
-                $worker = $workerRepository->findOneBy(['id' => $worker]);
-                $service = $serviceRepository->findOneBy(['id' => $service]);
-                $date = strtotime($date);
+        ) {
+            $worker = $workerRepository->findOneBy(['id' => $worker]);
+            $service = $serviceRepository->findOneBy(['id' => $service]);
+            $date = strtotime($date);
 
-                $date = date_create_from_format('Y-m-d H:i:s', date('Y-m-d H:i:s', $date));
-                $receipt = new Receipt();
-                $receipt->setWorker($worker);
-                $receipt->setService($service);
-                $receipt->setStartOfService($date);
-                $receipt->setBuyer($this->getUser());
-                $receipt->setOffice($worker->getOffice());
-                $receipt->setMethod('Pouzeće');
-                $receipt->setActivity(1);
+            $date = date_create_from_format('Y-m-d H:i:s', date('Y-m-d H:i:s', $date));
+            $receipt = new Receipt();
+            $receipt->setWorker($worker);
+            $receipt->setService($service);
+            $receipt->setStartOfService($date);
+            $receipt->setBuyer($this->getUser());
+            $receipt->setOffice($worker->getOffice());
+            $receipt->setMethod('Pouzeće');
+            $receipt->setActivity(1);
 
-                $entityManager->persist($receipt);
-                $entityManager->flush();
+            $entityManager->persist($receipt);
+            $entityManager->flush();
 
-                $this->addFlash(
-                    'success',
-                    'You ordered service: ' .
-                    $service->getName() .
-                    ' at ' .
-                    $date->format('Y-m-d H:i:s') .
-                    '!'
-                );
+            $this->addFlash(
+                'success',
+                'You ordered service: ' .
+                $service->getName() .
+                ' at ' .
+                $date->format('Y-m-d H:i:s') .
+                '!'
+            );
 
-                return $this->redirectToRoute('post_index');
-        }
-
+            return $this->redirectToRoute('post_index');
+        } else {
             $this->addFlash('alert', 'Something went wrong!');
 
             return $this->redirectToRoute('post_index');
+        }
     }
 
     /**
@@ -151,6 +151,7 @@ class PaymentController extends AbstractController
             ]
         );
         $transaction = $result->transaction;
+
         if ($transaction == null) {
             $this->addFlash('warning', 'Payment nije prošao');
             return $this->redirectToRoute('service_index');

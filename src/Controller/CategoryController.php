@@ -31,39 +31,39 @@ class CategoryController extends AbstractController
     ) {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
-        }
+        } else {
+            $form = $this->createForm(CategoryFormType::class);
+            $form->handleRequest($request);
 
-        $form = $this->createForm(CategoryFormType::class);
-        $form->handleRequest($request);
+            $data = $form->getExtraData();
 
-        $data = $form->getExtraData();
-
-        if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
-            $category = new Category();
-            $category->setName($form->get('name')->getData());
-            $entityManager->persist($category);
-            $entityManager->flush();
-
-            foreach ($data as $f) {
+            if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
                 $category = new Category();
-                $category->setName($f['name']);
+                $category->setName($form->get('name')->getData());
                 $entityManager->persist($category);
                 $entityManager->flush();
+
+                foreach ($data as $f) {
+                    $category = new Category();
+                    $category->setName($f['name']);
+                    $entityManager->persist($category);
+                    $entityManager->flush();
+                }
+
+                $this->addFlash('success', 'New category created!');
+                return $this->redirectToRoute('category_index');
             }
 
-            $this->addFlash('success', 'New category created!');
-            return $this->redirectToRoute('category_index');
+            $categories = $categoryRepository->findAll();
+
+            return $this->render(
+                'category/index.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'categories' => $categories,
+                ]
+            );
         }
-
-        $categories = $categoryRepository->findAll();
-
-        return $this->render(
-            'category/index.html.twig',
-            [
-                'form' => $form->createView(),
-                'categories' => $categories,
-            ]
-        );
     }
 
     /**
@@ -77,27 +77,27 @@ class CategoryController extends AbstractController
     {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
+        } else {
+            $form = $this->createForm(CategoryFormType::class, $category);
+            $form->handleRequest($request);
+
+            if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
+                $category->setName($form->get('name')->getData());
+                $entityManager->persist($category);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Category edited!');
+                return $this->redirectToRoute('category_index');
+            }
+
+            return $this->render(
+                'category/view.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'category' => $category,
+                ]
+            );
         }
-
-        $form = $this->createForm(CategoryFormType::class, $category);
-        $form->handleRequest($request);
-
-        if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
-            $category->setName($form->get('name')->getData());
-            $entityManager->persist($category);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Category edited!');
-            return $this->redirectToRoute('category_index');
-        }
-
-        return $this->render(
-            'category/view.html.twig',
-            [
-                'form' => $form->createView(),
-                'category' => $category,
-            ]
-        );
     }
 
     /**
@@ -108,9 +108,13 @@ class CategoryController extends AbstractController
      */
     public function delete(Category $category, EntityManagerInterface $entityManager)
     {
-        $entityManager->remove($category);
-        $entityManager->flush();
-        $this->addFlash('success', 'Successfully deleted!');
-        return $this->redirectToRoute('category_index');
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('post_index');
+        } else {
+            $entityManager->remove($category);
+            $entityManager->flush();
+            $this->addFlash('success', 'Successfully deleted!');
+            return $this->redirectToRoute('category_index');
+        }
     }
 }

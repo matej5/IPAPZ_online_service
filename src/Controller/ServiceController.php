@@ -30,7 +30,8 @@ class ServiceController extends AbstractController
      * @param                        EntityManagerInterface $entityManager
      * @param                        ServiceRepository $serviceRepository
      * @param                        PaginatorInterfaceAlias $paginator
-     * @return void
+     * @param null $category
+     * @return Response
      */
     public function index(
         CategoryRepository $categoryRepository,
@@ -89,7 +90,7 @@ class ServiceController extends AbstractController
 
         if (strtolower($request->get('category')) == 'queue' && $this->isGranted('ROLE_ADMIN')) {
             $service = $serviceRepository->findBy(['status' => 'queued']);
-        } elseif (strtolower($request->get('category')) == 'allowed' && $this->isGranted('ROLE_BOSS')) {
+        } else if (strtolower($request->get('category')) == 'allowed' && $this->isGranted('ROLE_BOSS')) {
             $service = $serviceRepository->findBy(['status' => 'allowed', 'boss' => $this->getUser()->getWorker()]);
         } else {
             $service = $serviceRepository->findByService($category, ['catalog' => 'active']);
@@ -128,36 +129,36 @@ class ServiceController extends AbstractController
     ) {
         if (!($this->isGranted('ROLE_BOSS') && $this->getUser() == $service->getBoss()->getUser())) {
             return $this->redirectToRoute('service_index');
+        } else {
+            $categories = $categoryRepository->findAll();
+
+            $form = $this->createForm(ServiceFormType::class, ['categories' => $categories, 'service' => $service]);
+            $form->handleRequest($request);
+            if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
+                /**
+                 * @var Service $service
+                 */
+                $service = $form->getData();
+                $service->setStatus('queued');
+                $service->setDuration($form->get('duration')->getData());
+                $service->setName($form->get('name')->getData());
+                $service->setCost($form->get('cost')->getData());
+                $entityManager->persist($service);
+                $entityManager->flush();
+                $this->addFlash('success', 'Edited service!');
+                return $this->redirectToRoute('service_index');
+            }
+
+            return $this->render(
+                'service/view.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'categories' => $categories,
+                    'services' => $service,
+                    'title' => 'Edit service'
+                ]
+            );
         }
-
-        $categories = $categoryRepository->findAll();
-
-        $form = $this->createForm(ServiceFormType::class, ['categories' => $categories, 'service' => $service]);
-        $form->handleRequest($request);
-        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
-            /**
-             * @var Service $service
-             */
-            $service = $form->getData();
-            $service->setStatus('queued');
-            $service->setDuration($form->get('duration')->getData());
-            $service->setName($form->get('name')->getData());
-            $service->setCost($form->get('cost')->getData());
-            $entityManager->persist($service);
-            $entityManager->flush();
-            $this->addFlash('success', 'Edited service!');
-            return $this->redirectToRoute('service_index');
-        }
-
-        return $this->render(
-            'service/view.html.twig',
-            [
-                'form' => $form->createView(),
-                'categories' => $categories,
-                'services' => $service,
-                'title' => 'Edit service'
-            ]
-        );
     }
 
     /**
@@ -176,7 +177,7 @@ class ServiceController extends AbstractController
             $service->setCatalog('inactive');
             $entityManager->persist($service);
             $entityManager->flush();
-            return $this->redirectToRoute('service_index');
+            return $this->redirectToRoute('service_index', ['category' => 'Queue']);
         }
 
         return $this->redirectToRoute('service_index');
@@ -202,7 +203,7 @@ class ServiceController extends AbstractController
 
             $entityManager->persist($service);
             $entityManager->flush();
-            return $this->redirectToRoute('service_index');
+            return $this->redirectToRoute('service_index', ['category' => 'Allowed']);
         }
 
         return $this->redirectToRoute('service_index');
@@ -257,7 +258,7 @@ class ServiceController extends AbstractController
             foreach ($_COOKIE['services'] as $s) {
                 $service[] = $serviceRepository->findOneBy(['id' => $s]);
             }
-        } elseif ($this->isGranted('ROLE_USER')) {
+        } else if ($this->isGranted('ROLE_USER')) {
             $service = $this->getUser()->getServices();
         }
 
@@ -283,7 +284,7 @@ class ServiceController extends AbstractController
             foreach ($_COOKIE['Buy'] as $r) {
                 $receipt[] = $receiptRepository->findOneBy(['id' => $r]);
             }
-        } elseif ($this->isGranted('ROLE_USER')) {
+        } else if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
         }
 
@@ -360,9 +361,12 @@ class ServiceController extends AbstractController
      */
     public function deleteService(Service $service, EntityManagerInterface $entityManager)
     {
-        $entityManager->remove($service);
-        $entityManager->flush();
-        $this->addFlash('success', 'Successfully deleted!');
+        if ($this->getUser()->getWorker() == $service->getBoss() && $this->isGranted('ROLE_BOSS')) {
+            $entityManager->remove($service);
+            $entityManager->flush();
+            $this->addFlash('success', 'Successfully deleted!');
+        }
+
         return $this->redirectToRoute('service_index');
     }
 
