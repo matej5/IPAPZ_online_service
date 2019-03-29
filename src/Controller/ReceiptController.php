@@ -272,7 +272,7 @@ class ReceiptController extends AbstractController
         $dompdf->stream(
             "receipt.pdf",
             [
-                "Attachment" => true
+                "Attachment" => false
             ]
         );
 

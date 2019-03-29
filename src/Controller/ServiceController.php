@@ -239,7 +239,7 @@ class ServiceController extends AbstractController
             );
 
             $cookie = new Cookie($cookieServices['name'], $cookieServices['service']);
-            $response->headers->setCookie($cookie, '', 1);
+            $response->headers->setCookie($cookie);
             $response->send();
         }
 
@@ -279,6 +279,7 @@ class ServiceController extends AbstractController
      */
     public function bought(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
     {
+        $receipt = null;
         $service = null;
         if (!$this->isGranted('ROLE_USER') && isset($_COOKIE['Buy'])) {
             foreach ($_COOKIE['Buy'] as $r) {
