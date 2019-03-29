@@ -256,7 +256,7 @@ class ReceiptController extends AbstractController
 
         $dompdf = new Dompdf($pdfOptions);
 
-        $view = $this->render(
+        $view = $this->renderView(
             'invoice/index.html.twig',
             [
                 'receipt' => $receipt
