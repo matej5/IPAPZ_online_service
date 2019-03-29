@@ -35,3 +35,17 @@
 .right{
     float: right;
 }
+
+.list{
+    padding-left: 0px;
+}
+
+.card{
+    margin: 10px;
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 100%;
+    }
+}
