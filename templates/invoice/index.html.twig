@@ -1,7 +1,15 @@
-{% block stylesheets %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block stylesheets %}
     <link href="{{ asset('css/style.css') }}" rel='stylesheet' />
 {% endblock %}
-{% block body %}
+</head>
+<body>
     <div class="receipt">
         <div class="receipt-content">
             <h1>{{ receipt.worker.firmName }}</h1>
@@ -30,4 +38,5 @@
             </div>
         </div>
     </div>
-{% endblock %}
+</body>
+</html>

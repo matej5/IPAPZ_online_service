@@ -126,10 +126,17 @@ class PostController extends AbstractController
      */
     public function deletePost(Post $post, EntityManagerInterface $entityManager)
     {
-        $entityManager->remove($post);
-        $entityManager->flush();
-        $this->addFlash('success', 'Successfully deleted!');
-        return $this->redirectToRoute('post_index');
+        if ($this->isGranted('ROLE_ADMIN') ||
+            ($this->isGranted('ROLE_BOSS') &&
+                $post->getUser() == $this->getUser())
+        ) {
+            $entityManager->remove($post);
+            $entityManager->flush();
+            $this->addFlash('success', 'Successfully deleted!');
+            return $this->redirectToRoute('post_index');
+        } else {
+            return $this->redirectToRoute('post_index');
+        }
     }
 
     /**

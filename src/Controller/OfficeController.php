@@ -19,31 +19,31 @@ class OfficeController extends AbstractController
      */
     public function index(Request $request, EntityManagerInterface $entityManager, OfficeRepository $officeRepository)
     {
-        if (!$this->isGranted('ROLE_USER')) {
+        if (!($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_BOSS')) ) {
             return $this->redirectToRoute('post_index');
+        } else {
+            $form = $this->createForm(OfficeFormType::class);
+            $form->handleRequest($request);
+            if (($this->isGranted('ROLE_ADMIN')
+                    || $this->isGranted('ROLE_BOSS'))
+                && ($form->isSubmitted() && $form->isValid())) {
+                $office = $form->getData();
+                $office->setOwner($this->getUser()->getWorker());
+                $entityManager->persist($office);
+                $entityManager->flush();
+                $this->addFlash('success', 'New office created!');
+                return $this->redirectToRoute('office_index');
+            }
+
+            $offices = $officeRepository->findAll();
+
+            return $this->render(
+                'office/view.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'offices' => $offices
+                ]
+            );
         }
-
-        $form = $this->createForm(OfficeFormType::class);
-        $form->handleRequest($request);
-        if (($this->isGranted('ROLE_ADMIN')
-                || $this->isGranted('ROLE_BOSS'))
-            && ($form->isSubmitted() && $form->isValid())) {
-            $office = $form->getData();
-            $office->setOwner($this->getUser()->getWorker());
-            $entityManager->persist($office);
-            $entityManager->flush();
-            $this->addFlash('success', 'New office created!');
-            return $this->redirectToRoute('office_index');
-        }
-
-        $offices = $officeRepository->findAll();
-
-        return $this->render(
-            'office/view.html.twig',
-            [
-                'form' => $form->createView(),
-                'offices' => $offices
-            ]
-        );
     }
 }

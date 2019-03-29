@@ -22,11 +22,11 @@
                     <a class="navName" href="{{ path('app_profile') }}"><img class="navImg" src="{{ asset('images/'~ app.user.email ~'/'~ app.user.image ) }}"><b>{{ app.user.firstName }} {{ app.user.lastName }}</b></a>
                 </li>
             {% endif %}
-            <div class="btn-group">
-                <li class="nav-item active">
-                    <a class="btn btn-secondary" role="button" href="{{ path('post_index') }}"><i class="fa fa-home" aria-hidden="true"></i></a>
-                </li>
+            <li class="nav-item active">
+                <a class="btn btn-secondary" role="button" href="{{ path('post_index') }}"><i class="fa fa-home" aria-hidden="true"></i></a>
+            </li>
             {% if is_granted('ROLE_ADMIN') %}
+            <div class="btn-group">
                 <li class="nav-item active">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Administration
@@ -37,6 +37,7 @@
                         <a class="dropdown-item" href="{{ path('boss_index') }}">Add Boss</a>
                     </div>
                 </li>
+            </div>
             {% endif %}
                 <li class="nav-item active">
                     <a class="btn btn-secondary" role="button" href="{{ path('service_index') }}">Services</a>
@@ -50,6 +51,7 @@
                 </li>
             {% endif %}
             {% if is_granted('ROLE_WORKER') or is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
+            <div class="btn-group">
                 <li class="nav-item active">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Jobs
@@ -60,8 +62,10 @@
                         <a class="dropdown-item" href="{{ path('receipt_incoming_jobs') }}">Incoming</a>
                     </div>
                 </li>
+            </div>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
+            <div class="btn-group">
                 <li class="nav-item active">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Shop
@@ -75,6 +79,7 @@
                             {% endif %}</a>
                     </div>
                 </li>
+            </div>
             {% endif %}
             </div>
         </ul>

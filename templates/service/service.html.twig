@@ -63,7 +63,7 @@
                                 Allow
                             </a>
                         {% endif %}
-                        {% if is_granted('ROLE_BOSS') and service.status == 'allowed' and service.boss == app.user.worker and title == 'Allowed' %}
+                        {% if is_granted('ROLE_BOSS') and service.status == 'allowed' and service.boss == app.user.worker %}
                             <a href="{{ path('service_activate', {'id': service.id}) }}">
                                 {% if service.catalog == 'inactive' %}
                                     <i class="fas fa-toggle-off"></i>

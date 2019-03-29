@@ -105,37 +105,37 @@ class WorkerController extends AbstractController
     ) {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
+        } else {
+            $users = $userRepository->findWithoutRole();
+
+            $form = $this->createForm(BossFormType::class, null, ['users' => $users]);
+            $form->handleRequest($request);
+
+            if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
+                /**
+                 * @var Worker $worker
+                 */
+                $worker = $form->getData();
+                $a = ['ROLE_BOSS'];
+                $worker->getUser()->setRoles($a);
+                $worker->getUser()->setWorker($worker);
+                $worker->setStartTime(0);
+                $entityManager->persist($worker);
+                $entityManager->flush();
+                $this->addFlash('success', 'New boss created!');
+                return $this->redirectToRoute('worker_index');
+            }
+
+            $workers = $workerRepository->findBy(['user' => $userRepository->findByRole('ROLE_BOSS')]);
+
+            return $this->render(
+                'boss/index.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'workers' => $workers
+                ]
+            );
         }
-
-        $users = $userRepository->findWithoutRole();
-
-        $form = $this->createForm(BossFormType::class, null, ['users' => $users]);
-        $form->handleRequest($request);
-
-        if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
-            /**
-             * @var Worker $worker
-             */
-            $worker = $form->getData();
-            $a = ['ROLE_BOSS'];
-            $worker->getUser()->setRoles($a);
-            $worker->getUser()->setWorker($worker);
-            $worker->setStartTime(0);
-            $entityManager->persist($worker);
-            $entityManager->flush();
-            $this->addFlash('success', 'New boss created!');
-            return $this->redirectToRoute('worker_index');
-        }
-
-        $workers = $workerRepository->findBy(['user' => $userRepository->findByRole('ROLE_BOSS')]);
-
-        return $this->render(
-            'boss/index.html.twig',
-            [
-                'form' => $form->createView(),
-                'workers' => $workers
-            ]
-        );
     }
 
     /**
@@ -155,29 +155,29 @@ class WorkerController extends AbstractController
 
         if (!($this->isGranted('ROLE_BOSS') || $this->isGranted('ROLE_ADMIN'))) {
             return $this->redirectToRoute('post_index');
+        } else {
+            /**
+             * @var Worker $worker
+             */
+            $worker = $workerRepository->findOneBy(['id' => $worker->getId()]);
+
+            $form = $this->createForm(OffWorFormType::class, $worker);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $worker->setOffice($form->get('office')->getData());
+                $worker->setWorkDays($form->get('workDays')->getData());
+                $entityManager->flush();
+            }
+
+            return $this->render(
+                'worker/view.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'worker' => $worker
+                ]
+            );
         }
-
-        /**
-         * @var Worker $worker
-         */
-        $worker = $workerRepository->findOneBy(['id' => $worker->getId()]);
-
-        $form = $this->createForm(OffWorFormType::class, $worker);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $worker->setOffice($form->get('office')->getData());
-            $worker->setWorkDays($form->get('workDays')->getData());
-            $entityManager->flush();
-        }
-
-        return $this->render(
-            'worker/view.html.twig',
-            [
-                'form' => $form->createView(),
-                'worker' => $worker
-            ]
-        );
     }
 
     /**

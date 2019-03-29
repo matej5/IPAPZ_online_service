@@ -34,14 +34,14 @@ class UserController extends AbstractController
     {
         if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
+        } else {
+            // get the login error if there is one
+            $error = $authenticationUtils->getLastAuthenticationError();
+            // last username entered by the user
+            $lastUsername = $authenticationUtils->getLastUsername();
+
+            return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
         }
-
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
     /**
@@ -62,44 +62,44 @@ class UserController extends AbstractController
     ) {
         if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
-        }
+        } else {
+            $user = new User();
+            $form = $this->createForm(RegistrationFormType::class, $user);
+            $form->handleRequest($request);
 
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $user->setMoney(200);
+                $user->createAvatar();
+                $user->setImage('avatar.jpeg');
+                $a = ["ROLE_ADMIN"];
+                $user->setRoles($a);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user->setMoney(200);
-            $user->createAvatar();
-            $user->setImage('avatar.jpeg');
-            $a = ["ROLE_ADMIN"];
-            $user->setRoles($a);
+                // encode the plain password
+                $user->setPassword(
+                    $passwordEncoder->encodePassword(
+                        $user,
+                        $form->get('plainPassword')->getData()
+                    )
+                );
+                $entityManager->persist($user);
+                $entityManager->flush();
+                // do anything else you need here, like send an email
 
-            // encode the plain password
-            $user->setPassword(
-                $passwordEncoder->encodePassword(
+                return $guardHandler->authenticateUserAndHandleSuccess(
                     $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
-            $entityManager->persist($user);
-            $entityManager->flush();
-            // do anything else you need here, like send an email
+                    $request,
+                    $authenticator,
+                    'main' // firewall name in security.yaml
+                );
+            }
 
-            return $guardHandler->authenticateUserAndHandleSuccess(
-                $user,
-                $request,
-                $authenticator,
-                'main' // firewall name in security.yaml
+            return $this->render(
+                'security/register.html.twig',
+                [
+                    'registrationForm' => $form->createView(),
+                ]
             );
         }
-
-        return $this->render(
-            'security/register.html.twig',
-            [
-                'registrationForm' => $form->createView(),
-            ]
-        );
     }
 
     private function insertData($em, $data)
@@ -121,26 +121,26 @@ class UserController extends AbstractController
 
         if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
+        } else {
+            $user = $this->getUser();
+
+            $form = $this->createForm(UserFormType::class, $user);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getUser()->setFirstname($form->get('firstname')->getData());
+                $this->getUser()->setLastname($form->get('lastname')->getData());
+                $entityManager->flush();
+            }
+
+            return $this->render(
+                'user/index.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'user' => $user
+                ]
+            );
         }
-
-        $user = $this->getUser();
-
-        $form = $this->createForm(UserFormType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getUser()->setFirstname($form->get('firstname')->getData());
-            $this->getUser()->setLastname($form->get('lastname')->getData());
-            $entityManager->flush();
-        }
-
-        return $this->render(
-            'user/index.html.twig',
-            [
-                'form' => $form->createView(),
-                'user' => $user
-            ]
-        );
     }
 
     /**
@@ -156,16 +156,16 @@ class UserController extends AbstractController
 
         if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
+        } else {
+            $user = $userRepository->findOneBy(['id' => $user->getId()]);
+
+            return $this->render(
+                'user/view.html.twig',
+                [
+                    'user' => $user
+                ]
+            );
         }
-
-        $user = $userRepository->findOneBy(['id' => $user->getId()]);
-
-        return $this->render(
-            'user/view.html.twig',
-            [
-                'user' => $user
-            ]
-        );
     }
 
     /**
@@ -178,14 +178,14 @@ class UserController extends AbstractController
 
         if (!$this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('post_index');
+        } else {
+            $user = $this->getUser();
+            $user->createAvatar();
+            $form = $this->createForm(UserFormType::class, $user);
+            $form->handleRequest($request);
+
+            return $this->redirectToRoute('app_profile');
         }
-
-        $user = $this->getUser();
-        $user->createAvatar();
-        $form = $this->createForm(UserFormType::class, $user);
-        $form->handleRequest($request);
-
-        return $this->redirectToRoute('app_profile');
     }
 
 
