@@ -71,8 +71,6 @@ class UserController extends AbstractController
                 $user->setMoney(200);
                 $user->createAvatar();
                 $user->setImage('avatar.jpeg');
-                $a = ["ROLE_ADMIN"];
-                $user->setRoles($a);
 
                 // encode the plain password
                 $user->setPassword(
