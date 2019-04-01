@@ -18,7 +18,10 @@ class OfficeFormType extends AbstractType
                 'state',
                 TextType::class,
                 [
-                    'label' => 'State'
+                    'label' => 'State',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
         $builder
@@ -26,7 +29,10 @@ class OfficeFormType extends AbstractType
                 'city',
                 TextType::class,
                 [
-                    'label' => 'City'
+                    'label' => 'City',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
         $builder
@@ -34,7 +40,10 @@ class OfficeFormType extends AbstractType
                 'address',
                 TextType::class,
                 [
-                    'label' => 'Address'
+                    'label' => 'Address',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
         $builder
@@ -42,7 +51,10 @@ class OfficeFormType extends AbstractType
                 'phoneNumber',
                 TextType::class,
                 [
-                    'label' => 'Phone'
+                    'label' => 'Phone',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
     }

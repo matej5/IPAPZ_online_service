@@ -272,10 +272,10 @@ class ReceiptController extends AbstractController
         $dompdf->stream(
             "receipt.pdf",
             [
-                "Attachment" => false
+                "Attachment" => true,
             ]
         );
 
-        return $this->redirectToRoute('post_index');
+        exit();
     }
 }

@@ -17,7 +17,7 @@ class CategoryFormType extends AbstractType
             TextType::class,
             [
                 'label' => 'Add a category',
-                'attr' => ['class' => 'required'],
+                'attr' => ['class' => 'required', 'class' => 'form-control']
             ]
         );
     }
