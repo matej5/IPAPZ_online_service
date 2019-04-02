@@ -10,19 +10,15 @@ namespace App\Form;
 
 use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ServiceFormType extends AbstractType
+class ServiceEditFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = $options['categories'];
-
         $builder
             ->add(
                 'name',
@@ -61,26 +57,6 @@ class ServiceFormType extends AbstractType
                         'class' => 'form-control'
                     ]
                 ]
-            )
-            ->add(
-                'image',
-                FileType::class,
-                [
-                    'label' => 'Image'
-                ]
-            )
-            ->add(
-                'category',
-                ChoiceType::class,
-                [
-                    'choices' => $choices,
-                    'choice_label' => 'name',
-                    'label' => 'Select category',
-                    'multiple' => true,
-                    'expanded' => true,
-                    'by_reference' => false,
-                    'empty_data' => 0
-                ]
             );
     }
 
@@ -88,8 +64,7 @@ class ServiceFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Service::class,
-                'categories' => ''
+                'data_class' => Service::class
             ]
         );
     }

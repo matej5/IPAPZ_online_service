@@ -103,7 +103,7 @@
             {% if app.user is null and app.request.cookies.get('services') is not null %}
             <div class="btn-group">
                 <li class="nav-item">
-                    <a class="btn btn-secondary" role="button" href="{{ path('service_view') }}">
+                    <a class="btn btn-secondary" role="button" href="{{ path('cart_view') }}">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
                 </li>
@@ -113,7 +113,7 @@
                 {% if app.user.getServices is not empty %}
             <div class="btn-group">
                 <li class="nav-item">
-                    <a class="btn btn-secondary" role="button" href="{{ path('service_view') }}">
+                    <a class="btn btn-secondary" role="button" href="{{ path('cart_view') }}">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
                 </li>
