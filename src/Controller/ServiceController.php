@@ -146,37 +146,38 @@ class ServiceController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'Edited service!');
                 return $this->redirectToRoute('service_index');
-        }
+            }
 
-        $form = $this->createForm(ServiceEditFormType::class, $service);
-        $form->handleRequest($request);
-        if ($this->isGranted('ROLE_BOSS') &&
-            $form->isSubmitted() && $form->isValid() &&
-            $this->getUser() == $service->getBoss()->getUser()
-        ) {
-            /**
-             * @var Service $service
-             */
-            $service = $form->getData();
-            $service->setStatus('queued');
-            $service->setDuration($form->get('duration')->getData());
-            $service->setName($form->get('name')->getData());
-            $service->setCost($form->get('cost')->getData());
-            $entityManager->persist($service);
-            $entityManager->flush();
-            $this->addFlash('success', 'Edited service!');
-            return $this->redirectToRoute('service_index');
-        }
+            $form = $this->createForm(ServiceEditFormType::class, $service);
+            $form->handleRequest($request);
+            if ($this->isGranted('ROLE_BOSS') &&
+                $form->isSubmitted() && $form->isValid() &&
+                $this->getUser() == $service->getBoss()->getUser()
+            ) {
+                /**
+                 * @var Service $service
+                 */
+                $service = $form->getData();
+                $service->setStatus('queued');
+                $service->setDuration($form->get('duration')->getData());
+                $service->setName($form->get('name')->getData());
+                $service->setCost($form->get('cost')->getData());
+                $entityManager->persist($service);
+                $entityManager->flush();
+                $this->addFlash('success', 'Edited service!');
+                return $this->redirectToRoute('service_index');
+            }
 
-        return $this->render(
-            'service/view.html.twig',
-            [
-                'form' => $form->createView(),
-                'categories' => $categories,
-                'service' => $service,
-                'title' => 'Edit service'
-            ]
-        );
+            return $this->render(
+                'service/view.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'categories' => $categories,
+                    'service' => $service,
+                    'title' => 'Edit service'
+                ]
+            );
+        }
     }
 
     /**
@@ -249,6 +250,7 @@ class ServiceController extends AbstractController
             if (isset($_COOKIE['services'][0])) {
                 $count = count($_COOKIE['services']);
             }
+
             setcookie("services[$count]", $service->getId(), time()+86400, '/');
         }
 
