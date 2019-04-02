@@ -130,7 +130,7 @@ class ServiceController extends AbstractController
         if (!($this->isGranted('ROLE_BOSS') && $this->getUser() == $service->getBoss()->getUser())) {
             return $this->redirectToRoute('service_index');
         } else {
-            $categories = $categoryRepository->findAll();
+            $categories = $categoryRepository->findAllASC();
 
             $form = $this->createForm(ServiceFormType::class, ['categories' => $categories, 'service' => $service]);
             $form->handleRequest($request);
