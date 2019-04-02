@@ -37,7 +37,10 @@ class OffWorFormType extends AbstractType
                 EntityType::class,
                 [
                     'class' => Office::class,
-                    'choice_label' => 'address'
+                    'choice_label' => 'address',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             )
             ->add(
@@ -45,6 +48,9 @@ class OffWorFormType extends AbstractType
                 NumberType::class,
                 [
                     'label' => 'Work time',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             )
             ->add(
@@ -62,7 +68,10 @@ class OffWorFormType extends AbstractType
                 'startTime',
                 NumberType::class,
                 [
-                    'label' => 'Start of work'
+                    'label' => 'Start of work',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
         $builder->get('workDays')

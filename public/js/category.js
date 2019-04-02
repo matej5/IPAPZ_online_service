@@ -7,9 +7,9 @@ $(document).ready(function () {
 
         cols += '<td><label>Add a category</label>' +
             '<input type="text" id="category_form_name" name="category_form[' + counter + '][name]"' +
-            'required="required" class="required"></td>';
+            'required="required" class="required form-control"></td>';
 
-        cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger "  value="Delete"></td>';
+        cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger"  value="Delete"></td>';
         newRow.append(cols);
         $("table.order-list").append(newRow);
         counter++;

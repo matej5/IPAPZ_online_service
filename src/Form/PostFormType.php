@@ -20,7 +20,10 @@ class PostFormType extends AbstractType
                 'title',
                 TextType::class,
                 [
-                    'label' => 'Title of post'
+                    'label' => 'Title of post',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
         $builder
@@ -28,7 +31,10 @@ class PostFormType extends AbstractType
                 'content',
                 TextareaType::class,
                 [
-                    'label' => 'What\'s on your mind?'
+                    'label' => 'What\'s on your mind?',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
         $builder

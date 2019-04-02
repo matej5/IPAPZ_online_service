@@ -28,7 +28,10 @@ class ReceiptFormType extends AbstractType
                 [
                     'class' => Office::class,
                     'placeholder' => 'Select office',
-                    'choices' => $options['offices']
+                    'choices' => $options['offices'],
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
 
@@ -44,7 +47,10 @@ class ReceiptFormType extends AbstractType
                     [
                         'class' => Worker::class,
                         'placeholder' => 'Select worker',
-                        'choices' => $form->getData()->getWorker()
+                        'choices' => $form->getData()->getWorker(),
+                        'attr' => [
+                            'class' => 'form-control'
+                        ]
                     ]
                 );
             }

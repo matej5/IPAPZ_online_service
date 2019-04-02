@@ -26,7 +26,11 @@ class WorkerFormType extends AbstractType
                 EntityType::class,
                 [
                     'choice_label' => 'email',
+                    'placeholder' => 'Select worker',
                     'class' => User::class,
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
                     'choices' => $options['users']
                 ]
             );

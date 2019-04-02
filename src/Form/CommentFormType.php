@@ -23,7 +23,10 @@ class CommentFormType extends AbstractType
                 'content',
                 TextareaType::class,
                 [
-                    'label' => 'Add new comment'
+                    'label' => 'Add new comment',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
     }

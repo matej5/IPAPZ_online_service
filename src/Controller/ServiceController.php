@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Service;
 use App\Form\ReceiptFormType;
+use App\Form\ServiceEditFormType;
 use App\Form\ServiceFormType;
 use App\Repository\CategoryRepository;
 use App\Repository\ReceiptRepository;
@@ -42,7 +43,7 @@ class ServiceController extends AbstractController
     ) {
         $categories = $categoryRepository->findAllASC();
 
-        $form = $this->createForm(ServiceFormType::class, ['categories' => $categories]);
+        $form = $this->createForm(ServiceFormType::class, null, ['categories' => $categories]);
         $form->handleRequest($request);
 
         if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
@@ -63,7 +64,7 @@ class ServiceController extends AbstractController
                     $fileName
                 );
             } else {
-                $fileName = null;
+                $fileName = 'service.png';
             }
 
             $service->setName($data['name']);
@@ -112,7 +113,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Symfony\Component\Routing\Annotation\Route("/serviceEdit/{id}", name="service_edit")
+     * @Symfony\Component\Routing\Annotation\Route("/serviceView/{id}", name="service_view")
      * @param                      Service $service
      * @param                      CategoryRepository $categoryRepository
      * @param                      Request $request
@@ -145,18 +146,37 @@ class ServiceController extends AbstractController
                 $entityManager->flush();
                 $this->addFlash('success', 'Edited service!');
                 return $this->redirectToRoute('service_index');
-            }
-
-            return $this->render(
-                'service/view.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'categories' => $categories,
-                    'services' => $service,
-                    'title' => 'Edit service'
-                ]
-            );
         }
+
+        $form = $this->createForm(ServiceEditFormType::class, $service);
+        $form->handleRequest($request);
+        if ($this->isGranted('ROLE_BOSS') &&
+            $form->isSubmitted() && $form->isValid() &&
+            $this->getUser() == $service->getBoss()->getUser()
+        ) {
+            /**
+             * @var Service $service
+             */
+            $service = $form->getData();
+            $service->setStatus('queued');
+            $service->setDuration($form->get('duration')->getData());
+            $service->setName($form->get('name')->getData());
+            $service->setCost($form->get('cost')->getData());
+            $entityManager->persist($service);
+            $entityManager->flush();
+            $this->addFlash('success', 'Edited service!');
+            return $this->redirectToRoute('service_index');
+        }
+
+        return $this->render(
+            'service/view.html.twig',
+            [
+                'form' => $form->createView(),
+                'categories' => $categories,
+                'service' => $service,
+                'title' => 'Edit service'
+            ]
+        );
     }
 
     /**
@@ -229,7 +249,6 @@ class ServiceController extends AbstractController
             if (isset($_COOKIE['services'][0])) {
                 $count = count($_COOKIE['services']);
             }
-
             setcookie("services[$count]", $service->getId(), time()+86400, '/');
         }
 
@@ -237,7 +256,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Symfony\Component\Routing\Annotation\Route("/cart", name="service_view")
+     * @Symfony\Component\Routing\Annotation\Route("/cart", name="cart_view")
      * @param          ServiceRepository $serviceRepository
      * @return         \Symfony\Component\HttpFoundation\Response
      */
@@ -344,7 +363,7 @@ class ServiceController extends AbstractController
     }
 
     /**
-     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("user                == post.getUser()")
+     * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("user.getWorker() == service.getBoss()")
      * @Symfony\Component\Routing\Annotation\Route("/service/{id}/delete", name="service_delete")
      * @param                         Service $service
      * @param                         EntityManagerInterface $entityManager
@@ -352,8 +371,11 @@ class ServiceController extends AbstractController
      */
     public function deleteService(Service $service, EntityManagerInterface $entityManager)
     {
-        if ($this->getUser()->getWorker() == $service->getBoss() && $this->isGranted('ROLE_BOSS')) {
-            $entityManager->remove($service);
+        if ($this->getUser()->getWorker() == $service->getBoss() &&
+            ($this->isGranted('ROLE_BOSS') ||
+                $this->isGranted('ROLE_ADMIN'))
+        ) {
+            $service->setStatus('removed');
             $entityManager->flush();
             $this->addFlash('success', 'Successfully deleted!');
         }

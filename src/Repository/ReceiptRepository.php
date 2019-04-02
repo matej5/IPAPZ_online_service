@@ -165,7 +165,7 @@ class ReceiptRepository extends ServiceEntityRepository
         $qb = $this->_em->createQueryBuilder();
         $qb->select('s')
             ->from($this->_entityName, 's')
-            ->where('s.startOfService > CURRENT_TIMESTAMP()')
+            ->where('s.startOfService < CURRENT_TIMESTAMP()')
             ->andWhere('s.buyer = :id')
             ->setParameter('id', $user)
             ->andWhere('s.activity = 1')

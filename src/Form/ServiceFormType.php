@@ -20,7 +20,7 @@ class ServiceFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = $options['data'];
+        $choices = $options['categories'];
 
         $builder
             ->add(
@@ -28,28 +28,37 @@ class ServiceFormType extends AbstractType
                 TextType::class,
                 [
                     'label' => 'Service',
-                    'attr' => ['pattern' => '[a-zA-Z]*']
+                    'attr' => ['pattern' => '[a-zA-Z]*', 'class' => 'form-control']
                 ]
             )
             ->add(
                 'cost',
                 NumberType::class,
                 [
-                    'label' => 'Cost (€)'
+                    'label' => 'Cost (€)',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             )
             ->add(
                 'duration',
                 NumberType::class,
                 [
-                    'label' => 'Duration (min)'
+                    'label' => 'Duration (min)',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             )
             ->add(
                 'description',
                 TextType::class,
                 [
-                    'label' => 'Description'
+                    'label' => 'Description',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             )
             ->add(
@@ -78,7 +87,8 @@ class ServiceFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => null
+                'data_class' => null,
+                'categories' => ''
             ]
         );
     }

@@ -28,6 +28,9 @@ class BossFormType extends AbstractType
                 [
                     'class' => User::class,
                     'placeholder' => 'Select boss',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
                     'choices' => $options['users']
                 ]
             )
@@ -35,7 +38,10 @@ class BossFormType extends AbstractType
                 'firmName',
                 TextType::class,
                 [
-                    'label' => 'Add firm name'
+                    'label' => 'Add firm name',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ]
                 ]
             );
     }

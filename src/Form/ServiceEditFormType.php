@@ -1,57 +1,58 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: matej
+ * Date: 19.02.19.
+ * Time: 18:53
+ */
 
 namespace App\Form;
 
-use App\Entity\Office;
+use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class OfficeFormType extends AbstractType
+class ServiceEditFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add(
-                'state',
+                'name',
                 TextType::class,
                 [
-                    'label' => 'State',
+                    'label' => 'Service',
+                    'attr' => ['pattern' => '[a-zA-Z]*', 'class' => 'form-control']
+                ]
+            )
+            ->add(
+                'cost',
+                NumberType::class,
+                [
+                    'label' => 'Cost (€)',
                     'attr' => [
                         'class' => 'form-control'
                     ]
                 ]
-            );
-        $builder
+            )
             ->add(
-                'city',
-                TextType::class,
+                'duration',
+                NumberType::class,
                 [
-                    'label' => 'City',
+                    'label' => 'Duration (min)',
                     'attr' => [
                         'class' => 'form-control'
                     ]
                 ]
-            );
-        $builder
+            )
             ->add(
-                'address',
+                'description',
                 TextType::class,
                 [
-                    'label' => 'Address',
-                    'attr' => [
-                        'class' => 'form-control'
-                    ]
-                ]
-            );
-        $builder
-            ->add(
-                'phoneNumber',
-                TextType::class,
-                [
-                    'label' => 'Phone',
+                    'label' => 'Description',
                     'attr' => [
                         'class' => 'form-control'
                     ]
@@ -63,7 +64,7 @@ class OfficeFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Office::class
+                'data_class' => Service::class
             ]
         );
     }

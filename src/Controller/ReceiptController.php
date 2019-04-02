@@ -238,7 +238,7 @@ class ReceiptController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/print/{id}", name="print_receipt")
      * @param          Receipt $receipt
      * @param          EntityManagerInterface $entityManager
-     * @return         \Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function print(
         Receipt $receipt,
@@ -256,7 +256,7 @@ class ReceiptController extends AbstractController
 
         $dompdf = new Dompdf($pdfOptions);
 
-        $view = $this->render(
+        $view = $this->renderView(
             'invoice/index.html.twig',
             [
                 'receipt' => $receipt
@@ -276,6 +276,6 @@ class ReceiptController extends AbstractController
             ]
         );
 
-        return $this->redirectToRoute('post_index');
+        exit();
     }
 }
