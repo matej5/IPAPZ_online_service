@@ -8,7 +8,6 @@
 
 namespace App\Form;
 
-use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -88,7 +87,7 @@ class ServiceFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Service::class,
+                'data_class' => null,
                 'categories' => ''
             ]
         );

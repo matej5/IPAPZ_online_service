@@ -66,7 +66,7 @@ class ServiceController extends AbstractController
                     $fileName
                 );
             } else {
-                $fileName = null;
+                $fileName = 'service.png';
             }
 
             $service->setName($data['name']);
