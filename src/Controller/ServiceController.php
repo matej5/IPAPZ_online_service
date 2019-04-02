@@ -131,7 +131,7 @@ class ServiceController extends AbstractController
         } else {
             $categories = $categoryRepository->findAllASC();
 
-            $form = $this->createForm(ServiceFormType::class, ['categories' => $categories, 'service' => $service]);
+            $form = $this->createForm(ServiceEditFormType::class, $service);
             $form->handleRequest($request);
             if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
                 /**
@@ -378,6 +378,7 @@ class ServiceController extends AbstractController
                 $this->isGranted('ROLE_ADMIN'))
         ) {
             $service->setStatus('removed');
+            $service->setCatalog('removed');
             $entityManager->flush();
             $this->addFlash('success', 'Successfully deleted!');
         }
