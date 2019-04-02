@@ -15,10 +15,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface as PaginatorInterfaceAlias;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ServiceController extends AbstractController
 {
@@ -31,7 +29,7 @@ class ServiceController extends AbstractController
      * @param                        ServiceRepository $serviceRepository
      * @param                        PaginatorInterfaceAlias $paginator
      * @param null $category
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function index(
         CategoryRepository $categoryRepository,
@@ -119,7 +117,7 @@ class ServiceController extends AbstractController
      * @param                      CategoryRepository $categoryRepository
      * @param                      Request $request
      * @param                      EntityManagerInterface $entityManager
-     * @return                     Response
+     * @return                     \Symfony\Component\HttpFoundation\Response
      */
     public function viewService(
         Service $service,
@@ -165,7 +163,7 @@ class ServiceController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/allow/{id}", name="service_allow")
      * @param                Service $service
      * @param                EntityManagerInterface $entityManager
-     * @return               Response
+     * @return               \Symfony\Component\HttpFoundation\Response
      */
     public function allow(Service $service, EntityManagerInterface $entityManager)
     {
@@ -187,7 +185,7 @@ class ServiceController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/activate/{id}", name="service_activate")
      * @param                   Service $service
      * @param                   EntityManagerInterface $entityManager
-     * @return                  Response
+     * @return                  \Symfony\Component\HttpFoundation\Response
      */
     public function activate(Service $service, EntityManagerInterface $entityManager)
     {
@@ -213,7 +211,7 @@ class ServiceController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/add/{id}", name="service_add")
      * @param              Service $service
      * @param              EntityManagerInterface $entityManager
-     * @return             Response
+     * @return             \Symfony\Component\HttpFoundation\Response
      */
     public function add(Service $service, EntityManagerInterface $entityManager)
     {
@@ -227,20 +225,12 @@ class ServiceController extends AbstractController
             $this->addFlash('success', 'New service added to cart!');
             return $this->redirectToRoute('service_index');
         } else {
-            $response = new Response();
             $count = 0;
             if (isset($_COOKIE['services'][0])) {
                 $count = count($_COOKIE['services']);
             }
 
-            $cookieServices = array(
-                'name' => "services[$count]",
-                'service' => $service->getId()
-            );
-
-            $cookie = new Cookie($cookieServices['name'], $cookieServices['service']);
-            $response->headers->setCookie($cookie);
-            $response->send();
+            setcookie("services[$count]", $service->getId(), time()+86400, '/');
         }
 
         return $this->redirectToRoute('service_index');
@@ -249,7 +239,7 @@ class ServiceController extends AbstractController
     /**
      * @Symfony\Component\Routing\Annotation\Route("/cart", name="service_view")
      * @param          ServiceRepository $serviceRepository
-     * @return         Response
+     * @return         \Symfony\Component\HttpFoundation\Response
      */
     public function view(ServiceRepository $serviceRepository)
     {
@@ -275,7 +265,7 @@ class ServiceController extends AbstractController
      * @param          Request $request
      * @param          ReceiptRepository $receiptRepository
      * @param          PaginatorInterface $paginator
-     * @return         Response
+     * @return         \Symfony\Component\HttpFoundation\Response
      */
     public function bought(Request $request, ReceiptRepository $receiptRepository, PaginatorInterface $paginator)
     {
@@ -307,7 +297,7 @@ class ServiceController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/cart/{id}", name="service_buy")
      * @param               Service $service
      * @param               Request $request
-     * @return              Response
+     * @return              \Symfony\Component\HttpFoundation\Response
      */
     public function buy(Service $service, Request $request)
     {
@@ -329,7 +319,7 @@ class ServiceController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/events/{id}", name="events")
      * @param                 ReceiptRepository $receiptRepository
      * @param                 null $id
-     * @return                Response
+     * @return                \Symfony\Component\HttpFoundation\Response
      * @throws                \Exception
      */
     public function events(
