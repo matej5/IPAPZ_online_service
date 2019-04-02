@@ -9,9 +9,7 @@ use App\Repository\ServiceRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class PaymentController extends AbstractController
 {
@@ -176,15 +174,12 @@ class PaymentController extends AbstractController
 
 
         if (!$this->getUser()) {
-            $response = new Response();
             $count = 0;
             if (isset($_COOKIE['Buy'][0])) {
                 $count = count($_COOKIE['Buy']);
             }
 
-            $cookie = new Cookie("Buy[$count]", $receipt->getId());
-            $response->headers->setCookie($cookie, '', 1);
-            $response->send();
+            setcookie("Buy[$count]", $receipt->getId(), time() + 1209600, '/');
         }
 
         $entityManager->persist($receipt);
