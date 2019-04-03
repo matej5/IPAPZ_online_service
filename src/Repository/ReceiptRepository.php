@@ -114,7 +114,7 @@ class ReceiptRepository extends ServiceEntityRepository
             ->andWhere('s.worker = :id')
             ->setParameter('id', $worker)
             ->andWhere('s.activity = 1')
-            ->orderBy('s.startOfService', 'DESC');
+            ->orderBy('s.startOfService', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -129,7 +129,7 @@ class ReceiptRepository extends ServiceEntityRepository
             ->andWhere('w.firmName = :firmname')
             ->setParameter('firmname', $firm)
             ->andWhere('s.activity = 1')
-            ->orderBy('s.startOfService', 'DESC');
+            ->orderBy('s.startOfService', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -141,7 +141,7 @@ class ReceiptRepository extends ServiceEntityRepository
             ->from($this->_entityName, 's')
             ->where('s.startOfService > CURRENT_TIMESTAMP()')
             ->andWhere('s.activity = 1')
-            ->orderBy('s.startOfService', 'DESC');
+            ->orderBy('s.startOfService', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
@@ -155,7 +155,7 @@ class ReceiptRepository extends ServiceEntityRepository
             ->andWhere('s.buyer = :id')
             ->setParameter('id', $user)
             ->andWhere('s.activity = 1')
-            ->orderBy('s.startOfService', 'DESC');
+            ->orderBy('s.startOfService', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
