@@ -130,26 +130,9 @@ class ServiceController extends AbstractController
 
         $form = $this->createForm(ServiceEditFormType::class, $service);
         $form->handleRequest($request);
-        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
-            /**
-             * @var Service $service
-             */
-            $service = $form->getData();
-            $service->setStatus('queued');
-            $service->setDuration($form->get('duration')->getData());
-            $service->setName($form->get('name')->getData());
-            $service->setCost($form->get('cost')->getData());
-            $entityManager->persist($service);
-            $entityManager->flush();
-            $this->addFlash('success', 'Edited service!');
-            return $this->redirectToRoute('service_index');
-        }
-
-        $form = $this->createForm(ServiceEditFormType::class, $service);
-        $form->handleRequest($request);
         if ($this->isGranted('ROLE_BOSS') &&
-            $form->isSubmitted() && $form->isValid() &&
-            $this->getUser() == $service->getBoss()->getUser()
+            $form->isSubmitted() &&
+            $this->getUser()->getWorker() == $service->getBoss()
         ) {
             /**
              * @var Service $service
