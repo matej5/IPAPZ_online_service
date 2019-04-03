@@ -22,6 +22,7 @@ class OffWorFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $offices = $options['offices'];
         $choices = [
             'Monday' => 1,
             'Tuesday' => 2,
@@ -37,6 +38,7 @@ class OffWorFormType extends AbstractType
                 EntityType::class,
                 [
                     'class' => Office::class,
+                    'choices' => $offices,
                     'choice_label' => 'address',
                     'attr' => [
                         'class' => 'form-control'
@@ -125,7 +127,8 @@ class OffWorFormType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Worker::class
+                'data_class' => Worker::class,
+                'offices' => ''
             ]
         );
     }

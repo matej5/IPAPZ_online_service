@@ -8,6 +8,7 @@ use App\Form\WorkerFormType;
 use App\Form\BossFormType;
 use App\Form\OffWorFormType;
 use App\Repository\JobRepository;
+use App\Repository\OfficeRepository;
 use App\Repository\ReceiptRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
@@ -63,15 +64,7 @@ class WorkerController extends AbstractController
         if ($this->isGranted('ROLE_ADMIN')) {
             $workers = $workerRepository->findAll();
         } else {
-            $workers = $workerRepository->findBy(
-                [
-                'firmName' => $workerRepository->findOneBy(
-                    [
-                    'user' => $this->getUser()
-                    ]
-                )->getFirmName()
-                ]
-            );
+            $workers = $workerRepository->findByFirm($this->getUser()->getWorker()->getFirmName());
         }
 
         $pagination = $paginator->paginate(
@@ -203,6 +196,7 @@ class WorkerController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/worker/{id}", name="app_worker")
      * @param                 Worker $worker
      * @param                 WorkerRepository $workerRepository
+     * @param                 OfficeRepository $officeRepository
      * @param                 Request $request
      * @param                 EntityManagerInterface $entityManager
      * @return                null|  \Symfony\Component\HttpFoundation\Response
@@ -210,11 +204,13 @@ class WorkerController extends AbstractController
     public function worker(
         Worker $worker,
         WorkerRepository $workerRepository,
+        OfficeRepository $officeRepository,
         Request $request,
         EntityManagerInterface $entityManager
     ) {
-
-        if (!($this->isGranted('ROLE_BOSS') || $this->isGranted('ROLE_ADMIN'))) {
+        if (!($this->isGranted('ROLE_BOSS')
+            && ($this->getUser()->getWorker()->getFirmName() == $worker->getFirmName()))
+        ) {
             return $this->redirectToRoute('post_index');
         } else {
             /**
@@ -222,7 +218,9 @@ class WorkerController extends AbstractController
              */
             $worker = $workerRepository->findOneBy(['id' => $worker->getId()]);
 
-            $form = $this->createForm(OffWorFormType::class, $worker);
+            $offices = $officeRepository->findBy(['owner' => $this->getUser()->getWorker()]);
+
+            $form = $this->createForm(OffWorFormType::class, $worker, ['offices' => $offices]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {

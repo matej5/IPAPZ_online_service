@@ -18,4 +18,20 @@ class WorkerRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Worker::class);
     }
+
+    /**
+     * @param string $firm
+     *
+     * @return array
+     */
+    public function findByFirm($firm)
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('w')
+            ->from($this->_entityName, 'w')
+            ->where('w.firmName = :firm')
+            ->setParameter('firm', $firm);
+
+        return $qb->getQuery()->getResult();
+    }
 }
