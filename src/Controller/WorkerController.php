@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Job;
 use App\Entity\Worker;
 use App\Form\WorkerFormType;
 use App\Form\BossFormType;
 use App\Form\OffWorFormType;
+use App\Repository\JobRepository;
 use App\Repository\ReceiptRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
@@ -46,15 +48,13 @@ class WorkerController extends AbstractController
         if ($this->isGranted('ROLE_BOSS')
             && $form->isSubmitted() && $form->isValid()) {
             /**
-             * @var Worker $worker
+             * @var Job $job
              */
-            $worker = $form->getData();
-            $a = ['ROLE_WORKER'];
-            $worker->setStartTime(0);
-            $worker->getUser()->setRoles($a);
-            $worker->getUser()->setWorker($worker);
-            $worker->setFirmName($workerRepository->findOneBy(['user' => $this->getUser()])->getFirmName());
-            $entityManager->persist($worker);
+            $job = new Job;
+            $job->setUser($this->getUser());
+            $job->setWorker($form->get('user')->getData());
+            $job->setFirmName($this->getUser()->getWorker()->getFirmName());
+            $entityManager->persist($job);
             $entityManager->flush();
             $this->addFlash('success', 'New worker created!');
             return $this->redirectToRoute('worker_index');
@@ -113,14 +113,13 @@ class WorkerController extends AbstractController
 
             if ($this->isGranted('ROLE_ADMIN') && $form->isSubmitted() && $form->isValid()) {
                 /**
-                 * @var Worker $worker
+                 * @var Job $job
                  */
-                $worker = $form->getData();
-                $a = ['ROLE_BOSS'];
-                $worker->getUser()->setRoles($a);
-                $worker->getUser()->setWorker($worker);
-                $worker->setStartTime(0);
-                $entityManager->persist($worker);
+                $job = new Job;
+                $job->setUser($this->getUser());
+                $job->setWorker($form->get('user')->getData());
+                $job->setFirmName($form->get('firmName')->getData());
+                $entityManager->persist($job);
                 $entityManager->flush();
                 $this->addFlash('success', 'New boss created!');
                 return $this->redirectToRoute('worker_index');
@@ -135,6 +134,68 @@ class WorkerController extends AbstractController
                     'workers' => $workers
                 ]
             );
+        }
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/invite", name="job_invite")
+     * @param          JobRepository $jobRepository
+     * @return         \Symfony\Component\HttpFoundation\Response
+     */
+    public function invite(
+        JobRepository $jobRepository
+    ) {
+        if (empty($this->getUser()->getJobsRequest())) {
+            return $this->redirectToRoute('post_index');
+        } else {
+            $jobs = $jobRepository->findBy(['worker' => $this->getUser()]);
+
+            return $this->render(
+                'worker/invite.html.twig',
+                [
+                    'jobs' => $jobs
+                ]
+            );
+        }
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/acceptJob/{id}", name="job_index")
+     * @param          Job $job
+     * @param          EntityManagerInterface $entityManager
+     * @return         \Symfony\Component\HttpFoundation\Response
+     */
+    public function acceptJob(
+        Job $job,
+        EntityManagerInterface $entityManager
+    ) {
+        if (!$this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute('post_index');
+        } else {
+            if (!$this->getUser()->getWorker()) {
+                $worker = new Worker;
+                $worker->setFirmName($job->getFirmName());
+                $worker->setUser($this->getUser());
+                $worker->setStartTime(0);
+                $this->getUser()->setWorker($worker);
+                if ($job->getUser()->getId() == 1) {
+                    $a = ['ROLE_BOSS'];
+                } else {
+                    $a = ['ROLE_WORKER'];
+                }
+
+                $worker->getUser()->setRoles($a);
+                $entityManager->persist($worker);
+                foreach ($this->getUser()->getJobsRequest() as $j) {
+                    $entityManager->remove($j);
+                }
+
+                $entityManager->flush();
+                $this->addFlash('success', 'New boss created!');
+                return $this->redirectToRoute('worker_index');
+            }
+
+            return $this->redirectToRoute('worker_index');
         }
     }
 

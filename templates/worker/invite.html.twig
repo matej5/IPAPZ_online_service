@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h3>Job Invites</h3>
+    {% for job in jobs %}
+        <div class="row mt-3">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>{{ job.user.firstName }} {{ job.user.lastName }} invites you to {{ job.firmName }}</h4>
+                        <a href="{{ path('job_index' , {'id': job.id}) }}">Accept</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

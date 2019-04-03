@@ -198,10 +198,10 @@ class PaymentController extends AbstractController
     {
         $gateway = new \Braintree_Gateway(
             [
-                'environment' => 'sandbox',
-                'merchantId' => 'm2hf33ycfks9kky2',
-                'publicKey' => '787g2vgdp5mqxz9j',
-                'privateKey' => 'b6c1e90e8997ffc9ea01991f56504ef8'
+                'environment' => getenv('BT_ENVIRONMENT'),
+                'merchantId' => getenv('BT_MERCHANT_ID'),
+                'publicKey' => getenv('BT_PUBLIC_KEY'),
+                'privateKey' => getenv('BT_PRIVATE_KEY')
             ]
         );
         return $gateway;

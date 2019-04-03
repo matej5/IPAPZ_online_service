@@ -126,58 +126,54 @@ class ServiceController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager
     ) {
-        if (!($this->isGranted('ROLE_BOSS') && $this->getUser() == $service->getBoss()->getUser())) {
+        $categories = $categoryRepository->findAllASC();
+
+        $form = $this->createForm(ServiceEditFormType::class, $service);
+        $form->handleRequest($request);
+        if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
+            /**
+             * @var Service $service
+             */
+            $service = $form->getData();
+            $service->setStatus('queued');
+            $service->setDuration($form->get('duration')->getData());
+            $service->setName($form->get('name')->getData());
+            $service->setCost($form->get('cost')->getData());
+            $entityManager->persist($service);
+            $entityManager->flush();
+            $this->addFlash('success', 'Edited service!');
             return $this->redirectToRoute('service_index');
-        } else {
-            $categories = $categoryRepository->findAllASC();
-
-            $form = $this->createForm(ServiceEditFormType::class, $service);
-            $form->handleRequest($request);
-            if ($this->isGranted('ROLE_BOSS') && $form->isSubmitted() && $form->isValid()) {
-                /**
-                 * @var Service $service
-                 */
-                $service = $form->getData();
-                $service->setStatus('queued');
-                $service->setDuration($form->get('duration')->getData());
-                $service->setName($form->get('name')->getData());
-                $service->setCost($form->get('cost')->getData());
-                $entityManager->persist($service);
-                $entityManager->flush();
-                $this->addFlash('success', 'Edited service!');
-                return $this->redirectToRoute('service_index');
-            }
-
-            $form = $this->createForm(ServiceEditFormType::class, $service);
-            $form->handleRequest($request);
-            if ($this->isGranted('ROLE_BOSS') &&
-                $form->isSubmitted() && $form->isValid() &&
-                $this->getUser() == $service->getBoss()->getUser()
-            ) {
-                /**
-                 * @var Service $service
-                 */
-                $service = $form->getData();
-                $service->setStatus('queued');
-                $service->setDuration($form->get('duration')->getData());
-                $service->setName($form->get('name')->getData());
-                $service->setCost($form->get('cost')->getData());
-                $entityManager->persist($service);
-                $entityManager->flush();
-                $this->addFlash('success', 'Edited service!');
-                return $this->redirectToRoute('service_index');
-            }
-
-            return $this->render(
-                'service/view.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'categories' => $categories,
-                    'service' => $service,
-                    'title' => 'Edit service'
-                ]
-            );
         }
+
+        $form = $this->createForm(ServiceEditFormType::class, $service);
+        $form->handleRequest($request);
+        if ($this->isGranted('ROLE_BOSS') &&
+            $form->isSubmitted() && $form->isValid() &&
+            $this->getUser() == $service->getBoss()->getUser()
+        ) {
+            /**
+             * @var Service $service
+             */
+            $service = $form->getData();
+            $service->setStatus('queued');
+            $service->setDuration($form->get('duration')->getData());
+            $service->setName($form->get('name')->getData());
+            $service->setCost($form->get('cost')->getData());
+            $entityManager->persist($service);
+            $entityManager->flush();
+            $this->addFlash('success', 'Edited service!');
+            return $this->redirectToRoute('service_index');
+        }
+
+        return $this->render(
+            'service/view.html.twig',
+            [
+                'form' => $form->createView(),
+                'categories' => $categories,
+                'service' => $service,
+                'title' => 'Edit service'
+            ]
+        );
     }
 
     /**

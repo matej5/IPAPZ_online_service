@@ -94,6 +94,16 @@ class User implements UserInterface
      */
     private $worker;
 
+    /**
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Job", mappedBy="user")
+     */
+    private $jobs;
+
+    /**
+     * @Doctrine\ORM\Mapping\OneToMany(targetEntity="App\Entity\Job", mappedBy="worker")
+     */
+    private $jobsRequest;
+
 
     public function __construct()
     {
@@ -103,6 +113,8 @@ class User implements UserInterface
         $this->receipts = new ArrayCollection();
         $this->likeDislikes = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
+        $this->jobsRequest = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -542,5 +554,67 @@ class User implements UserInterface
     public function __toString()
     {
         return $this->email;
+    }
+
+    /**
+     * @return Collection|Job[]
+     */
+    public function getJobs(): Collection
+    {
+        return $this->jobs;
+    }
+
+    public function addJob(\App\Entity\Job $job): self
+    {
+        if (!$this->jobs->contains($job)) {
+            $this->jobs[] = $job;
+            $job->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJob(\App\Entity\Job $job): self
+    {
+        if ($this->jobs->contains($job)) {
+            $this->jobs->removeElement($job);
+            // set the owning side to null (unless already changed)
+            if ($job->getUser() === $this) {
+                $job->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Job[]
+     */
+    public function getJobsRequest(): Collection
+    {
+        return $this->jobsRequest;
+    }
+
+    public function addJobsRequest(\App\Entity\Job $jobsRequest): self
+    {
+        if (!$this->jobsRequest->contains($jobsRequest)) {
+            $this->jobsRequest[] = $jobsRequest;
+            $jobsRequest->setWorker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJobsRequest(\App\Entity\Job $jobsRequest): self
+    {
+        if ($this->jobsRequest->contains($jobsRequest)) {
+            $this->jobsRequest->removeElement($jobsRequest);
+            // set the owning side to null (unless already changed)
+            if ($jobsRequest->getWorker() === $this) {
+                $jobsRequest->setWorker(null);
+            }
+        }
+
+        return $this;
     }
 }

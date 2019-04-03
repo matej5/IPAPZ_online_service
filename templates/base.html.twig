@@ -70,21 +70,30 @@
             </div>
             {% endif %}
             {% if is_granted('ROLE_USER') %}
-            <div class="btn-group">
-                <li class="nav-item active">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Shop
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{{ path('receipt_index') }}">History</a>
-                        <a class="dropdown-item" href="{{ path('receipt_missed') }}">Missed</a>
-                        <a class="dropdown-item" href="{{ path('receipt_incoming') }}">Incoming
-                            {% if app.user.checkForIncomingReceipts is not empty %}
-                                <i class="fas fa-exclamation"></i>
-                            {% endif %}</a>
-                    </div>
-                </li>
-            </div>
+                <div class="btn-group">
+                    <li class="nav-item active">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Shop
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('receipt_index') }}">History</a>
+                            <a class="dropdown-item" href="{{ path('receipt_missed') }}">Missed</a>
+                            <a class="dropdown-item" href="{{ path('receipt_incoming') }}">Incoming
+                                {% if app.user.checkForIncomingReceipts is not empty %}
+                                    <i class="fas fa-exclamation"></i>
+                                {% endif %}</a>
+                        </div>
+                    </li>
+                </div>
+            {% endif %}
+            {% if is_granted('ROLE_USER') and app.user.getJobsRequest is not empty %}
+                <div class="btn-group">
+                    <li class="nav-item">
+                        <a class="btn btn-secondary" role="button" href="{{ path('job_invite') }}">
+                            Job invite
+                        </a>
+                    </li>
+                </div>
             {% endif %}
             </div>
         </ul>
