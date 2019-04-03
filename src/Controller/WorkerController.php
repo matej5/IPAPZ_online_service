@@ -292,7 +292,7 @@ class WorkerController extends AbstractController
                 $radniDan = false;
             }
 
-            $receipts = $receiptRepository->findAll(['worker' => $worker]);
+            $receipts = $receiptRepository->findBy(['worker' => $worker]);
 
             foreach ($receipts as $receipt) {
                 //svaka narudzba (pocetak i kraj) u sekundama
