@@ -238,7 +238,7 @@ class ReceiptController extends AbstractController
      * @Symfony\Component\Routing\Annotation\Route("/print/{id}", name="print_receipt")
      * @param          Receipt $receipt
      * @param          EntityManagerInterface $entityManager
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return         null
      */
     public function print(
         Receipt $receipt,

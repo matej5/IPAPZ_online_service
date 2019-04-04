@@ -292,6 +292,7 @@ class WorkerController extends AbstractController
                 $radniDan = false;
             }
 
+            $avaliable = true;
             $receipts = $receiptRepository->findBy(['worker' => $worker]);
 
             foreach ($receipts as $receipt) {
