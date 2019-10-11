@@ -55,6 +55,7 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
+                businessHours: true,
                 businessHours: '{{ path('work_time') }}'.concat('/' + id),
                 eventSources: [
                     '{{ path('events') }}'.concat('/' + id)

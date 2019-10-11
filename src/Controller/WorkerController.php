@@ -309,8 +309,8 @@ class WorkerController extends AbstractController
                     $startOfServ + $servDur < $chosenTime + $chosenServDur) {
                     $avaliable = false;
                     break;
-                } elseif ($startOfServ < $chosenTime &&
-                    $startOfServ + $servDur > $chosenTime + $chosenServDur) {
+                } elseif ($startOfServ <= $chosenTime &&
+                    $startOfServ + $servDur >= $chosenTime + $chosenServDur) {
                     $avaliable = false;
                     break;
                 } else {

@@ -356,19 +356,19 @@ class ServiceController extends AbstractController
     ) {
         $data = [];
         $worker = $workerRepository->findOneBy(['id' => $id]);
-        $startTime = date('H:m', $worker->getStartTime() * 3600 - 1);
-        $endTime = date('H:m', ($worker->getStartTime() + $worker->getWorkTime()) * 3600 );
+        $startTime = $worker->getStartTime() . ":00";
+        $endTime = date('H:m', ($worker->getStartTime() + $worker->getWorkTime())* 3600);
         $daysOfWeek = [];
         for ($i = 0; $i < 7; $i++) {
-            if($worker->getWorkDays() & pow(2, $i)) {
+            if ($worker->getWorkDays() & pow(2, $i)) {
                 $daysOfWeek[] = $i;
             }
         }
 
         $data = [
-            'dow' => $daysOfWeek,
-            'start' => $startTime,
-            'end' => $endTime
+            'daysOfWeek' => $daysOfWeek,
+            'startTime' => $startTime,
+            'endTime' => $endTime
         ];
 
         $response = new JsonResponse($data);

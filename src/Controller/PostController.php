@@ -33,20 +33,25 @@ class PostController extends AbstractController
             /**
              * @var Post $post
              */
-            $post = $form->getData();
+            $post = new Post();
+            if (!empty($form->get('image')->getData())) {
+                $file = $form->get('image')->getData();
 
-            $file = $form->get('image')->getData();
+                $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
 
-            $fileName = $this->generateUniqueFileName() . '.' . $file->guessExtension();
+                // moves the file to the directory where brochures are stored
+                $file->move(
+                    $this->getParameter('post_directory'),
+                    $fileName
+                );
 
-            // moves the file to the directory where brochures are stored
-            $file->move(
-                $this->getParameter('post_directory'),
-                $fileName
-            );
+            } else {
+                $fileName = 'post.jpg';
+            }
 
             $post->setImage($fileName);
-
+            $post->setContent($form->get('content')->getData());
+            $post->setTitle($form->get('title')->getData());
             $post->setUser($this->getUser());
             $entityManager->persist($post);
             $entityManager->flush();
