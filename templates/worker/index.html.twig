@@ -1,13 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    <h3>Workers</h3>
     {% if is_granted('ROLE_BOSS') %}
+    <button class="btn btn-primary" onclick="openForm()">New Worker</button>
+    <div class="form-popup" id="myForm">
         {{ form_start(form) }}
             {{ form_row(form.user) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
         {{ form_end(form) }}
+    </div>
     {% endif %}
-    <h3>Workers</h3>
+
     {% for worker in workers %}
         <div class="row mt-3">
             <div class="col-lg-6">

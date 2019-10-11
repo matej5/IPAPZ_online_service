@@ -2,19 +2,24 @@
 
 {% block body %}
     {% if is_granted('ROLE_USER') %}
-        <h3>Profile</h3>
+        <h3>{{ worker.getName }}</h3>
         <hr>
-        <p>Name: {{ worker.getName }} </p>
         <p>Email: {{ worker.user.email }}</p>
         <img class="img-thumbnail" style="height: 150px; width: 150px;" src="{{ asset('images/'~ worker.user.email ~'/'~ worker.user.image ) }}">
             <hr>
+
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_BOSS') %}
+        <button class="btn btn-primary" onclick="openForm()">Edit</button>
+        <div class="form-popup" id="myForm">
             {{ form_start(form) }}
             {{ form_row(form.office) }}
+            {{ form_row(form.startTime) }}
             {{ form_row(form.workTime) }}
             {{ form_widget(form.workDays) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
             {{ form_end(form) }}
+        </div>
         {% endif %}
     {% endif %}
 {% endblock %}

@@ -138,7 +138,11 @@ class Receipt
 
     public function getActivity(): ?bool
     {
-        return $this->activity;
+        if ($this->startOfService > date("Y-m-d H:i:s")){
+            return false;
+        }
+
+        return true;
     }
 
     public function setActivity(bool $activity): self

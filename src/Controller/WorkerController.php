@@ -57,7 +57,7 @@ class WorkerController extends AbstractController
             $job->setFirmName($this->getUser()->getWorker()->getFirmName());
             $entityManager->persist($job);
             $entityManager->flush();
-            $this->addFlash('success', 'New worker created!');
+            $this->addFlash('success', 'New work offer sent!');
             return $this->redirectToRoute('worker_index');
         }
 
@@ -114,8 +114,8 @@ class WorkerController extends AbstractController
                 $job->setFirmName($form->get('firmName')->getData());
                 $entityManager->persist($job);
                 $entityManager->flush();
-                $this->addFlash('success', 'New boss created!');
-                return $this->redirectToRoute('worker_index');
+                $this->addFlash('success', 'New boss offer sent!');
+                return $this->redirectToRoute('boss_index');
             }
 
             $workers = $workerRepository->findBy(['user' => $userRepository->findByRole('ROLE_BOSS')]);
@@ -184,7 +184,7 @@ class WorkerController extends AbstractController
                 }
 
                 $entityManager->flush();
-                $this->addFlash('success', 'New boss created!');
+                $this->addFlash('success', 'Job accepted!');
                 return $this->redirectToRoute('worker_index');
             }
 
@@ -211,7 +211,7 @@ class WorkerController extends AbstractController
         if (!($this->isGranted('ROLE_BOSS')
             && ($this->getUser()->getWorker()->getFirmName() == $worker->getFirmName()))
         ) {
-            return $this->redirectToRoute('post_index');
+            return $this->redirectToRoute('app_user', ['id' => $worker->getUser()->getId()]);
         } else {
             /**
              * @var Worker $worker
@@ -226,6 +226,7 @@ class WorkerController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $worker->setOffice($form->get('office')->getData());
                 $worker->setWorkDays($form->get('workDays')->getData());
+                $worker->setWorkTime($form->get('workTime')->getData());
                 $entityManager->flush();
             }
 

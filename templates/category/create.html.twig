@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% if is_granted('ROLE_ADMIN') %}
+        {{ form_start(form) }}
+        <table id="myTable" class=" table order-list">
+            <thead>
+            <tr>
+                <td>Name of category</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    {{ form_row(form.name) }}
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="5" style="text-align: left;">
+                    <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
+                </td>
+            </tr>
+            <tr>
+            </tr>
+            </tfoot>
+        </table>
+            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        {{ form_end(form) }}
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/category.js') }}"></script>
+{% endblock %}

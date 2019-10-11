@@ -344,6 +344,38 @@ class ServiceController extends AbstractController
     }
 
     /**
+     * @Symfony\Component\Routing\Annotation\Route("/workTime/{id}", name="work_time")
+     * @param                 WorkerRepository $workerRepository
+     * @param                 null $id
+     * @return                \Symfony\Component\HttpFoundation\Response
+     * @throws                \Exception
+     */
+    public function workTime(
+        WorkerRepository $workerRepository,
+        $id = null
+    ) {
+        $data = [];
+        $worker = $workerRepository->findOneBy(['id' => $id]);
+        $startTime = date('H:m', $worker->getStartTime() * 3600 - 1);
+        $endTime = date('H:m', ($worker->getStartTime() + $worker->getWorkTime()) * 3600 );
+        $daysOfWeek = [];
+        for ($i = 0; $i < 7; $i++) {
+            if($worker->getWorkDays() & pow(2, $i)) {
+                $daysOfWeek[] = $i;
+            }
+        }
+
+        $data = [
+            'dow' => $daysOfWeek,
+            'start' => $startTime,
+            'end' => $endTime
+        ];
+
+        $response = new JsonResponse($data);
+        return $response;
+    }
+
+    /**
      * @Sensio\Bundle\FrameworkExtraBundle\Configuration\Security("user.getWorker() == service.getBoss()")
      * @Symfony\Component\Routing\Annotation\Route("/service/{id}/delete", name="service_delete")
      * @param                         Service $service

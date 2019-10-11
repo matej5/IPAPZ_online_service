@@ -32,6 +32,32 @@ class CategoryController extends AbstractController
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('post_index');
         } else {
+            $categories = $categoryRepository->findAll();
+
+            return $this->render(
+                'category/index.html.twig',
+                [
+                    'categories' => $categories,
+                ]
+            );
+        }
+    }
+
+    /**
+     * @Symfony\Component\Routing\Annotation\Route("/addCategory", name="category_add")
+     * @param                Request $request
+     * @param                EntityManagerInterface $entityManager
+     * @param                CategoryRepository $categoryRepository
+     * @return               \Symfony\Component\HttpFoundation\Response
+     */
+    public function add(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        CategoryRepository $categoryRepository
+    ) {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('post_index');
+        } else {
             $form = $this->createForm(CategoryFormType::class);
             $form->handleRequest($request);
 
@@ -54,20 +80,17 @@ class CategoryController extends AbstractController
                 return $this->redirectToRoute('category_index');
             }
 
-            $categories = $categoryRepository->findAll();
-
             return $this->render(
-                'category/index.html.twig',
+                'category/create.html.twig',
                 [
-                    'form' => $form->createView(),
-                    'categories' => $categories,
+                    'form' => $form->createView()
                 ]
             );
         }
     }
 
     /**
-     * @Symfony\Component\Routing\Annotation\Route("/categories/{id}", name="category_view")
+     * @Symfony\Component\Routing\Annotation\Route("/category/{id}", name="category_view")
      * @param                     Category $category
      * @param                     Request $request
      * @param                     EntityManagerInterface $entityManager

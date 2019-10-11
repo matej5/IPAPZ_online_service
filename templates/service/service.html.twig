@@ -1,19 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-
-    {% if is_granted('ROLE_BOSS') %}
-        {{ form_start(form) }}
-            {{ form_row(form.name) }}
-            {{ form_row(form.cost) }}
-            {{ form_row(form.duration) }}
-            {{ form_row(form.description) }}
-            {{ form_row(form.image) }}
-            {{ form_row(form.category) }}
-            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
-        {{ form_end(form) }}
-    {% endif %}
-
     <div class="row">
         <div class="col-2" >
             <ul class="list group">
@@ -41,6 +28,22 @@
             </ul>
         </div>
         <div class="col-lg-10">
+            {% if is_granted('ROLE_BOSS') %}
+                <button class="btn btn-primary" onclick="openForm()">New service</button>
+                <div class="form-popup" id="myForm">
+                {{ form_start(form) }}
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.cost) }}
+                    {{ form_row(form.duration) }}
+                    {{ form_row(form.description) }}
+                    {{ form_row(form.image) }}
+                    {{ form_row(form.category) }}
+                    <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+                    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                {{ form_end(form) }}
+                </div>
+            {% endif %}
+
             <ul class="list group">
                 <h3>{{ title }}</h3>
                 {% for service in services %}

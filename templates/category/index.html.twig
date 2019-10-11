@@ -1,52 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {% if is_granted('ROLE_ADMIN') %}
-        {{ form_start(form) }}
-        <table id="myTable" class=" table order-list">
-            <thead>
-            <tr>
-                <td>Name of category</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
-                    {{ form_row(form.name) }}
-                </td>
-            </tr>
-            </tbody>
-            <tfoot>
-            <tr>
-                <td colspan="5" style="text-align: left;">
-                    <input type="button" class="btn btn-lg btn-block " id="addrow" value="Add Row" />
-                </td>
-            </tr>
-            <tr>
-            </tr>
-            </tfoot>
-        </table>
-            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
-        {{ form_end(form) }}
-    {% endif %}
-
     <h3>Categories</h3>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a class="btn btn-primary" href="{{ path('category_add') }}">
+            Create new
+        </a>
+    {% endif %}
+    <div class="row mt-3">
     {% for category in categories %}
-        <div class="row mt-3">
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-body">
+        <div class="col col-lg-2">
+            <div class="card">
+                <div class="card-body">
+                    <center>
                         <a href="{{ path('category_view', {'id': category.id}) }}">
                             <p class="card-text">{{ category.name }}</p>
                         </a>
-                    </div>
+                    </center>
                 </div>
             </div>
         </div>
     {% endfor %}
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('js/category.js') }}"></script>
+    </div>
 {% endblock %}

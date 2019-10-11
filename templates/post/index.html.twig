@@ -3,12 +3,16 @@
 {% block body %}
     <h1>Pocetna</h1>
     {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
+    <button class="btn btn-primary" onclick="openForm()">New Post</button>
+    <div class="form-popup" id="myForm">
         {{ form_start(form) }}
             {{ form_row(form.title) }}
             {{ form_row(form.content) }}
             {{ form_row(form.image) }}
             <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
         {{ form_end(form) }}
+    </div>
     {% endif %}
 
     {% for post in posts %}

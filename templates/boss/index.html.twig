@@ -1,20 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {% if is_granted('ROLE_ADMIN') %}
-        {{ form_start(form) }}
-        {{ form_row(form.user) }}
-        {{ form_row(form.firmName) }}
-            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
-        {{ form_end(form) }}
-    {% endif %}
     <h3>Bosses</h3>
+    {% if is_granted('ROLE_ADMIN') %}
+        <button class="btn btn-primary" onclick="openForm()">Edit</button>
+        <div class="form-popup" id="myForm">
+            {{ form_start(form) }}
+                {{ form_row(form.user) }}
+                {{ form_row(form.firmName) }}
+                <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            {{ form_end(form) }}
+        </div>
+    {% endif %}
+    
     {% for worker in workers %}
         <div class="row mt-3">
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">{{ worker.name }}</p>
+                        <a href="{{ path('app_worker' , {'id': worker.id}) }}"><p class="card-text">{{ worker.name }}</p></a>
                     </div>
                 </div>
             </div>

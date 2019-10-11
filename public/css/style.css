@@ -49,3 +49,7 @@
         max-width: 100%;
     }
 }
+
+.form-popup{
+    display: none;
+}

@@ -49,15 +49,15 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 selectable: true,
-                firstDay: 1,
+                Date,
                 header: {
-                    left: 'prev,next today',
+                    left: 'next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
+                businessHours: '{{ path('work_time') }}'.concat('/' + id),
                 eventSources: [
                     '{{ path('events') }}'.concat('/' + id)
-
                 ],
                 type: 'POST',
                 scrollTime: '07:00',
