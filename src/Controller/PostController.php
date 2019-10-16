@@ -44,7 +44,6 @@ class PostController extends AbstractController
                     $this->getParameter('post_directory'),
                     $fileName
                 );
-
             } else {
                 $fileName = 'post.jpg';
             }

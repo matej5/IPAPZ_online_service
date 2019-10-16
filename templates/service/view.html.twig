@@ -27,7 +27,7 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="col-10" >
+        <div class="col-1" >
             {% if is_granted('ROLE_BOSS') and app.user.getWorker == service.boss%}
             <button class="btn btn-primary" onclick="openForm()">Edit</button>
             <div class="form-popup" id="myForm">
