@@ -3,16 +3,16 @@
 {% block body %}
     <div class="row mt-3">
         <div class="col-lg-12">
-            <div class="jumbotron">
+            <div class="jumbotron black-background">
                 <div class="row">
                     <div class="col-lg-3">
-                        <p class="text-muted">{{ post.createdAt|date }}</p>
+                        <p">{{ post.createdAt|date }}</p>
                     </div>
                     <div class="col-lg-3">
-                        <p class="text-muted">{{ post.user.firstname }} {{ post.user.lastname }}</p>
+                        <p>{{ post.user.firstname }} {{ post.user.lastname }}</p>
                     </div>
                     {% if post.user.worker is not null %}
-                        <p class="text-muted">{{ post.user.worker.firmName }}</p>
+                        <h3>{{ post.user.worker.firmName }}</h3>
                     {% endif %}
                     <div class="col-lg-3 text-right">
                         {% if app.user == post.user %}
@@ -35,17 +35,19 @@
         </div>
     </div>
 
-    {% if is_granted('ROLE_USER') %}
-        {{ form_start(commentForm) }}
-            {{ form_row(commentForm.content) }}
-            <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
-        {{ form_end(commentForm) }}
-    {% endif %}
-
+    <div class="black-background">
+        {% if is_granted('ROLE_USER') %}
+            {{ form_start(commentForm) }}
+                {{ form_row(commentForm.content) }}
+                <button type="submit" class="btn btn-primary" formnovalidate>Save</button>
+            {{ form_end(commentForm) }}
+        {% endif %}
+    </div>
+    
     {% for comment in post.comments %}
         <div class="row mt-3">
             <div class="col-lg-6">
-                <div class="card">
+                <div class="card black-background">
                     <div class="card-body">
                         <img class="img-thumbnail" style="height: 150px; width: 150px;" src="{{ asset('images/'~ comment.user.email ~'/'~ comment.user.image ) }}">
                         <h6 class="card-subtitle mt-2 text-muted">{{ comment.createdAt|date }}</h6>

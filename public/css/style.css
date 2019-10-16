@@ -6,7 +6,7 @@ body{
     color: white;
 }
 
-.navbar, .card{
+.black-background{
     background-color: rgba(25,20,25,0.7);
 }
 

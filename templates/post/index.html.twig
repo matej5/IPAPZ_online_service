@@ -4,7 +4,7 @@
     <h1>Pocetna</h1>
     {% if is_granted('ROLE_BOSS') or is_granted('ROLE_ADMIN') %}
     <button class="btn btn-primary" onclick="openForm()">New Post</button>
-    <div class="form-popup" id="myForm">
+    <div class="form-popup black-background" id="myForm">
         {{ form_start(form) }}
             {{ form_row(form.title) }}
             {{ form_row(form.content) }}
@@ -18,7 +18,7 @@
     {% for post in posts %}
         <div class="row mt-3 justify-content-md-center">
             <div class="col-lg-6 ">
-                <div class="card">
+                <div class="card black-background">
                     <div class="card-body">
                         <img id="img" src="{{ asset('images/posts/' ~post.image) }}">
                         <h6 class="card-subtitle mt-2 text-muted">{{ post.createdAt|date }}</h6>
